@@ -4,10 +4,13 @@ import jwt, { Secret } from "jsonwebtoken";
 
 import { RequestType, Status } from "./types";
 
-export const generateResponse = (status: Status, message: string, res: NextApiResponse) => res.status(parseInt(status)).json({ message });
+export const generateResponse = (status: Status, message: string, res: NextApiResponse, extraInfo?: object) => res.status(parseInt(status)).json({
+  message,
+  ...extraInfo,
+});
 
 export const checkRequestType = (endPointRequestTYpe: RequestType, userRequestType: RequestType, res: NextApiResponse) => {
-  if (userRequestType === endPointRequestTYpe) {
+  if (userRequestType !== endPointRequestTYpe) {
     return generateResponse("405", `Request type ${userRequestType} is not allowed`, res);
   }
 };
@@ -27,7 +30,12 @@ export const hashPhassword = async (password: string) => {
 };
 
 export const generateJWT = async (userId: string) => {
-  const token = await jwt.sign({ id: userId }, process.env.JWT_SECRET as Secret);
+  const token = await jwt.sign(
+    {
+      id: userId,
+    },
+    process.env.JWT_SECRET as Secret,
+  );
   return token;
 };
 
