@@ -44,8 +44,8 @@ const postRequestHandler = async (req: NextApiRequest, res: NextApiResponse) => 
     let message = "";
 
     if (
-      error instanceof PrismaClientKnownRequestError
-      && [PRISMA_ERRORS.INCONSITENT, PRISMA_ERRORS.NOT_FOUND].includes(error.code as PRISMA_ERRORS)
+      error instanceof PrismaClientKnownRequestError &&
+      [PRISMA_ERRORS.INCONSITENT, PRISMA_ERRORS.NOT_FOUND].includes(error.code as PRISMA_ERRORS)
     ) {
       message = "Parent not found.";
     }
