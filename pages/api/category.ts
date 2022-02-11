@@ -1,7 +1,9 @@
+import { Prisma } from "@prisma/client";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
 import { NextApiRequest, NextApiResponse } from "next";
 
 import { generateResponse } from "../../utils";
+import { PRISMA_ERRORS } from "../../utils/enum";
 import { ErrorMessages } from "../../utils/preconfig";
 
 import prisma from "../../utils/prisma";
@@ -25,11 +27,30 @@ const postRequestHandler = async (req: NextApiRequest, res: NextApiResponse) => 
       return generateResponse("400", "Invalid input provided.", res, validationResponse);
     }
 
-    const category = await prisma.category.create({ data: req.body });
+    const data = { name: req.body.name } as Prisma.CategoryCreateInput;
+
+    if (req.body.parent) {
+      data.parentCategory = {
+        connect: {
+          id: req.body.parent,
+        },
+      };
+    }
+
+    const category = await prisma.category.create({ data });
 
     return generateResponse("200", "Category saved.", res, { category });
   } catch (error) {
-    return generateResponse("400", "Something went wrong.", res);
+    let message = "";
+
+    if (
+      error instanceof PrismaClientKnownRequestError
+      && [PRISMA_ERRORS.INCONSITENT, PRISMA_ERRORS.NOT_FOUND].includes(error.code as PRISMA_ERRORS)
+    ) {
+      message = "Parent not found.";
+    }
+
+    return generateResponse("400", message || "Something went wrong.", res);
   }
 };
 
@@ -76,7 +97,6 @@ const deleteRequestHandler = async (req: NextApiRequest, res: NextApiResponse) =
 };
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
-  console.log(req.method);
   switch (req.method as RequestType) {
     case "GET":
       return getRequestHandler(req, res);
