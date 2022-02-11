@@ -1,6 +1,29 @@
 import * as yup from "yup";
 import { ValidationError } from "yup";
-import { ResponseError, SignupBody } from "./types";
+import { CategoryBody, ResponseError, SignupBody } from "./types";
+
+const handleError = (errors: any) => {
+  if (errors instanceof ValidationError) {
+    let errorMessage = {} as ResponseError;
+
+    const err = errors.inner.map((error, index) => {
+      const errorInfo = {
+        key: error.path || "",
+        message: error.message,
+      };
+
+      if (index === 0) {
+        errorMessage = errorInfo;
+      }
+      return errorInfo;
+    });
+
+    return {
+      errors: err,
+      errorMessage,
+    };
+  }
+};
 
 export const validateUserRegister = async (values: SignupBody) => {
   try {
@@ -13,25 +36,21 @@ export const validateUserRegister = async (values: SignupBody) => {
       abortEarly: false,
     });
   } catch (errors) {
-    if (errors instanceof ValidationError) {
-      let errorMessage = {} as ResponseError;
+    return handleError(errors);
+  }
+};
 
-      const err = errors.inner.map((error, index) => {
-        const errorInfo = {
-          key: error.path || "",
-          message: error.message,
-        };
+export const validateCategory = async (values: CategoryBody) => {
+  try {
+    const schema: yup.SchemaOf<CategoryBody> = yup.object().shape({
+      name: yup.string().trim().required("Please provide category name."),
+    });
 
-        if (index === 0) {
-          errorMessage = errorInfo;
-        }
-        return errorInfo;
-      });
-
-      return {
-        errors: err,
-        errorMessage,
-      };
-    }
+    await schema.validate(values, {
+      abortEarly: false,
+    });
+  } catch (errors) {
+    console.log({ errors });
+    return handleError(errors);
   }
 };

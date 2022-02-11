@@ -10,3 +10,7 @@ export type SignupBody = {
   email: string;
   password: string;
 };
+
+export type CategoryBody = {
+  name: string;
+};
