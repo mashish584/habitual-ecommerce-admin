@@ -1,6 +1,5 @@
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
 import { NextApiRequest, NextApiResponse } from "next";
-import Error from "next/error";
 
 import { generateResponse } from "../../utils";
 import { ErrorMessages } from "../../utils/preconfig";

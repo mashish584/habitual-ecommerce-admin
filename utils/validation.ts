@@ -28,7 +28,8 @@ const handleError = (errors: any) => {
 export const validateUserRegister = async (values: SignupBody) => {
   try {
     const schema: yup.SchemaOf<SignupBody> = yup.object().shape({
-      email: yup.string().trim().required("Email address is required.").email("Email address is not valid.").label("email"),
+      email: yup.string().trim().required("Email address is required.").email("Email address is not valid.")
+        .label("email"),
       password: yup.string().trim().required("Password is required.").label("password"),
     });
 
