@@ -18,6 +18,7 @@ module.exports = {
     camelcase: 0,
     "no-restricted-syntax": 0,
     "global-require": 0,
+    "consistent-return": 0,
     radix: 0,
   },
   settings: {
