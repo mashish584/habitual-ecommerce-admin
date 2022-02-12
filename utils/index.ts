@@ -46,15 +46,16 @@ export const comparePassword = (password: string, currentPassword: string) => bc
 
 export const catchAsyncError = (fn: AsyncFnType) => (req: NextApiRequest, res: NextApiResponse) =>
   fn(req, res).catch((error) => {
-    console.log({ error });
+    let status: Status = "400";
     let message = "";
 
     if (
       error instanceof PrismaClientKnownRequestError &&
       [PRISMA_ERRORS.INCONSITENT, PRISMA_ERRORS.NOT_FOUND].includes(error.code as PRISMA_ERRORS)
     ) {
-      message = "Parent not found.";
+      message = "Record not found.";
+      status = "404";
     }
 
-    return generateResponse("400", message || "Something went wrong.", res);
+    return generateResponse(status, message || "Something went wrong.", res);
   });

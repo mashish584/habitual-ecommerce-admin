@@ -11,10 +11,7 @@ const handleError = (errors: any) => {
     let errorMessage = {} as ResponseError;
 
     const err = errors.inner.map((error, index) => {
-      const errorInfo = {
-        key: error.path || "",
-        message: error.message,
-      };
+      const errorInfo = { key: error.path || "", message: error.message };
 
       if (index === 0) {
         errorMessage = errorInfo;
@@ -22,14 +19,11 @@ const handleError = (errors: any) => {
       return errorInfo;
     });
 
-    return {
-      errors: err,
-      errorMessage,
-    };
+    return { errors: err, errorMessage };
   }
 };
 
-export const validateUserRegister = async (values: SignupBody) => {
+export const validateUserCred = async (values: SignupBody) => {
   try {
     const schema: yup.SchemaOf<SignupBody> = yup.object().shape({
       email: yup.string().trim().required("Email address is required.").email("Email address is not valid.").label("email"),
@@ -54,7 +48,6 @@ export const validateCategory = async (values: CategoryBody) => {
       abortEarly: false,
     });
   } catch (errors) {
-    console.log({ errors });
     return handleError(errors);
   }
 };

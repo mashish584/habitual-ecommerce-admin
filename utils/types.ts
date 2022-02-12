@@ -15,6 +15,10 @@ export type SignupBody = {
   password: string;
 };
 
+export type UserInfoBody = {
+  fullname: string | undefined | null;
+};
+
 export type CategoryBody = {
   name: string | undefined | null;
 };
