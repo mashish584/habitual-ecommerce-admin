@@ -1,6 +1,10 @@
+import { NextApiResponse } from "next";
+
 import * as yup from "yup";
-import { ValidationError } from "yup";
-import { CategoryBody, ResponseError, SignupBody } from "./types";
+
+const { ValidationError } = yup;
+
+import { CategoryBody, FileType, ResponseError, SignupBody } from "./types";
 
 const handleError = (errors: any) => {
   if (errors instanceof ValidationError) {
@@ -28,8 +32,7 @@ const handleError = (errors: any) => {
 export const validateUserRegister = async (values: SignupBody) => {
   try {
     const schema: yup.SchemaOf<SignupBody> = yup.object().shape({
-      email: yup.string().trim().required("Email address is required.").email("Email address is not valid.")
-        .label("email"),
+      email: yup.string().trim().required("Email address is required.").email("Email address is not valid.").label("email"),
       password: yup.string().trim().required("Password is required.").label("password"),
     });
 
@@ -54,4 +57,12 @@ export const validateCategory = async (values: CategoryBody) => {
     console.log({ errors });
     return handleError(errors);
   }
+};
+
+export const validateImageUpload = (file: FileType, res: NextApiResponse) => {
+  if (file && !file.mimetype.includes("image")) {
+    return res.status(422).json({ message: "Only image is allowed to upload." });
+  }
+
+  return true;
 };

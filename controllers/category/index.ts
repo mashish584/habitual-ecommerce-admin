@@ -3,7 +3,8 @@ import { Prisma } from "@prisma/client";
 
 import prisma from "../../utils/prisma";
 import { generateResponse } from "../../utils";
-import { validateCategory } from "../../utils/validation";
+import { validateCategory, validateImageUpload } from "../../utils/validation";
+import { upload_on_imagekit } from "../../utils/upload";
 
 const getRequestHandler = async (req: NextApiRequest, res: NextApiResponse) => {
   const categories = await prisma.category.findMany();
@@ -11,7 +12,6 @@ const getRequestHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 };
 
 const postRequestHandler = async (req: NextApiRequest, res: NextApiResponse) => {
-  console.log(req);
   const validationResponse = await validateCategory(req.body);
 
   if (validationResponse) {
@@ -19,6 +19,11 @@ const postRequestHandler = async (req: NextApiRequest, res: NextApiResponse) => 
   }
 
   const data = { name: req.body.name } as Prisma.CategoryCreateInput;
+
+  if (req.file && validateImageUpload(req.file, res)) {
+    const response = await upload_on_imagekit(req.file.buffer, req.file.originalname);
+    data.image = response.url;
+  }
 
   if (req.body.parent) {
     data.parentCategory = {

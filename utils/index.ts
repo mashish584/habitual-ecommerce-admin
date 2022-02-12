@@ -2,15 +2,14 @@ import { NextApiRequest, NextApiResponse } from "next";
 import bcrypt from "bcryptjs";
 import jwt, { Secret } from "jsonwebtoken";
 
-import { RequestType, Status } from "./types";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
+import { AsyncFnType, RequestType, Status } from "./types";
 import { PRISMA_ERRORS } from "./enum";
 
-export const generateResponse = (status: Status, message: string, res: NextApiResponse, extraInfo?: object) =>
-  res.status(parseInt(status)).json({
-    message,
-    ...extraInfo,
-  });
+export const generateResponse = (status: Status, message: string, res: NextApiResponse, extraInfo?: object) => res.status(parseInt(status)).json({
+  message,
+  ...extraInfo,
+});
 
 export const checkRequestType = (endPointRequestTYpe: RequestType, userRequestType: RequestType, res: NextApiResponse) => {
   if (userRequestType !== endPointRequestTYpe) {
@@ -44,18 +43,15 @@ export const generateJWT = async (userId: string) => {
 
 export const comparePassword = (password: string, currentPassword: string) => bcrypt.compare(password, currentPassword);
 
-export const catchAsyncError =
-  (fn: (req: NextApiRequest, res: NextApiResponse) => Promise<any>) => (req: NextApiRequest, res: NextApiResponse) => {
-    return fn(req, res).catch((error) => {
-      let message = "";
+export const catchAsyncError = (fn: AsyncFnType) => (req: NextApiRequest, res: NextApiResponse) => fn(req, res).catch((error) => {
+  let message = "";
 
-      if (
-        error instanceof PrismaClientKnownRequestError &&
-        [PRISMA_ERRORS.INCONSITENT, PRISMA_ERRORS.NOT_FOUND].includes(error.code as PRISMA_ERRORS)
-      ) {
-        message = "Parent not found.";
-      }
+  if (
+    error instanceof PrismaClientKnownRequestError
+      && [PRISMA_ERRORS.INCONSITENT, PRISMA_ERRORS.NOT_FOUND].includes(error.code as PRISMA_ERRORS)
+  ) {
+    message = "Parent not found.";
+  }
 
-      return generateResponse("400", message || "Something went wrong.", res);
-    });
-  };
+  return generateResponse("400", message || "Something went wrong.", res);
+});
