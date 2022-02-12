@@ -16,7 +16,7 @@ export type SignupBody = {
 };
 
 export type CategoryBody = {
-  name: string;
+  name: string | undefined | null;
 };
 
 export type FileType = {

@@ -2,9 +2,9 @@ import { NextApiResponse } from "next";
 
 import * as yup from "yup";
 
-const { ValidationError } = yup;
-
 import { CategoryBody, FileType, ResponseError, SignupBody } from "./types";
+
+const { ValidationError } = yup;
 
 const handleError = (errors: any) => {
   if (errors instanceof ValidationError) {
@@ -47,7 +47,7 @@ export const validateUserRegister = async (values: SignupBody) => {
 export const validateCategory = async (values: CategoryBody) => {
   try {
     const schema: yup.SchemaOf<CategoryBody> = yup.object().shape({
-      name: yup.string().trim().required("Please provide category name."),
+      name: yup.string().trim().required("Please provide category name.").notRequired(),
     });
 
     await schema.validate(values, {

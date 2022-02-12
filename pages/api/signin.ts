@@ -2,9 +2,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 
 import prisma from "../../utils/prisma";
 import { RequestType } from "../../utils/types";
-import {
-  checkRequestType, comparePassword, generateJWT, generateResponse,
-} from "../../utils";
+import { checkRequestType, comparePassword, generateJWT, generateResponse } from "../../utils";
 import { validateUserRegister } from "../../utils/validation";
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {

@@ -53,7 +53,14 @@ const patchRequestHandler = async (req: NextApiRequest, res: NextApiResponse) =>
     throw new Error("Category not found.");
   }
 
-  await prisma.category.update({ where: { id: categoryId }, data: req.body });
+  const data = { name: req.body.name } as Prisma.CategoryUpdateInput;
+
+  if (req.file && validateImageUpload(req.file, res)) {
+    const response = await upload_on_imagekit(req.file.buffer, req.file.originalname);
+    data.image = response.url;
+  }
+
+  await prisma.category.update({ where: { id: categoryId }, data });
 
   return generateResponse("200", "Category updated.", res);
 };
@@ -63,7 +70,7 @@ const deleteRequestHandler = async (req: NextApiRequest, res: NextApiResponse) =
 
   const category = await prisma.category.delete({ where: { id: categoryId } });
 
-  return generateResponse("200", `${category.name} is remvoed successfylly.`, res);
+  return generateResponse("200", `${category.name} is removed successfylly.`, res);
 };
 
 export default {

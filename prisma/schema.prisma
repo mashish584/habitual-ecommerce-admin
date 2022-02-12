@@ -17,6 +17,7 @@ model User {
   email String @unique
   password String 
   fullname String?
+  profile String?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @default(now())
 }
@@ -24,7 +25,7 @@ model User {
 model Category{
   id String @id @default(dbgenerated()) @map("_id") @db.ObjectId
   name String @unique
-  parentId String? 
+  parentId String?  @db.ObjectId
   parentCategory Category?  @relation("CategoryParent",fields: [parentId],references: [id],onUpdate: NoAction,onDelete: NoAction)
   subCategory Category? @relation("CategoryParent")
   image String?
