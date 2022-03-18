@@ -61,3 +61,13 @@ export const catchAsyncError = (fn: AsyncFnType) => (req: NextApiRequest, res: N
 
     return generateResponse(status, message || "Something went wrong.", res);
   });
+
+export const isInvalidObject = (keys: string[], object: Object) => Object.keys(object).some((key) => !keys.includes(key));
+export const isValidJSONString = (value: string) => {
+  try {
+    JSON.parse(value);
+  } catch (error) {
+    return false;
+  }
+  return true;
+};

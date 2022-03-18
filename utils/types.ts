@@ -9,7 +9,7 @@ export type ResponseError = {
   message: string;
 };
 
-//→ Field Interfaces
+// → Field Interfaces
 export interface FileType {
   fieldname: string;
   originalname: string;
@@ -21,6 +21,7 @@ export interface FileType {
 
 export interface ProductVariant {
   image: FileType;
+  color: string;
 }
 
 export interface SlideColors {
@@ -28,7 +29,7 @@ export interface SlideColors {
   backgroundColor: string;
 }
 
-//→ Request Body Types
+// → Request Body Types
 
 export type SignupBody = {
   email: string;
@@ -47,7 +48,7 @@ export type ProductBody = {
   title: string;
   description: string;
   images: FileType[];
-  variants: Record<string, ProductVariant>;
+  variants: ProductVariant[];
   slideColors: SlideColors[];
   price: Number;
   discount: Number;

@@ -13,7 +13,7 @@ const postRequestHandler = async (req: NextApiRequest, res: NextApiResponse) => 
     return generateResponse("400", "Invalid input provided.", res, validationResponse);
   }
 
-  return generateResponse("200", `Product created endpoint hit.`, res);
+  return generateResponse("200", "Product created endpoint hit.", res);
 };
 
 export default {

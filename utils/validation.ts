@@ -1,8 +1,9 @@
 import { NextApiResponse } from "next";
 
 import * as yup from "yup";
+import { isInvalidObject, isValidJSONString } from "./index";
 
-import { CategoryBody, FileType, ProductBody, ResponseError, SignupBody } from "./types";
+import { CategoryBody, FileType, ProductBody, ProductVariant, ResponseError, SignupBody } from "./types";
 
 const { ValidationError } = yup;
 
@@ -66,15 +67,30 @@ export const validateProduct = async (values: ProductBody) => {
         .array()
         .min(1, "Please upload atleast 1 product image.")
         .max(4, `Please remove ${4 - values.images.length} images.`)
-        .test("isValidImages", "Product images is not valid.Please check image type.", (images) => {
+        .test("isValidImages", "Product images is not valid.Please check image type.", () => {
+          const images = values.images || [];
           const isInvalidImageFileExists = images?.some((image) => image && !image.mimetype.includes("image"));
-
-          if (isInvalidImageFileExists) {
-            return false;
-          }
-
-          return true;
+          return !isInvalidImageFileExists;
         }),
+      variants: yup.mixed().test("isValidVariants", "Please provide valid variants.", (value) => {
+        const variants = (isValidJSONString(value) ? JSON.parse(value) : []) as ProductVariant[];
+
+        if (variants.length) {
+          const variantObjectKeys = ["color", "image"];
+          const isValidVariant = variants.some((variant) => {
+            if (typeof variant === "object") {
+              const invalidObject = isInvalidObject(variantObjectKeys, variant);
+              return !invalidObject;
+            }
+
+            return true;
+          });
+
+          return isValidVariant;
+        }
+
+        return true;
+      }),
     });
 
     await schema.validate(values, {
