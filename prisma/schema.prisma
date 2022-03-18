@@ -25,10 +25,25 @@ model User {
 model Category{
   id String @id @default(auto()) @map("_id") @db.ObjectId
   name String @unique
-  parentId String?  @db.ObjectId
+  parentId String?
   parentCategory Category?  @relation("CategoryParent",fields: [parentId],references: [id],onUpdate: NoAction,onDelete: NoAction)
-  subCategory Category? @relation("CategoryParent")
+  subCategory Category[] @relation("CategoryParent")
   image String?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @default(now())
+}
+
+
+model Product {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  title String @unique
+  description String?
+  images Json[]
+  variants Json?
+  slideColors Json[]
+  price Float
+  discount Float?
+  quantity Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
 }
