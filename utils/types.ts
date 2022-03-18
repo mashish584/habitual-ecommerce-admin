@@ -9,7 +9,27 @@ export type ResponseError = {
   message: string;
 };
 
-//= => Body Types
+//→ Field Interfaces
+export interface FileType {
+  fieldname: string;
+  originalname: string;
+  encoding: string;
+  mimetype: string;
+  buffer: string;
+  size: number;
+}
+
+export interface ProductVariant {
+  image: FileType;
+}
+
+export interface SlideColors {
+  color: string;
+  backgroundColor: string;
+}
+
+//→ Request Body Types
+
 export type SignupBody = {
   email: string;
   password: string;
@@ -23,11 +43,14 @@ export type CategoryBody = {
   name: string | undefined | null;
 };
 
-export type FileType = {
-  fieldname: string;
-  originalname: string;
-  encoding: string;
-  mimetype: string;
-  buffer: string;
-  size: number;
+export type ProductBody = {
+  title: string;
+  description: string;
+  images: FileType[];
+  variants: Record<string, ProductVariant>;
+  slideColors: SlideColors[];
+  price: Number;
+  discount: Number;
+  quantity: Number;
+  categories: string[];
 };

@@ -42,8 +42,9 @@ model Product {
   variants Json?
   slideColors Json[]
   price Float
-  discount Float?
+  discount Float? @default(0)
   quantity Int
+  category String[]
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
 }
