@@ -13,7 +13,7 @@ datasource db {
 
 
 model User {
-  id    String @id @default(dbgenerated()) @map("_id") @db.ObjectId
+  id    String @id @default(auto()) @map("_id") @db.ObjectId
   email String @unique
   password String 
   fullname String?
@@ -23,7 +23,7 @@ model User {
 }
 
 model Category{
-  id String @id @default(dbgenerated()) @map("_id") @db.ObjectId
+  id String @id @default(auto()) @map("_id") @db.ObjectId
   name String @unique
   parentId String?  @db.ObjectId
   parentCategory Category?  @relation("CategoryParent",fields: [parentId],references: [id],onUpdate: NoAction,onDelete: NoAction)
