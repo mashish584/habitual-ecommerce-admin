@@ -4,7 +4,9 @@ import * as yup from "yup";
 import { isInvalidObject, isValidJSONString } from "./index";
 import prisma from "./prisma";
 
-import { CategoryBody, FileType, ProductBody, ProductVariant, ResponseError, SignupBody, SlideColors } from "./types";
+import {
+  CategoryBody, FileType, ProductBody, ProductVariant, ResponseError, SignupBody, SlideColors,
+} from "./types";
 
 const { ValidationError } = yup;
 
@@ -38,7 +40,8 @@ const handleError = (errors: any) => {
 export const validateUserCred = async (values: SignupBody) => {
   try {
     const schema: yup.SchemaOf<SignupBody> = yup.object().shape({
-      email: yup.string().trim().required("Email address is required.").email("Email address is not valid.").label("email"),
+      email: yup.string().trim().required("Email address is required.").email("Email address is not valid.")
+        .label("email"),
       password: yup.string().trim().required("Password is required.").label("password"),
     });
 
@@ -66,7 +69,7 @@ export const validateCategory = async (values: CategoryBody) => {
 
 export const validateProduct = async (values: ProductBody) => {
   try {
-    const schema: yup.SchemaOf<ProductBody> = yup.object().shape({
+    const schema = yup.object().shape({
       title: yup.string().trim().required("Please provide product title."),
       description: yup
         .string()
@@ -112,6 +115,9 @@ export const validateProduct = async (values: ProductBody) => {
       }),
       slideColors: yup.mixed().test("isValidSlideColors", "Please provide valid slide colors.", (value) => {
         const slideColors = (isValidJSONString(value) ? JSON.parse(value) : []) as SlideColors[];
+
+        if (slideColors.length !== values.images.length) return false;
+
         if (slideColors.length) {
           const slideColorObjectKeys = ["color", "backgroundColor"];
           const isValidSlideColor = slideColors.some((slideColor) => {
