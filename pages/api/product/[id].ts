@@ -10,7 +10,7 @@ const handler = nc<NextApiRequest, NextApiResponse>({
 })
   .use(upload().array("image"))
   .get(catchAsyncError(controller.getRequestHandler))
-  .post(catchAsyncError(controller.postRequestHandler));
+  .patch(catchAsyncError(controller.patchRequestHandler));
 
 export default handler;
 

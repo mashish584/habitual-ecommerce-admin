@@ -1,12 +1,11 @@
+import { Product } from "@prisma/client";
 import { NextApiResponse } from "next";
 
 import * as yup from "yup";
 import { isInvalidObject, isValidJSONString } from "./index";
 import prisma from "./prisma";
 
-import {
-  CategoryBody, FileType, ProductBody, ProductVariant, ResponseError, SignupBody, SlideColors,
-} from "./types";
+import { CategoryBody, FileType, ProductBody, ProductVariant, ResponseError, SignupBody, SlideColors } from "./types";
 
 const { ValidationError } = yup;
 
@@ -40,8 +39,7 @@ const handleError = (errors: any) => {
 export const validateUserCred = async (values: SignupBody) => {
   try {
     const schema: yup.SchemaOf<SignupBody> = yup.object().shape({
-      email: yup.string().trim().required("Email address is required.").email("Email address is not valid.")
-        .label("email"),
+      email: yup.string().trim().required("Email address is required.").email("Email address is not valid.").label("email"),
       password: yup.string().trim().required("Password is required.").label("password"),
     });
 
@@ -67,10 +65,17 @@ export const validateCategory = async (values: CategoryBody) => {
   }
 };
 
-export const validateProduct = async (values: ProductBody) => {
+export const validateProduct = async (values: ProductBody, productinfo?: Product) => {
   try {
+    // → totalImages is sumof user selected images and images already in db if both exist
+    // → else it will be upload images length which will be by default 0 if not passed
+    const totalImages =
+      values?.images?.length && productinfo?.id && productinfo?.images?.length
+        ? productinfo.images.length + values.images.length
+        : values?.images?.length;
+
     const schema = yup.object().shape({
-      title: yup.string().trim().required("Please provide product title."),
+      title: yup.string().trim().required("Please provide product title.").notRequired(),
       description: yup
         .string()
         .trim()
@@ -79,10 +84,22 @@ export const validateProduct = async (values: ProductBody) => {
         .notRequired(),
       images: yup
         .array()
-        .min(1, "Please upload atleast 1 product image.")
+        .min(productinfo?.images?.length ? 0 : 1, "Please upload atleast 1 product image.")
         .max(4, `Please remove ${4 - values.images.length} images.`)
-        .test("isValidImages", "Product images is not valid.Please check image type.", () => {
+        .test("isValidImages", "Product images is not valid.Please check image type.", (_, { createError, path }) => {
           const images = values.images || [];
+
+          // ⚠️ total image exceed the limit of 4
+          if (productinfo?.id && productinfo?.images?.length && images?.length) {
+            if (totalImages > 4) {
+              return createError({
+                path,
+                message: `Please remove ${totalImages - 4} images.`,
+              });
+            }
+          }
+
+          // ⚠️ check for mime type
           const isInvalidImageFileExists = images?.some((image) => image && !image.mimetype.includes("image"));
           return !isInvalidImageFileExists;
         }),
@@ -95,8 +112,7 @@ export const validateProduct = async (values: ProductBody) => {
             if (typeof variant === "object") {
               const invalidObject = isInvalidObject(variantObjectKeys, variant);
 
-              // → if valid object check validate values color should be "string" with length
-              // → image should be valid
+              // → If valid object check for values for both color and image
               if (!invalidObject) {
                 const isValidColorValue = variant.color?.trim()?.length > 0;
                 const isValidImage = variant?.image?.mimetype?.includes("image");
@@ -113,10 +129,16 @@ export const validateProduct = async (values: ProductBody) => {
 
         return true;
       }),
-      slideColors: yup.mixed().test("isValidSlideColors", "Please provide valid slide colors.", (value) => {
+      slideColors: yup.mixed().test("isValidSlideColors", "Please provide valid slide colors.", (value, { createError, path }) => {
         const slideColors = (isValidJSONString(value) ? JSON.parse(value) : []) as SlideColors[];
 
-        if (slideColors.length !== values.images.length) return false;
+        // ⚠️ Check for length equality b/w sliderColor & slideImages
+        if (slideColors.length < totalImages) {
+          return createError({
+            path,
+            message: "Slide colors length should be greater than or equal to slides length .",
+          });
+        }
 
         if (slideColors.length) {
           const slideColorObjectKeys = ["color", "backgroundColor"];
@@ -141,8 +163,10 @@ export const validateProduct = async (values: ProductBody) => {
       price: yup
         .string()
         .trim()
-        .notRequired()
         .test("isValidPrice", "Please provide valid price value.", (value = "") => {
+          // ✅ valid if it's edit mode & value is not provided by user
+          if (productinfo?.id && value === "") return true;
+
           const price = parseFloat(value);
 
           if (isNaN(price) || price <= 0) return false;
@@ -153,7 +177,7 @@ export const validateProduct = async (values: ProductBody) => {
         .string()
         .trim()
         .test("isValidPrice", "Please provide valid discount value.", (value = "") => {
-          if (!value) return true;
+          if (value === "") return true;
 
           const price = parseFloat(value);
 
@@ -165,7 +189,7 @@ export const validateProduct = async (values: ProductBody) => {
         .string()
         .trim()
         .test("isValidQuantity", "Please provide valid quantity value.", (value = "") => {
-          if (!value) return true;
+          if (value === "") return true;
           const quantity = parseInt(value);
 
           if (isNaN(quantity) || quantity < 0) return false;
@@ -175,7 +199,11 @@ export const validateProduct = async (values: ProductBody) => {
       categories: yup.mixed().test("isValidCategories", "Please provide valid categories", async (value) => {
         const categories = (isValidJSONString(value) ? JSON.parse(value) : []) as string[];
 
-        if (!categories.length) return false;
+        // ✅ Valid if no new category added but have old categories already during update
+        if (productinfo?.category?.length && !categories.length) return true;
+
+        // ⚠️ No category added
+        if (!categories.length && !productinfo?.category?.length) return false;
 
         for (const key in categories) {
           const category = categories[key];
