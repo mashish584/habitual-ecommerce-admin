@@ -6,11 +6,10 @@ import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
 import { AsyncFnType, RequestType, Status } from "./types";
 import { PRISMA_ERRORS } from "./enum";
 
-export const generateResponse = (status: Status, message: string, res: NextApiResponse, extraInfo?: object) =>
-  res.status(parseInt(status)).json({
-    message,
-    ...extraInfo,
-  });
+export const generateResponse = (status: Status, message: string, res: NextApiResponse, extraInfo?: object) => res.status(parseInt(status)).json({
+  message,
+  ...extraInfo,
+});
 
 export const checkRequestType = (endPointRequestTYpe: RequestType, userRequestType: RequestType, res: NextApiResponse) => {
   if (userRequestType !== endPointRequestTYpe) {
@@ -44,23 +43,22 @@ export const generateJWT = async (userId: string) => {
 
 export const comparePassword = (password: string, currentPassword: string) => bcrypt.compare(password, currentPassword);
 
-export const catchAsyncError = (fn: AsyncFnType) => (req: NextApiRequest, res: NextApiResponse) =>
-  fn(req, res).catch((error) => {
-    console.log({ error });
+export const catchAsyncError = (fn: AsyncFnType) => (req: NextApiRequest, res: NextApiResponse) => fn(req, res).catch((error) => {
+  console.log({ error });
 
-    let status: Status = "400";
-    let message = "";
+  let status: Status = "400";
+  let message = "";
 
-    if (
-      error instanceof PrismaClientKnownRequestError &&
-      [PRISMA_ERRORS.INCONSITENT, PRISMA_ERRORS.NOT_FOUND].includes(error.code as PRISMA_ERRORS)
-    ) {
-      message = "Record not found.";
-      status = "404";
-    }
+  if (
+    error instanceof PrismaClientKnownRequestError
+      && [PRISMA_ERRORS.INCONSITENT, PRISMA_ERRORS.NOT_FOUND].includes(error.code as PRISMA_ERRORS)
+  ) {
+    message = "Record not found.";
+    status = "404";
+  }
 
-    return generateResponse(status, message || "Something went wrong.", res);
-  });
+  return generateResponse(status, message || "Something went wrong.", res);
+});
 
 export const isInvalidObject = (keys: string[], object: Object) => Object.keys(object).some((key) => !keys.includes(key));
 export const isValidJSONString = (value: string) => {

@@ -2,10 +2,21 @@ import { NextApiResponse } from "next";
 
 import * as yup from "yup";
 import { isInvalidObject, isValidJSONString } from "./index";
+import prisma from "./prisma";
 
-import { CategoryBody, FileType, ProductBody, ProductVariant, ResponseError, SignupBody } from "./types";
+import { CategoryBody, FileType, ProductBody, ProductVariant, ResponseError, SignupBody, SlideColors } from "./types";
 
 const { ValidationError } = yup;
+
+// → Prisma based validation
+const isCategoryExistInRecords = async (id: string) => {
+  try {
+    const count = await prisma.category.count({ where: { id } });
+    return count > 0;
+  } catch (error) {
+    return false;
+  }
+};
 
 const handleError = (errors: any) => {
   if (errors instanceof ValidationError) {
@@ -80,13 +91,92 @@ export const validateProduct = async (values: ProductBody) => {
           const isValidVariant = variants.some((variant) => {
             if (typeof variant === "object") {
               const invalidObject = isInvalidObject(variantObjectKeys, variant);
-              return !invalidObject;
+
+              // → if valid object check validate values color should be "string" with length
+              // → image should be valid
+              if (!invalidObject) {
+                const isValidColorValue = variant.color?.trim()?.length > 0;
+                const isValidImage = variant?.image?.mimetype?.includes("image");
+
+                return true || (isValidColorValue && isValidImage);
+              }
             }
 
-            return true;
+            return false;
           });
 
           return isValidVariant;
+        }
+
+        return true;
+      }),
+      slideColors: yup.mixed().test("isValidSlideColors", "Please provide valid slide colors.", (value) => {
+        const slideColors = (isValidJSONString(value) ? JSON.parse(value) : []) as SlideColors[];
+        if (slideColors.length) {
+          const slideColorObjectKeys = ["color", "backgroundColor"];
+          const isValidSlideColor = slideColors.some((slideColor) => {
+            if (typeof slideColor === "object") {
+              const invalidObject = isInvalidObject(slideColorObjectKeys, slideColor);
+
+              if (!invalidObject) {
+                const isValidColor = slideColor.color?.trim()?.length > 0;
+                const isValidBackgroundCOlor = slideColor.backgroundColor?.trim()?.length > 0;
+                return isValidColor && isValidBackgroundCOlor;
+              }
+              return false;
+            }
+            return false;
+          });
+
+          return isValidSlideColor;
+        }
+        return true;
+      }),
+      price: yup
+        .string()
+        .trim()
+        .notRequired()
+        .test("isValidPrice", "Please provide valid price value.", (value = "") => {
+          const price = parseFloat(value);
+
+          if (isNaN(price) || price <= 0) return false;
+
+          return true;
+        }),
+      discount: yup
+        .string()
+        .trim()
+        .test("isValidPrice", "Please provide valid discount value.", (value = "") => {
+          if (!value) return true;
+
+          const price = parseFloat(value);
+
+          if (isNaN(price) || price < 0) return false;
+
+          return true;
+        }),
+      quantity: yup
+        .string()
+        .trim()
+        .test("isValidQuantity", "Please provide valid quantity value.", (value = "") => {
+          if (!value) return true;
+          const quantity = parseInt(value);
+
+          if (isNaN(quantity) || quantity < 0) return false;
+
+          return true;
+        }),
+      categories: yup.mixed().test("isValidCategories", "Please provide valid categories", async (value) => {
+        const categories = (isValidJSONString(value) ? JSON.parse(value) : []) as string[];
+
+        if (!categories.length) return false;
+
+        for (const key in categories) {
+          const category = categories[key];
+          const isExist = await isCategoryExistInRecords(category);
+          if (!isExist) {
+            return false;
+          }
         }
 
         return true;

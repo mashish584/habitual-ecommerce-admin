@@ -22,6 +22,9 @@ module.exports = {
     "consistent-return": 0,
     "no-shadow": 0,
     radix: 0,
+    "no-restricted-globals": 0,
+    "no-await-in-loop": 0,
+    "guard-for-in": 0,
   },
   settings: {
     "import/resolver": {
