@@ -23,6 +23,6 @@ export const upload_on_imagekit = async (file: any, filename: string) => {
   return upload;
 };
 
-export const delete_image_from_imagekit = (path: string) => image_kit.deleteFile(path);
+export const delete_image_from_imagekit = (id: string) => image_kit.deleteFile(id);
 
 export default () => multer({ storage });

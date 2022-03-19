@@ -1,9 +1,10 @@
+import {} from "@prisma/client";
 import { NextApiRequest, NextApiResponse } from "next";
 
 import { generateResponse } from "../../utils";
 import prisma from "../../utils/prisma";
 import { FileType } from "../../utils/types";
-import { upload_on_imagekit } from "../../utils/upload";
+import { delete_image_from_imagekit, upload_on_imagekit } from "../../utils/upload";
 import { validateProduct } from "../../utils/validation";
 
 const getRequestHandler = async (req: NextApiRequest, res: NextApiResponse) => {};
@@ -83,8 +84,43 @@ const patchRequestHandler = async (req: NextApiRequest, res: NextApiResponse) =>
   return generateResponse("200", "Product created endpoint hit.", res, { product });
 };
 
+const deleteProductImageHandler = async (req: NextApiRequest, res: NextApiResponse) => {
+  const imageId = req.query?.id;
+  const productId = req.body?.productId;
+
+  //⚠️ productId not exist
+  const productInfo = await prisma.product.findFirst({ where: { id: productId } });
+
+  if (!productInfo) {
+    throw new Error("Product id not found.");
+  }
+
+  const images = productInfo.images || [];
+
+  //⚠️ imageId not exist
+  const imageIndex = images?.findIndex((product: any) => product?.fileId === imageId);
+
+  if (imageIndex === -1) {
+    throw new Error("Image id not found in product.");
+  }
+
+  //🗑 image from imagekit and update product image field
+  await delete_image_from_imagekit(imageId as string);
+  images.splice(imageIndex, 1);
+
+  const product = await prisma.product.update({
+    where: { id: productId },
+    data: {
+      images: images,
+    },
+  });
+
+  return generateResponse("200", "Product image removed.", res, { product });
+};
+
 export default {
   getRequestHandler,
   postRequestHandler,
   patchRequestHandler,
+  deleteProductImageHandler,
 };
