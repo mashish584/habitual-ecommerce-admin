@@ -1,4 +1,4 @@
-import {} from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import { NextApiRequest, NextApiResponse } from "next";
 
 import { generateResponse } from "../../utils";
@@ -7,7 +7,50 @@ import { FileType } from "../../utils/types";
 import { delete_image_from_imagekit, upload_on_imagekit } from "../../utils/upload";
 import { validateProduct } from "../../utils/validation";
 
-const getRequestHandler = async (req: NextApiRequest, res: NextApiResponse) => {};
+const getRequestHandler = async (req: NextApiRequest, res: NextApiResponse) => {
+  const skip = parseInt((req.query?.skip || "0") as string);
+  const take = parseInt((req?.query?.take || "10") as string);
+
+  const options: Prisma.ProductFindManyArgs = {};
+
+  // 🔍 product based on title and description
+  if (req.query?.search) {
+    const searchText = req.query.search as string;
+    options.where = {
+      OR: [
+        {
+          title: {
+            contains: searchText,
+          },
+        },
+        {
+          description: {
+            contains: searchText,
+          },
+        },
+      ],
+    };
+  }
+
+  // 👀 look for products with category
+  if (req?.query?.category) {
+    const categories = typeof req.query.category === "string" ? [req.query.category] : req?.query?.category;
+
+    options.where = {
+      ...options.where,
+      category: {
+        hasSome: categories,
+      },
+    };
+  }
+
+  const totalCountPromise = prisma.product.count({ where: options.where });
+  const productsPromise = prisma.product.findMany({ ...options, skip, take });
+
+  const [totalCount, products] = await Promise.all([totalCountPromise, productsPromise]);
+
+  return generateResponse("200", "Products fetched..", res, { totalCount, products });
+};
 
 const postRequestHandler = async (req: NextApiRequest, res: NextApiResponse) => {
   const files = req.files || [];
@@ -88,7 +131,7 @@ const deleteProductImageHandler = async (req: NextApiRequest, res: NextApiRespon
   const imageId = req.query?.id;
   const productId = req.body?.productId;
 
-  //⚠️ productId not exist
+  // ⚠️ productId not exist
   const productInfo = await prisma.product.findFirst({ where: { id: productId } });
 
   if (!productInfo) {
@@ -97,21 +140,21 @@ const deleteProductImageHandler = async (req: NextApiRequest, res: NextApiRespon
 
   const images = productInfo.images || [];
 
-  //⚠️ imageId not exist
+  // ⚠️ imageId not exist
   const imageIndex = images?.findIndex((product: any) => product?.fileId === imageId);
 
   if (imageIndex === -1) {
     throw new Error("Image id not found in product.");
   }
 
-  //🗑 image from imagekit and update product image field
+  // 🗑 image from imagekit and update product image field
   await delete_image_from_imagekit(imageId as string);
   images.splice(imageIndex, 1);
 
   const product = await prisma.product.update({
     where: { id: productId },
     data: {
-      images: images,
+      images,
     },
   });
 
