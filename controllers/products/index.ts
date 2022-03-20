@@ -1,4 +1,4 @@
-import { Prisma } from "@prisma/client";
+import { Category, Prisma, Product } from "@prisma/client";
 import { NextApiRequest, NextApiResponse } from "next";
 
 import { generateResponse } from "../../utils";
@@ -6,6 +6,9 @@ import prisma from "../../utils/prisma";
 import { FileType } from "../../utils/types";
 import { delete_image_from_imagekit, upload_on_imagekit } from "../../utils/upload";
 import { validateProduct } from "../../utils/validation";
+
+type CategoryInfo = Pick<Category, "id" | "name">[];
+type ProductInfo = Partial<Product> & { categories?: CategoryInfo };
 
 const getRequestHandler = async (req: NextApiRequest, res: NextApiResponse) => {
   const skip = parseInt((req.query?.skip || "0") as string);
@@ -47,7 +50,31 @@ const getRequestHandler = async (req: NextApiRequest, res: NextApiResponse) => {
   const totalCountPromise = prisma.product.count({ where: options.where });
   const productsPromise = prisma.product.findMany({ ...options, skip, take });
 
-  const [totalCount, products] = await Promise.all([totalCountPromise, productsPromise]);
+  const [totalCount, products]: [number, ProductInfo[]] = await Promise.all([totalCountPromise, productsPromise]);
+
+  //👀  fetch product category details like id and name will be served
+  //🚨 Add redis in future to cache category details
+  const categories: Record<string, string> = {};
+
+  for (let productKeyIndex in products) {
+    const product = products[productKeyIndex];
+    product.categories = [];
+
+    //🚨 Avoiding TS anger on categoryKeyIndex type
+    if (!product.category) product.category = [];
+
+    for (let categoryKeyIndex in product.category) {
+      const category = product.category[categoryKeyIndex];
+      if (!categories[category]) {
+        const categoryInfo = await prisma.category.findFirst({ where: { id: category }, select: { name: true, id: true } });
+        if (categoryInfo) {
+          categories[category] = categoryInfo?.name as string;
+          product.categories.push(categoryInfo);
+        }
+      }
+    }
+    delete product.category;
+  }
 
   return generateResponse("200", "Products fetched..", res, { totalCount, products });
 };
