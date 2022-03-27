@@ -52,18 +52,18 @@ const getRequestHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 
   const [totalCount, products]: [number, ProductInfo[]] = await Promise.all([totalCountPromise, productsPromise]);
 
-  //👀  fetch product category details like id and name will be served
-  //🚨 Add redis in future to cache category details
+  // 👀  fetch product category details like id and name will be served
+  // 🚨 Add redis in future to cache category details
   const categories: Record<string, string> = {};
 
-  for (let productKeyIndex in products) {
+  for (const productKeyIndex in products) {
     const product = products[productKeyIndex];
     product.categories = [];
 
-    //🚨 Avoiding TS anger on categoryKeyIndex type
+    // 🚨 Avoiding TS anger on categoryKeyIndex type
     if (!product.category) product.category = [];
 
-    for (let categoryKeyIndex in product.category) {
+    for (const categoryKeyIndex in product.category) {
       const category = product.category[categoryKeyIndex];
       if (!categories[category]) {
         const categoryInfo = await prisma.category.findFirst({ where: { id: category }, select: { name: true, id: true } });

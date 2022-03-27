@@ -1,15 +1,18 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 
+import { User } from "@prisma/client";
 import prisma from "../../utils/prisma";
 import { RequestType } from "../../utils/types";
-import { checkRequestType, generateResponse, hashPhassword } from "../../utils";
+import {
+  checkRequestType, createStripeUser, generateResponse, hashPhassword,
+} from "../../utils";
 import { validateUserCred } from "../../utils/validation";
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   checkRequestType("POST", req.method as RequestType, res);
 
   try {
-    const user = req.body || {};
+    const user = (req.body || {}) as User;
     const validationResponse = await validateUserCred(user);
 
     if (validationResponse) {
@@ -17,6 +20,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     }
 
     user.password = await hashPhassword(user.password);
+    user.stripe_customer_id = await createStripeUser(user.email);
 
     await prisma.user.create({
       data: user,

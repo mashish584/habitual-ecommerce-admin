@@ -17,6 +17,7 @@ model User {
   password     String
   fullname     String?
   profile      String?
+  stripe_customer_id String
   transactions Transactions[]
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @default(now())

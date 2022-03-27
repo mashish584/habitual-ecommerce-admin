@@ -1,10 +1,15 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import bcrypt from "bcryptjs";
 import jwt, { Secret } from "jsonwebtoken";
-
+import { User } from "@prisma/client";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
+
+import { Stripe } from "stripe";
 import { AsyncFnType, RequestType, Status } from "./types";
 import { PRISMA_ERRORS } from "./enum";
+import prisma from "./prisma";
+
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 export const generateResponse = (status: Status, message: string, res: NextApiResponse, extraInfo?: object) => res.status(parseInt(status)).json({
   message,
@@ -69,3 +74,54 @@ export const isValidJSONString = (value: string) => {
   }
   return true;
 };
+
+export const getUser = async (request: NextApiRequest) => {
+  try {
+    const decoded = (await decodeJWT(request?.headers?.authorization)) as User;
+
+    const user = await prisma.user.findFirst({
+      where: {
+        id: decoded.id,
+      },
+    });
+
+    return user;
+  } catch (error) {
+    return null;
+  }
+};
+
+export const createStripeUser = async (email: string) => {
+  const customer = await stripe.customers.create({
+    email,
+    name: email,
+    address: {
+      city: "Kashiput",
+      country: "India",
+      line1: "Chamunda Vihar",
+      postal_code: 244714,
+    },
+  });
+
+  return customer.id;
+};
+
+export const createEphemeralKeys = (stripeCustomerId: string): Promise<Stripe.Response<Stripe.EphemeralKey>> => stripe.ephemeralKeys.create(
+  {
+    customer: stripeCustomerId,
+  },
+  {
+    apiVersion: "2020-08-27",
+  },
+);
+
+export const createPaymentIntent = (
+  total: number,
+  userId: string,
+  stripeCustomerId: string,
+): Promise<Stripe.Response<Stripe.PaymentIntent>> => stripe.paymentIntents.create({
+  amount: total,
+  currency: "inr",
+  description: `Payment of amount ₹.${total / 100} for #${userId}`,
+  customer: stripeCustomerId,
+});
