@@ -5,9 +5,7 @@ import * as yup from "yup";
 import { isInvalidObject, isValidJSONString } from "./index";
 import prisma from "./prisma";
 
-import {
-  CategoryBody, FileType, ProductBody, ProductVariant, ResponseError, SignupBody, SlideColors,
-} from "./types";
+import { CategoryBody, FileType, ProductBody, ProductVariant, ResponseError, SignupBody, SlideColors } from "./types";
 
 const { ValidationError } = yup;
 
@@ -41,8 +39,7 @@ const handleError = (errors: any) => {
 export const validateUserCred = async (values: SignupBody) => {
   try {
     const schema: yup.SchemaOf<SignupBody> = yup.object().shape({
-      email: yup.string().trim().required("Email address is required.").email("Email address is not valid.")
-        .label("email"),
+      email: yup.string().trim().required("Email address is required.").email("Email address is not valid.").label("email"),
       password: yup.string().trim().required("Password is required.").label("password"),
     });
 
@@ -72,9 +69,10 @@ export const validateProduct = async (values: ProductBody, productinfo?: Product
   try {
     // → totalImages is sumof user selected images and images already in db if both exist
     // → else it will be upload images length which will be by default 0 if not passed
-    const totalImages = values?.images?.length && productinfo?.id && productinfo?.images?.length
-      ? productinfo.images.length + values.images.length
-      : values?.images?.length;
+    const totalImages =
+      values?.images?.length && productinfo?.id && productinfo?.images?.length
+        ? productinfo.images.length + values.images.length
+        : values?.images?.length;
 
     const schema = yup.object().shape({
       title: yup.string().trim().required("Please provide product title.").notRequired(),
@@ -133,14 +131,6 @@ export const validateProduct = async (values: ProductBody, productinfo?: Product
       }),
       slideColors: yup.mixed().test("isValidSlideColors", "Please provide valid slide colors.", (value, { createError, path }) => {
         const slideColors = (isValidJSONString(value) ? JSON.parse(value) : []) as SlideColors[];
-
-        // ⚠️ Check for length equality b/w sliderColor & slideImages
-        if (slideColors.length < totalImages) {
-          return createError({
-            path,
-            message: "Slide colors length should be greater than or equal to slides length .",
-          });
-        }
 
         if (slideColors.length) {
           const slideColorObjectKeys = ["color", "backgroundColor"];

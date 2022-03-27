@@ -92,9 +92,20 @@ const postRequestHandler = async (req: NextApiRequest, res: NextApiResponse) => 
   // → Parsing data in type defined in schema
   data.price = parseFloat(req.body.price);
   data.quantity = parseInt(req.body.quantity);
-  data.category = JSON.parse(req.body.categories);
-  data.slideColors = JSON.parse(req.body.slideColors);
   data.discount = parseFloat(req.body.discount) || 0;
+
+  const categories = JSON.parse(req.body.categories);
+
+  if (categories.length) {
+    data.category = {
+      connect: categories.map((categpry: string) => ({ id: categpry })),
+    };
+  }
+
+  //→ Check for slide colors
+  if (data.slideColors) {
+    data.slideColors = JSON.parse(req.body.slideColors);
+  }
 
   // → Check for variants property
   if (data.variants) {
@@ -138,7 +149,6 @@ const patchRequestHandler = async (req: NextApiRequest, res: NextApiResponse) =>
   // → new images added by user upload them
   if (data.price) data.price = parseFloat(req.body.price);
   if (data.quantity) data.quantity = parseInt(req.body.quantity);
-  if (data.category) data.category = JSON.parse(req.body.categories);
   if (data.slideColors) data.slideColors = JSON.parse(req.body.slideColors);
   if (data.discount) data.discount = parseFloat(req.body.discount) || 0;
 
