@@ -76,12 +76,17 @@ export const isValidJSONString = (value: string) => {
 };
 
 export const getUser = async (request: NextApiRequest) => {
+  console.log("Headers", { ...request.headers });
   try {
     const decoded = (await decodeJWT(request?.headers?.authorization)) as User;
 
     const user = await prisma.user.findFirst({
       where: {
         id: decoded.id,
+      },
+      select: {
+        password: true,
+        interests: true,
       },
     });
 

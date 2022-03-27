@@ -12,26 +12,30 @@ datasource db {
 }
 
 model User {
-  id           String         @id @default(auto()) @map("_id") @db.ObjectId
-  email        String         @unique
-  password     String
-  fullname     String?
-  profile      String?
+  id                 String         @id @default(auto()) @map("_id") @db.ObjectId
+  email              String         @unique
+  password           String
+  fullname           String?
+  profile            String?
   stripe_customer_id String
-  transactions Transactions[]
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @default(now())
+  transactions       Transactions[]
+  interestIds        String[]       @db.ObjectId
+  interests          Category[]     @relation(fields: [interestIds], references: [id])
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @default(now())
 }
 
 model Category {
-  id             String     @id @default(auto()) @map("_id") @db.ObjectId
-  name           String     @unique
-  parentId       String?
-  parentCategory Category?  @relation("CategoryParent", fields: [parentId], references: [id], onUpdate: NoAction, onDelete: NoAction)
-  subCategory    Category[] @relation("CategoryParent")
-  image          String?
-  createdAt      DateTime   @default(now())
-  updatedAt      DateTime   @default(now())
+  id                String     @id @default(auto()) @map("_id") @db.ObjectId
+  name              String     @unique
+  parentId          String?
+  parentCategory    Category?  @relation("CategoryParent", fields: [parentId], references: [id], onUpdate: NoAction, onDelete: NoAction)
+  subCategory       Category[] @relation("CategoryParent")
+  interestedUserIds String[]   @db.ObjectId
+  interestedUsers   User[]     @relation(fields: [interestedUserIds], references: [id])
+  image             String?
+  createdAt         DateTime   @default(now())
+  updatedAt         DateTime   @default(now())
 }
 
 model Product {
@@ -46,7 +50,7 @@ model Product {
   quantity    Int
   category    String[]
   isStaffPick Boolean? @default(false)
-  isFeatured Boolean? @default(false)
+  isFeatured  Boolean? @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @default(now())
 }

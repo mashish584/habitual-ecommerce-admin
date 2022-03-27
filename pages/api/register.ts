@@ -28,6 +28,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
     return generateResponse("200", "Your account is successfully created.", res);
   } catch (error) {
+    console.log({ error });
     return generateResponse("400", "Something went wrong.", res);
   }
 };
