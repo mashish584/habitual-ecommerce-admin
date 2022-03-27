@@ -33,26 +33,29 @@ model Category {
   subCategory       Category[] @relation("CategoryParent")
   interestedUserIds String[]   @db.ObjectId
   interestedUsers   User[]     @relation(fields: [interestedUserIds], references: [id])
+  productIds        String[]   @db.ObjectId
+  products          Product[]  @relation(fields: [productIds], references: [id])
   image             String?
   createdAt         DateTime   @default(now())
   updatedAt         DateTime   @default(now())
 }
 
 model Product {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  title       String   @unique
+  id          String     @id @default(auto()) @map("_id") @db.ObjectId
+  title       String     @unique
   description String?
   images      Json[]
   variants    Json?
   slideColors Json[]
   price       Float
-  discount    Float?   @default(0)
+  discount    Float?     @default(0)
   quantity    Int
-  category    String[]
-  isStaffPick Boolean? @default(false)
-  isFeatured  Boolean? @default(false)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @default(now())
+  categoryIds String[]   @db.ObjectId
+  category    Category[] @relation(fields: [categoryIds], references: [id])
+  isStaffPick Boolean?   @default(false)
+  isFeatured  Boolean?   @default(false)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @default(now())
 }
 
 model Transactions {
