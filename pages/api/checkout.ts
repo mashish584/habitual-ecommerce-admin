@@ -15,8 +15,6 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       return generateResponse("401", "Please login to continue.", res);
     }
 
-    console.log({ cartItems });
-
     const ephemeralKey = await createEphemeralKeys(user.stripe_customer_id);
     const productIds = Object.keys(cartItems);
 
