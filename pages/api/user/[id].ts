@@ -10,7 +10,7 @@ import prisma from "../../../utils/prisma";
 const patchHandler = async (req: NextApiRequest, res: NextApiResponse) => {
   const userId = req.query?.id as string;
 
-  const { fullname, profile, interests } = req.body;
+  const { fullname, profile, interests, reasons } = req.body;
   const data = {} as Prisma.UserCreateInput;
 
   if (req.file && validateImageUpload(req.file, res)) {
@@ -35,6 +35,16 @@ const patchHandler = async (req: NextApiRequest, res: NextApiResponse) => {
     data.interests = {
       connect: JSON.parse(interests).map((interest: string) => ({ id: interest })),
     };
+  }
+
+  if (isValidJSONString(reasons)) {
+    const selectedReasons = JSON.parse(reasons);
+
+    const isNotStringValue = selectedReasons.some((value: any) => typeof value !== "string");
+
+    if (isNotStringValue) throw new Error("Invalid reason value provided.");
+
+    data.joining_reasons = selectedReasons;
   }
 
   await prisma.user.update({ where: { id: userId }, data });

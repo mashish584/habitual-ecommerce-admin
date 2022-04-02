@@ -17,6 +17,7 @@ model User {
   password           String
   fullname           String?
   profile            String?
+  joining_reasons    String[]
   stripe_customer_id String
   transactions       Transactions[]
   interestIds        String[]       @db.ObjectId
