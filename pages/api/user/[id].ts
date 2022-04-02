@@ -3,14 +3,14 @@ import { NextApiRequest, NextApiResponse } from "next";
 
 import { Prisma } from "@prisma/client";
 import upload, { upload_on_imagekit } from "../../../utils/upload";
-import { catchAsyncError, generateResponse } from "../../../utils";
+import { catchAsyncError, generateResponse, isValidJSONString } from "../../../utils";
 import { validateImageUpload } from "../../../utils/validation";
 import prisma from "../../../utils/prisma";
 
 const patchHandler = async (req: NextApiRequest, res: NextApiResponse) => {
   const userId = req.query?.id as string;
 
-  const { fullname, profile } = req.body;
+  const { fullname, profile, interests } = req.body;
   const data = {} as Prisma.UserCreateInput;
 
   if (req.file && validateImageUpload(req.file, res)) {
@@ -24,6 +24,17 @@ const patchHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 
   if (profile?.trim() === "") {
     data.profile = "";
+  }
+
+  if (isValidJSONString(interests)) {
+    const selectedInterests = JSON.parse(interests);
+    if (!Array.isArray(selectedInterests)) {
+      throw new Error("Interests value is not valid.");
+    }
+
+    data.interests = {
+      connect: JSON.parse(interests).map((interest: string) => ({ id: interest })),
+    };
   }
 
   await prisma.user.update({ where: { id: userId }, data });
