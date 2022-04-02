@@ -35,46 +35,67 @@ const getRequestHandler = async (req: NextApiRequest, res: NextApiResponse) => {
     };
   }
 
-  // 👀 look for products with category
+  // 👀 for products with category
   if (req?.query?.category) {
     const categories = typeof req.query.category === "string" ? [req.query.category] : req?.query?.category;
 
     options.where = {
-      ...options.where,
-      category: {
+      categoryIds: {
         hasSome: categories,
       },
     };
   }
 
-  const totalCountPromise = prisma.product.count({ where: options.where });
-  const productsPromise = prisma.product.findMany({ ...options, skip, take });
+  // 👀 for featured products
+  if (req?.query?.isFeatured === "true") {
+    options.where = {
+      ...options.where,
+      isFeatured: true,
+    };
+  }
 
-  const [totalCount, products]: [number, ProductInfo[]] = await Promise.all([totalCountPromise, productsPromise]);
+  // 👀 for products with hot deals
+  if (req.query?.isHotDeals === "true") {
+    options.where = {
+      ...options.where,
+      discount: {
+        gt: 0,
+      },
+    };
 
-  // 👀  fetch product category details like id and name will be served
-  // 🚨 Add redis in future to cache category details
-  const categories: Record<string, string> = {};
+    options.orderBy = {
+      discount: "desc",
+    };
+  }
 
-  for (const productKeyIndex in products) {
-    const product = products[productKeyIndex];
-    product.categories = [];
+  // 👀 for selection fields{
+  if (req?.query?.select) {
+    // expecting to be a string with comma seperated values
+    if (typeof req.query?.select === "string") {
+      const selection = req.query?.select
+        .split(",")
+        .reduce((previousValues, currentValue) => ({ ...previousValues, ...{ [currentValue]: true } }), {} as Prisma.ProductSelect);
 
-    // 🚨 Avoiding TS anger on categoryKeyIndex type
-    if (!product.category) product.category = [];
-
-    for (const categoryKeyIndex in product.category) {
-      const category = product.category[categoryKeyIndex];
-      if (!categories[category]) {
-        const categoryInfo = await prisma.category.findFirst({ where: { id: category }, select: { name: true, id: true } });
-        if (categoryInfo) {
-          categories[category] = categoryInfo?.name as string;
-          product.categories.push(categoryInfo);
+      if (Object.keys(selection).length) {
+        // if category field in selection
+        if (Object.keys(selection).includes("category")) {
+          selection.category = {
+            select: {
+              id: true,
+              name: true,
+            },
+          };
         }
+
+        options.select = selection;
       }
     }
-    delete product.category;
   }
+
+  const totalCountPromise = prisma.product.count({ where: options.where });
+  const productsPromise = prisma.product.findMany({ skip, take, ...options });
+
+  const [totalCount, products]: [number, ProductInfo[]] = await Promise.all([totalCountPromise, productsPromise]);
 
   return generateResponse("200", "Products fetched..", res, { totalCount, products });
 };
@@ -102,7 +123,7 @@ const postRequestHandler = async (req: NextApiRequest, res: NextApiResponse) => 
     };
   }
 
-  //→ Check for slide colors
+  // → Check for slide colors
   if (data.slideColors) {
     data.slideColors = JSON.parse(req.body.slideColors);
   }

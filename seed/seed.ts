@@ -4,9 +4,7 @@ import ProductJSON from "./products";
 const prisma = new PrismaClient();
 
 const seed = () => {
-  const inserts = ProductJSON.map((product) => {
-    return prisma.product.create({ data: product });
-  });
+  const inserts = ProductJSON.map((product) => prisma.product.create({ data: product }));
 
   return Promise.all(inserts);
 };
