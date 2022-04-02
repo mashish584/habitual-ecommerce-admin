@@ -7,7 +7,37 @@ import { validateCategory, validateImageUpload } from "../../utils/validation";
 import { upload_on_imagekit } from "../../utils/upload";
 
 const getRequestHandler = async (req: NextApiRequest, res: NextApiResponse) => {
-  const categories = await prisma.category.findMany();
+  const { parent, child } = req.query;
+
+  const options: Prisma.CategoryFindManyArgs = {};
+
+  if (parent) {
+    options.where = {
+      parentId: {
+        equals: null,
+      },
+    };
+  }
+
+  if (child) {
+    options.where = {
+      parentId: {
+        not: null,
+      },
+    };
+  }
+
+  const categories = await prisma.category.findMany({
+    ...options,
+    include: {
+      parentCategory: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
+    },
+  });
   return generateResponse("200", "Categories fetched.", res, { categories });
 };
 

@@ -68,27 +68,25 @@ const getRequestHandler = async (req: NextApiRequest, res: NextApiResponse) => {
     };
   }
 
-  // 👀 for selection fields{
-  if (req?.query?.select) {
-    // expecting to be a string with comma seperated values
-    if (typeof req.query?.select === "string") {
-      const selection = req.query?.select
-        .split(",")
-        .reduce((previousValues, currentValue) => ({ ...previousValues, ...{ [currentValue]: true } }), {} as Prisma.ProductSelect);
+  // 👀 for selection fields
+  // expecting to be a string with comma seperated values
+  if (req?.query?.select && typeof req.query?.select === "string") {
+    const selection = req.query?.select
+      .split(",")
+      .reduce((previousValues, currentValue) => ({ ...previousValues, ...{ [currentValue]: true } }), {} as Prisma.ProductSelect);
 
-      if (Object.keys(selection).length) {
-        // if category field in selection
-        if (Object.keys(selection).includes("category")) {
-          selection.category = {
-            select: {
-              id: true,
-              name: true,
-            },
-          };
-        }
-
-        options.select = selection;
+    if (Object.keys(selection).length) {
+      // if category field in selection
+      if (Object.keys(selection).includes("category")) {
+        selection.category = {
+          select: {
+            id: true,
+            name: true,
+          },
+        };
       }
+
+      options.select = selection;
     }
   }
 
