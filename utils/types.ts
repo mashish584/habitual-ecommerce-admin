@@ -55,3 +55,6 @@ export type ProductBody = {
   quantity: Number;
   categories: string[];
 };
+
+// TS Utils
+export type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;

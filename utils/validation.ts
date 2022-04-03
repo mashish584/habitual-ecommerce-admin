@@ -5,9 +5,7 @@ import * as yup from "yup";
 import { isInvalidObject, isValidJSONString } from "./index";
 import prisma from "./prisma";
 
-import {
-  CategoryBody, FileType, ProductBody, ProductVariant, ResponseError, SignupBody, SlideColors,
-} from "./types";
+import { CategoryBody, FileType, ProductBody, ProductVariant, ResponseError, SignupBody, SlideColors } from "./types";
 
 const { ValidationError } = yup;
 
@@ -41,8 +39,24 @@ const handleError = (errors: any) => {
 export const validateUserCred = async (values: SignupBody) => {
   try {
     const schema: yup.SchemaOf<SignupBody> = yup.object().shape({
-      email: yup.string().trim().required("Email address is required.").email("Email address is not valid.")
-        .label("email"),
+      email: yup
+        .string()
+        .trim()
+        .required("Email address is required.")
+        .email("Email address is not valid.")
+        .label("email")
+        .test("isValidEmail", "Product images is not valid.Please check image type.", async (value, { createError, path }) => {
+          const isEmailExist = (await prisma.user.count({ where: { email: value } })) > 0;
+
+          if (isEmailExist) {
+            return createError({
+              path,
+              message: `Email address is already registered.`,
+            });
+          }
+
+          return true;
+        }),
       password: yup.string().trim().required("Password is required.").label("password"),
     });
 
@@ -72,9 +86,10 @@ export const validateProduct = async (values: ProductBody, productinfo?: Product
   try {
     // → totalImages is sumof user selected images and images already in db if both exist
     // → else it will be upload images length which will be by default 0 if not passed
-    const totalImages = values?.images?.length && productinfo?.id && productinfo?.images?.length
-      ? productinfo.images.length + values.images.length
-      : values?.images?.length;
+    const totalImages =
+      values?.images?.length && productinfo?.id && productinfo?.images?.length
+        ? productinfo.images.length + values.images.length
+        : values?.images?.length;
 
     const schema = yup.object().shape({
       title: yup.string().trim().required("Please provide product title.").notRequired(),
