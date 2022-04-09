@@ -38,7 +38,7 @@ const getRequestHandler = async (req: NextApiRequest, res: NextApiResponse) => {
     };
   }
 
-  if (search?.trim() !== "") {
+  if (typeof search === "string" && search.trim() !== "") {
     options.where = {
       parentId: {
         equals: null,
@@ -60,7 +60,7 @@ const getRequestHandler = async (req: NextApiRequest, res: NextApiResponse) => {
       },
     },
   });
-  return generateResponse("200", "Categories fetched.", res, { categories });
+  return generateResponse("200", "Categories fetched.", res, { data: categories });
 };
 
 const postRequestHandler = async (req: NextApiRequest, res: NextApiResponse) => {
