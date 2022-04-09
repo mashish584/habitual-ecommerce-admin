@@ -1,21 +1,28 @@
 import nc from "next-connect";
 import { NextApiRequest, NextApiResponse } from "next";
 
-import { Prisma } from "@prisma/client";
-import upload, { upload_on_imagekit } from "../../../utils/upload";
+import { Prisma, User } from "@prisma/client";
+import upload, { delete_image_from_imagekit, upload_on_imagekit } from "../../../utils/upload";
 import { catchAsyncError, generateResponse, isValidJSONString } from "../../../utils";
 import { validateImageUpload } from "../../../utils/validation";
 import prisma from "../../../utils/prisma";
+import { PartialBy } from "../../../utils/types";
 
 const patchHandler = async (req: NextApiRequest, res: NextApiResponse) => {
   const userId = req.query?.id as string;
 
   const { fullname, profile, interests, reasons } = req.body;
   const data = {} as Prisma.UserCreateInput;
+  const user = await prisma.user.findFirst({ where: { id: userId } });
 
   if (req.file && validateImageUpload(req.file, res)) {
     const response = await upload_on_imagekit(req.file.buffer, req.file.originalname);
     data.profile = response.url;
+    data.profileImageId = response.fileId;
+
+    if (user?.profileImageId) {
+      delete_image_from_imagekit(user.profileImageId);
+    }
   }
 
   if (fullname || fullname?.trim() === "") {
@@ -47,9 +54,11 @@ const patchHandler = async (req: NextApiRequest, res: NextApiResponse) => {
     data.joining_reasons = selectedReasons;
   }
 
-  await prisma.user.update({ where: { id: userId }, data });
+  const updatedInfo: PartialBy<User, "password"> = await prisma.user.update({ where: { id: userId }, data });
 
-  return generateResponse("200", "Profile info updated.", res);
+  delete updatedInfo.password;
+
+  return generateResponse("200", "Profile info updated.", res, { data: updatedInfo });
 };
 
 const handler = nc<NextApiRequest, NextApiResponse>({
