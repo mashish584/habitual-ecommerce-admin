@@ -11,7 +11,7 @@ import { PartialBy } from "../../../utils/types";
 const patchHandler = async (req: NextApiRequest, res: NextApiResponse) => {
   const userId = req.query?.id as string;
 
-  const { fullname, profile, interests, reasons } = req.body;
+  const { fullname, profile, interests, joining_reasons } = req.body;
   const data = {} as Prisma.UserCreateInput;
   const user = await prisma.user.findFirst({ where: { id: userId } });
 
@@ -44,8 +44,8 @@ const patchHandler = async (req: NextApiRequest, res: NextApiResponse) => {
     };
   }
 
-  if (isValidJSONString(reasons)) {
-    const selectedReasons = JSON.parse(reasons);
+  if (isValidJSONString(joining_reasons)) {
+    const selectedReasons = JSON.parse(joining_reasons);
 
     const isNotStringValue = selectedReasons.some((value: any) => typeof value !== "string");
 
