@@ -7,7 +7,7 @@ import { validateCategory, validateImageUpload } from "../../utils/validation";
 import { upload_on_imagekit } from "../../utils/upload";
 
 const getRequestHandler = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { parent, child, parentId } = req.query;
+  const { parent, child, parentId, childLimit, exclude } = req.query;
   const search = req.query.search as string;
 
   const options: Prisma.CategoryFindManyArgs = {};
@@ -41,7 +41,7 @@ const getRequestHandler = async (req: NextApiRequest, res: NextApiResponse) => {
   if (typeof search === "string" && search.trim() !== "") {
     options.where = {
       parentId: {
-        equals: null,
+        not: null,
       },
       name: {
         contains: search,
@@ -49,17 +49,50 @@ const getRequestHandler = async (req: NextApiRequest, res: NextApiResponse) => {
     };
   }
 
-  const categories = await prisma.category.findMany({
-    ...options,
-    include: {
-      parentCategory: {
-        select: {
-          id: true,
-          name: true,
+  if (exclude) {
+    const ids = typeof exclude === "string" ? [exclude] : exclude;
+    options.where = {
+      ...options.where,
+      id: {
+        notIn: ids,
+      },
+    };
+  }
+
+  let categories;
+  if (childLimit && typeof parentId !== "string" && parentId) {
+    categories = await Promise.all(
+      parentId.map((id) => {
+        options.where = { parentId: id };
+        options.take = parseInt(childLimit as string);
+        return prisma.category.findMany({
+          ...options,
+          include: {
+            parentCategory: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
+          },
+        });
+      }),
+    );
+    categories = categories.flat(1);
+  } else {
+    categories = await prisma.category.findMany({
+      ...options,
+      include: {
+        parentCategory: {
+          select: {
+            id: true,
+            name: true,
+          },
         },
       },
-    },
-  });
+    });
+  }
+
   return generateResponse("200", "Categories fetched.", res, { data: categories });
 };
 
