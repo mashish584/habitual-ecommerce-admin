@@ -8,6 +8,30 @@ import { validateImageUpload } from "../../../utils/validation";
 import prisma from "../../../utils/prisma";
 import { PartialBy } from "../../../utils/types";
 
+const getHandler = async (req: NextApiRequest, res: NextApiResponse) => {
+  const userId = req?.query?.id as string;
+
+  const user = await prisma.user.findFirst({
+    where: { id: userId },
+    include: {
+      interests: {
+        select: {
+          id: true,
+          name: true,
+          image: true,
+        },
+      },
+    },
+  });
+
+  if (!user) throw new Error("User info not found.");
+
+  const data = { ...user } as PartialBy<User, "password">;
+  delete data.password;
+
+  return generateResponse("200", "User info fetched.", res, { data });
+};
+
 const patchHandler = async (req: NextApiRequest, res: NextApiResponse) => {
   const userId = req.query?.id as string;
 
@@ -65,6 +89,7 @@ const handler = nc<NextApiRequest, NextApiResponse>({
   onNoMatch: (req, res) => generateResponse("405", `Request type ${req.method} is not allowed.`, res),
 })
   .use(upload().single("profile"))
+  .get(catchAsyncError(getHandler))
   .patch(catchAsyncError(patchHandler));
 
 export default handler;

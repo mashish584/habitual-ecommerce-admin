@@ -50,6 +50,7 @@ const getRequestHandler = async (req: NextApiRequest, res: NextApiResponse) => {
   }
 
   if (exclude) {
+    console.log({ exclude });
     const ids = typeof exclude === "string" ? [exclude] : exclude;
     options.where = {
       ...options.where,
