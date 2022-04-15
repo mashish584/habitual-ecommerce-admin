@@ -1,13 +1,21 @@
-import { NextApiResponse } from "next";
+import { NextApiRequest, NextApiResponse } from "next";
 import bcrypt from "bcryptjs";
 import jwt, { Secret } from "jsonwebtoken";
+import { User } from "@prisma/client";
+import { PrismaClientKnownRequestError, PrismaClientValidationError } from "@prisma/client/runtime";
 
-import { RequestType, Status } from "./types";
+import { Stripe } from "stripe";
+import { AsyncFnType, RequestType, Status } from "./types";
+import { PRISMA_ERRORS } from "./enum";
+import prisma from "./prisma";
 
-export const generateResponse = (status: Status, message: string, res: NextApiResponse, extraInfo?: object) => res.status(parseInt(status)).json({
-  message,
-  ...extraInfo,
-});
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
+
+export const generateResponse = (status: Status, message: string, res: NextApiResponse, extraInfo?: object) =>
+  res.status(parseInt(status)).json({
+    message,
+    ...extraInfo,
+  });
 
 export const checkRequestType = (endPointRequestTYpe: RequestType, userRequestType: RequestType, res: NextApiResponse) => {
   if (userRequestType !== endPointRequestTYpe) {
@@ -40,3 +48,93 @@ export const generateJWT = async (userId: string) => {
 };
 
 export const comparePassword = (password: string, currentPassword: string) => bcrypt.compare(password, currentPassword);
+
+export const catchAsyncError = (fn: AsyncFnType) => (req: NextApiRequest, res: NextApiResponse) =>
+  fn(req, res).catch((error) => {
+    console.log({ error });
+    let status: Status = "400";
+    let message = "";
+
+    if (
+      error instanceof PrismaClientKnownRequestError &&
+      [PRISMA_ERRORS.INCONSITENT, PRISMA_ERRORS.NOT_FOUND].includes(error.code as PRISMA_ERRORS)
+    ) {
+      message = "Record not found.";
+      status = "404";
+    }
+
+    if (error instanceof PrismaClientValidationError) {
+      message = "Please check field types.";
+      status = "400";
+    }
+
+    return generateResponse(status, message || "Something went wrong.", res);
+  });
+
+export const isInvalidObject = (keys: string[], object: Object) => Object.keys(object).some((key) => !keys.includes(key));
+export const isValidJSONString = (value: string) => {
+  try {
+    JSON.parse(value);
+  } catch (error) {
+    return false;
+  }
+  return true;
+};
+
+export const getUser = async (request: NextApiRequest) => {
+  console.log("Headers", { ...request.headers });
+  try {
+    const decoded = (await decodeJWT(request?.headers?.authorization)) as User;
+
+    const user = await prisma.user.findFirst({
+      where: {
+        id: decoded.id,
+      },
+      select: {
+        password: true,
+        interests: true,
+      },
+    });
+
+    return user;
+  } catch (error) {
+    return null;
+  }
+};
+
+export const createStripeUser = async (email: string) => {
+  const customer = await stripe.customers.create({
+    email,
+    name: email,
+    address: {
+      city: "Kashiput",
+      country: "India",
+      line1: "Chamunda Vihar",
+      postal_code: 244714,
+    },
+  });
+
+  return customer.id;
+};
+
+export const createEphemeralKeys = (stripeCustomerId: string): Promise<Stripe.Response<Stripe.EphemeralKey>> =>
+  stripe.ephemeralKeys.create(
+    {
+      customer: stripeCustomerId,
+    },
+    {
+      apiVersion: "2020-08-27",
+    },
+  );
+
+export const createPaymentIntent = (
+  total: number,
+  userId: string,
+  stripeCustomerId: string,
+): Promise<Stripe.Response<Stripe.PaymentIntent>> =>
+  stripe.paymentIntents.create({
+    amount: total,
+    currency: "inr",
+    description: `Payment of amount ₹.${total / 100} for #${userId}`,
+    customer: stripeCustomerId,
+  });
