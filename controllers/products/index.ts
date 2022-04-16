@@ -170,6 +170,14 @@ const patchRequestHandler = async (req: NextApiRequest, res: NextApiResponse) =>
   if (data.quantity) data.quantity = parseInt(req.body.quantity);
   if (data.slideColors) data.slideColors = JSON.parse(req.body.slideColors);
   if (data.discount) data.discount = parseFloat(req.body.discount) || 0;
+  if (data.categories) {
+    const categories = JSON.parse(req.body.categories);
+    data.category = {
+      disconnect: productInfo.categoryIds.map((id) => ({ id })),
+      connect: categories.map((categpry: string) => ({ id: categpry })),
+    };
+    delete data.categories;
+  }
 
   if (data.images.length) {
     const images = await Promise.all(files.map((image: FileType) => upload_on_imagekit(image.buffer, image.originalname)));
