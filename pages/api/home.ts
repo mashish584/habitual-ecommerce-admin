@@ -20,6 +20,13 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     where: {
       isFeatured: true,
     },
+    include: {
+      category: {
+        select: {
+          name: true,
+        },
+      },
+    },
     skip: 0,
     take: 10,
   });
@@ -80,7 +87,10 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
           userInterests[key] = [];
         }
 
-        userInterests[key].push(product);
+        const index = userInterests[key].findIndex((existProduct) => existProduct.id === product.id);
+        if (index === -1) {
+          userInterests[key].push(product);
+        }
       });
     }
   }
