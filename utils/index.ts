@@ -82,7 +82,6 @@ export const isValidJSONString = (value: string) => {
 };
 
 export const getUser = async (request: NextApiRequest) => {
-  console.log("Headers", { ...request.headers });
   try {
     const decoded = (await decodeJWT(request?.headers?.authorization)) as User;
 
@@ -90,9 +89,14 @@ export const getUser = async (request: NextApiRequest) => {
       where: {
         id: decoded.id,
       },
-      select: {
-        password: true,
-        interests: true,
+      include: {
+        interests: {
+          select: {
+            id: true,
+            name: true,
+            parentId: true,
+          },
+        },
       },
     });
 

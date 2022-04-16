@@ -31,7 +31,7 @@ export interface SlideColors {
 
 // → Request Body Types
 
-export type SignupBody = {
+export type AuthBody = {
   email: string;
   password: string;
 };
