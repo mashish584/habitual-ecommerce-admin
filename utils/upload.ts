@@ -25,4 +25,17 @@ export const upload_on_imagekit = async (file: any, filename: string) => {
 
 export const delete_image_from_imagekit = (id: string) => image_kit.deleteFile(id);
 
+export const listFiles = () => {
+  image_kit
+    .listFiles({
+      name: "music-03.png",
+    })
+    .then((response) => {
+      console.log(response);
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+};
+
 export default () => multer({ storage });

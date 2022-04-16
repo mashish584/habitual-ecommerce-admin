@@ -1,11 +1,11 @@
 import { Category, Prisma, Product } from "@prisma/client";
 import { NextApiRequest, NextApiResponse } from "next";
 
-import { generateResponse } from "../../utils";
 import prisma from "../../utils/prisma";
 import { FileType } from "../../utils/types";
 import { delete_image_from_imagekit, upload_on_imagekit } from "../../utils/upload";
 import { validateProduct } from "../../utils/validation";
+import { generateResponse } from "../../utils";
 
 type CategoryInfo = Pick<Category, "id" | "name">[];
 type ProductInfo = Partial<Product> & { categories?: CategoryInfo };
