@@ -1,9 +1,9 @@
 import { NextApiResponse, NextApiRequest } from "next";
 
+import { Product } from "@prisma/client";
 import { RequestType } from "../../utils/types";
 import { checkRequestType, generateResponse, getUser } from "../../utils";
 import prisma from "../../utils/prisma";
-import { Product } from "@prisma/client";
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   checkRequestType("GET", req.method as RequestType, res);
@@ -40,7 +40,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     },
   });
 
-  let userInterests: Record<string, Partial<Product>[]> = {};
+  const userInterests: Record<string, Partial<Product>[]> = {};
   if (user?.id && user?.interests?.length) {
     const categoryIds: string[] = [];
 
