@@ -3,9 +3,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { User } from "@prisma/client";
 import prisma from "../../utils/prisma";
 import { PartialBy, RequestType } from "../../utils/types";
-import {
-  checkRequestType, createStripeUser, generateJWT, generateResponse, hashPhassword,
-} from "../../utils";
+import { checkRequestType, createStripeUser, generateJWT, generateResponse, hashPhassword } from "../../utils";
 import { validateUserCred } from "../../utils/validation";
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {

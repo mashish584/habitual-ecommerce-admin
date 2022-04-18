@@ -98,6 +98,18 @@ const getRequestHandler = async (req: NextApiRequest, res: NextApiResponse) => {
   return generateResponse("200", "Products fetched..", res, { totalCount, products });
 };
 
+const getIndividualProductHandler = async (req: NextApiRequest, res: NextApiResponse) => {
+  const productId = req.query?.id as string;
+
+  const product = await prisma.product.findFirst({ where: { id: productId } });
+
+  if (!product) {
+    throw new Error("Product not found.");
+  }
+
+  return generateResponse("200", "Product info fetched.", res, { data: product });
+};
+
 const postRequestHandler = async (req: NextApiRequest, res: NextApiResponse) => {
   const files = req.files || [];
 
@@ -227,6 +239,7 @@ const deleteProductImageHandler = async (req: NextApiRequest, res: NextApiRespon
 
 export default {
   getRequestHandler,
+  getIndividualProductHandler,
   postRequestHandler,
   patchRequestHandler,
   deleteProductImageHandler,
