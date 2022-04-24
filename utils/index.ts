@@ -9,13 +9,12 @@ import { AsyncFnType, RequestType, Status } from "./types";
 import { PRISMA_ERRORS } from "./enum";
 import prisma from "./prisma";
 
-const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
+const stripe: Stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
-export const generateResponse = (status: Status, message: string, res: NextApiResponse, extraInfo?: object) =>
-  res.status(parseInt(status)).json({
-    message,
-    ...extraInfo,
-  });
+export const generateResponse = (status: Status, message: string, res: NextApiResponse, extraInfo?: object) => res.status(parseInt(status)).json({
+  message,
+  ...extraInfo,
+});
 
 export const checkRequestType = (endPointRequestTYpe: RequestType, userRequestType: RequestType, res: NextApiResponse) => {
   if (userRequestType !== endPointRequestTYpe) {
@@ -49,26 +48,25 @@ export const generateJWT = async (userId: string) => {
 
 export const comparePassword = (password: string, currentPassword: string) => bcrypt.compare(password, currentPassword);
 
-export const catchAsyncError = (fn: AsyncFnType) => (req: NextApiRequest, res: NextApiResponse) =>
-  fn(req, res).catch((error) => {
-    let status: Status = "400";
-    let message = "";
+export const catchAsyncError = (fn: AsyncFnType) => (req: NextApiRequest, res: NextApiResponse) => fn(req, res).catch((error) => {
+  let status: Status = "400";
+  let message = "";
 
-    if (
-      error instanceof PrismaClientKnownRequestError &&
-      [PRISMA_ERRORS.INCONSITENT, PRISMA_ERRORS.NOT_FOUND].includes(error.code as PRISMA_ERRORS)
-    ) {
-      message = "Record not found.";
-      status = "404";
-    }
+  if (
+    error instanceof PrismaClientKnownRequestError
+      && [PRISMA_ERRORS.INCONSITENT, PRISMA_ERRORS.NOT_FOUND].includes(error.code as PRISMA_ERRORS)
+  ) {
+    message = "Record not found.";
+    status = "404";
+  }
 
-    if (error instanceof PrismaClientValidationError) {
-      message = "Please check field types.";
-      status = "400";
-    }
+  if (error instanceof PrismaClientValidationError) {
+    message = "Please check field types.";
+    status = "400";
+  }
 
-    return generateResponse(status, message || "Something went wrong.", res);
-  });
+  return generateResponse(status, message || "Something went wrong.", res);
+});
 
 export const isInvalidObject = (keys: string[], object: Object) => Object.keys(object).some((key) => !keys.includes(key));
 export const isValidJSONString = (value: string) => {
@@ -114,31 +112,39 @@ export const createStripeUser = async (email: string) => {
       city: "Kashiput",
       country: "India",
       line1: "Chamunda Vihar",
-      postal_code: 244714,
+      postal_code: "244714",
     },
   });
 
   return customer.id;
 };
 
-export const createEphemeralKeys = (stripeCustomerId: string): Promise<Stripe.Response<Stripe.EphemeralKey>> =>
-  stripe.ephemeralKeys.create(
-    {
-      customer: stripeCustomerId,
-    },
-    {
-      apiVersion: "2020-08-27",
-    },
-  );
-
-export const createPaymentIntent = (
-  total: number,
-  userId: string,
-  stripeCustomerId: string,
-): Promise<Stripe.Response<Stripe.PaymentIntent>> =>
-  stripe.paymentIntents.create({
-    amount: total,
-    currency: "inr",
-    description: `Payment of amount ₹.${total / 100} for #${userId}`,
+export const createEphemeralKeys = (stripeCustomerId: string): Promise<Stripe.Response<Stripe.EphemeralKey>> => stripe.ephemeralKeys.create(
+  {
     customer: stripeCustomerId,
-  });
+  },
+  {
+    apiVersion: "2020-08-27",
+  },
+);
+
+export const createPaymentIntent = (total: number, stripeCustomerId: string): Promise<Stripe.Response<Stripe.PaymentIntent>> => stripe.paymentIntents.create({
+  amount: total,
+  currency: "usd",
+  description: `Payment of amount $${total / 100} successfully done.`,
+  customer: stripeCustomerId,
+  shipping: {
+    name: "Test",
+    // Temporaty
+    address: {
+      line1: "510 Townsend St",
+      postal_code: "98140",
+      city: "San Francisco",
+      country: "US",
+    },
+  },
+});
+
+export const fetchPaymentMethods = (customerId: string) => stripe.customers.listPaymentMethods(customerId, { type: "card" });
+
+export const fetchPaymentInfo = (paymentIntentId: string) => stripe.paymentIntents.retrieve(paymentIntentId);
