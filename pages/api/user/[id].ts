@@ -19,6 +19,13 @@ const getHandler = async (req: NextApiRequest, res: NextApiResponse) => {
           id: true,
           name: true,
           image: true,
+          parentCategory: {
+            select: {
+              id: true,
+              name: true,
+              image: true,
+            },
+          },
         },
       },
     },
@@ -33,11 +40,9 @@ const getHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 };
 
 const patchHandler = async (req: NextApiRequest, res: NextApiResponse) => {
+  console.log(req.body);
   const userId = req.query?.id as string;
-
-  const {
-    fullname, profile, interests, joining_reasons,
-  } = req.body;
+  const { fullname, profile, interests, joining_reasons, addresses } = req.body;
   const data = {} as Prisma.UserCreateInput;
   const user = await prisma.user.findFirst({ where: { id: userId } });
 
@@ -78,6 +83,10 @@ const patchHandler = async (req: NextApiRequest, res: NextApiResponse) => {
     if (isNotStringValue) throw new Error("Invalid reason value provided.");
 
     data.joining_reasons = selectedReasons;
+  }
+
+  if (isValidJSONString(addresses)) {
+    data.addresses = JSON.parse(addresses);
   }
 
   const updatedInfo: PartialBy<User, "password"> = await prisma.user.update({ where: { id: userId }, data });
