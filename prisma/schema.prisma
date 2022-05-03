@@ -21,7 +21,7 @@ model User {
   bio                String?
   joining_reasons    String[]
   stripe_customer_id String
-  addresses            Json?
+  addresses          Json[]
   transactions       Transactions[]
   interestIds        String[]       @db.ObjectId
   interests          Category[]     @relation(fields: [interestIds], references: [id])

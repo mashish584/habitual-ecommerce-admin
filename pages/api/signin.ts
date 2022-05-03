@@ -1,7 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 
+import { User } from "@prisma/client";
 import prisma from "../../utils/prisma";
-import { RequestType } from "../../utils/types";
+import { PartialBy, RequestType } from "../../utils/types";
 import {
   checkRequestType, comparePassword, generateJWT, generateResponse,
 } from "../../utils";
@@ -34,11 +35,19 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       throw new Error("User credential not matched.");
     }
 
-    const token = await generateJWT(user.id);
+    if (user) {
+      const data: PartialBy<User, "password"> = user;
+      const token = await generateJWT(user.id);
 
-    return generateResponse("200", "You have been successfully logged in.", res, {
-      token,
-    });
+      delete data.password;
+
+      return generateResponse("200", "You have been successfully logged in.", res, {
+        token,
+        data: {
+          ...data,
+        },
+      });
+    }
   } catch (error: any) {
     const message = error?.message || "Something went wrong.";
 

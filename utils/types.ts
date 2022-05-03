@@ -56,5 +56,17 @@ export type ProductBody = {
   categories: string[];
 };
 
+export type Address = {
+  id: string;
+  firstName: string;
+  lastName: string;
+  streetName: string;
+  state: string;
+  city: string;
+  pin: string;
+  mobileNumber: string;
+  default: boolean;
+};
+
 // TS Utils
 export type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
