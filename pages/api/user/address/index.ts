@@ -26,6 +26,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     // 🔥 Update address
     const existingAddresses = user?.addresses || [];
     body.address.id = uuidv4();
+    body.address.default = existingAddresses.length === 0;
     const updatedInfo = await prisma.user.update({ where: { id: user.id }, data: { addresses: [...existingAddresses, body.address] } });
     delete user.password;
 

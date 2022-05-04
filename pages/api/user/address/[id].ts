@@ -50,7 +50,8 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     }
 
     if (body.address) {
-      existingAddresses[addressIndex] = body.address;
+      const lastAddressUpdate = existingAddresses[addressIndex] as Object;
+      existingAddresses[addressIndex] = { ...lastAddressUpdate, ...body.address };
     }
 
     user = await prisma.user.update({
