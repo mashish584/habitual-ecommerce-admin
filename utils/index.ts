@@ -5,7 +5,7 @@ import { User } from "@prisma/client";
 import { PrismaClientKnownRequestError, PrismaClientValidationError } from "@prisma/client/runtime";
 
 import { Stripe } from "stripe";
-import { AsyncFnType, RequestType, Status } from "./types";
+import { Address, AsyncFnType, RequestType, Status } from "./types";
 import { PRISMA_ERRORS } from "./enum";
 import prisma from "./prisma";
 
@@ -131,19 +131,23 @@ export const createEphemeralKeys = (stripeCustomerId: string): Promise<Stripe.Re
     },
   );
 
-export const createPaymentIntent = (total: number, stripeCustomerId: string): Promise<Stripe.Response<Stripe.PaymentIntent>> =>
+export const createPaymentIntent = (
+  total: number,
+  stripeCustomerId: string,
+  defaultAddress: Address,
+): Promise<Stripe.Response<Stripe.PaymentIntent>> =>
   stripe.paymentIntents.create({
     amount: total,
     currency: "usd",
     description: `Payment of amount $${total / 100} successfully done.`,
     customer: stripeCustomerId,
     shipping: {
-      name: "Test",
-      // Temporaty
+      name: `${defaultAddress.firstName} ${defaultAddress.lastName}`,
       address: {
-        line1: "510 Townsend St",
-        postal_code: "98140",
-        city: "San Francisco",
+        line1: defaultAddress.streetName,
+        postal_code: defaultAddress.pin,
+        city: defaultAddress.city,
+        state: defaultAddress.state,
         country: "US",
       },
     },
