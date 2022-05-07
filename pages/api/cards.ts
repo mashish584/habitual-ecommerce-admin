@@ -1,6 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 
-import { checkRequestType, fetchPaymentMethods, generateResponse, getUser } from "../../utils";
+import {
+  checkRequestType, fetchPaymentMethods, generateResponse, getUser,
+} from "../../utils";
 import { RequestType } from "../../utils/types";
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
@@ -24,9 +26,8 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
             expiry: `${card.exp_month > 9 ? card.exp_month : `0${card.exp_month}`}/${card.exp_year}`,
             last4: card.last4,
           };
-        } else {
-          return {};
         }
+        return {};
       });
     }
 

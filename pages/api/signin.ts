@@ -50,7 +50,6 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     }
   } catch (error: any) {
     const message = error?.message || "Something went wrong.";
-
     return generateResponse("400", message, res);
   }
 };

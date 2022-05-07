@@ -1,11 +1,9 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-
 import { User } from "@prisma/client";
+
 import prisma from "../../utils/prisma";
 import { PartialBy, RequestType } from "../../utils/types";
-import {
-  checkRequestType, createStripeUser, generateJWT, generateResponse, hashPhassword,
-} from "../../utils";
+import { checkRequestType, createStripeUser, generateJWT, generateResponse, hashPhassword } from "../../utils";
 import { validateUserCred } from "../../utils/validation";
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
@@ -13,10 +11,11 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
   try {
     const body = (req.body || {}) as User;
-    const validationResponse = await validateUserCred(body);
+    const validationResponse = await validateUserCred(body, true);
 
     if (validationResponse) {
-      return generateResponse("400", "Invalid input provided.", res, validationResponse);
+      const message = validationResponse?.errorMessage?.message || "Invalid input provided.";
+      return generateResponse("400", message, res, validationResponse);
     }
 
     body.password = await hashPhassword(body.password);
