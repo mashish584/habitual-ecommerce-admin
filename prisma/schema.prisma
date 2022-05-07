@@ -75,6 +75,7 @@ model Transactions {
   userId        String   @db.ObjectId
   transactionId String
   address       Json
+  amount        Float
   status        Status   @default(PENDING)
   receiptUrl    String?
   productIds    String[]

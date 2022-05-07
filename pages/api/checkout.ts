@@ -52,6 +52,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         paymentIntent: paymentIntent.client_secret,
         customer: user.stripe_customer_id,
         ephemeralKey: ephemeralKey.secret,
+        cartTotal,
       },
     });
   } catch (error) {
