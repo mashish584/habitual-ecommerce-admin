@@ -68,6 +68,12 @@ enum Status {
   FAILED
 }
 
+enum OrderStatus {
+  INPROCESS
+  SHIPPED
+  DELIVERED
+}
+
 model Transactions {
   id            String   @id @default(auto()) @map("_id") @db.ObjectId
   details       Json[]
@@ -77,6 +83,7 @@ model Transactions {
   address       Json
   amount        Float
   status        Status   @default(PENDING)
+  orderStatus   OrderStatus   @default(INPROCESS)
   receiptUrl    String?
   productIds    String[]
   createdAt     DateTime @default(now())
