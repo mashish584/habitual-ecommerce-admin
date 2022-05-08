@@ -1,7 +1,7 @@
 import nc from "next-connect";
 import { NextApiRequest, NextApiResponse } from "next";
-
 import { Prisma, User } from "@prisma/client";
+
 import upload, { delete_image_from_imagekit, upload_on_imagekit } from "../../../utils/upload";
 import { catchAsyncError, generateResponse, isValidJSONString } from "../../../utils";
 import { validateImageUpload } from "../../../utils/validation";
@@ -19,6 +19,13 @@ const getHandler = async (req: NextApiRequest, res: NextApiResponse) => {
           id: true,
           name: true,
           image: true,
+          parentCategory: {
+            select: {
+              id: true,
+              name: true,
+              image: true,
+            },
+          },
         },
       },
     },
@@ -34,8 +41,9 @@ const getHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 
 const patchHandler = async (req: NextApiRequest, res: NextApiResponse) => {
   const userId = req.query?.id as string;
-
-  const { fullname, profile, interests, joining_reasons } = req.body;
+  const {
+    fullname, profile, interests, joining_reasons, bio,
+  } = req.body;
   const data = {} as Prisma.UserCreateInput;
   const user = await prisma.user.findFirst({ where: { id: userId } });
 
@@ -76,6 +84,10 @@ const patchHandler = async (req: NextApiRequest, res: NextApiResponse) => {
     if (isNotStringValue) throw new Error("Invalid reason value provided.");
 
     data.joining_reasons = selectedReasons;
+  }
+
+  if (bio) {
+    data.bio = bio?.trim();
   }
 
   const updatedInfo: PartialBy<User, "password"> = await prisma.user.update({ where: { id: userId }, data });

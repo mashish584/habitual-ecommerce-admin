@@ -31,7 +31,7 @@ export interface SlideColors {
 
 // → Request Body Types
 
-export type SignupBody = {
+export type AuthBody = {
   email: string;
   password: string;
 };
@@ -54,6 +54,18 @@ export type ProductBody = {
   discount: Number;
   quantity: Number;
   categories: string[];
+};
+
+export type Address = {
+  id: string;
+  firstName: string;
+  lastName: string;
+  streetName: string;
+  state: string;
+  city: string;
+  pin: string;
+  mobileNumber: string;
+  default: boolean;
 };
 
 // TS Utils

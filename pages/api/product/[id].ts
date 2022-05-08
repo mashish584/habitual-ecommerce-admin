@@ -9,7 +9,7 @@ const handler = nc<NextApiRequest, NextApiResponse>({
   onNoMatch: (req, res) => generateResponse("405", `Request type ${req.method} is not allowed.`, res),
 })
   .use(upload().array("image"))
-  .get(catchAsyncError(controller.getRequestHandler))
+  .get(catchAsyncError(controller.getIndividualProductHandler))
   .patch(catchAsyncError(controller.patchRequestHandler));
 
 export default handler;

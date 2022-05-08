@@ -1,10 +1,10 @@
-import type { NextApiRequest, NextApiResponse } from "next";
+import { NextApiRequest, NextApiResponse } from "next";
 
 import {
   checkRequestType, createEphemeralKeys, createPaymentIntent, generateResponse, getUser,
 } from "../../utils";
 import prisma from "../../utils/prisma";
-import { RequestType } from "../../utils/types";
+import { Address, RequestType } from "../../utils/types";
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   checkRequestType("POST", req.method as RequestType, res);
@@ -39,13 +39,21 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
     const cartTotal = products.reduce((prevValue, product) => prevValue + product.price * cartItems[product.id].quantity, 0);
 
-    const paymentIntent = await createPaymentIntent(cartTotal * 100, user.id, user.stripe_customer_id);
+    const defaultAddress = user.addresses.filter((address) => {
+      const userAddress = address as Address;
+      return userAddress.default;
+    })[0];
+    const paymentIntent = await createPaymentIntent(cartTotal * 100, user.stripe_customer_id, defaultAddress as Address);
 
     return generateResponse("200", "Purchased successfull.", res, {
-      publishableKey: process.env.STRIPE_PUBLIC,
-      paymentIntent: paymentIntent.client_secret,
-      customer: user.stripe_customer_id,
-      ephemeralKey: ephemeralKey.secret,
+      data: {
+        paymentId: paymentIntent.id,
+        publishableKey: process.env.STRIPE_PUBLIC,
+        paymentIntent: paymentIntent.client_secret,
+        customer: user.stripe_customer_id,
+        ephemeralKey: ephemeralKey.secret,
+        cartTotal,
+      },
     });
   } catch (error) {
     console.log({ error });

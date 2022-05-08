@@ -1,6 +1,7 @@
 import multer from "multer";
 
 import ImageKit from "imagekit";
+import { ListFileOptions } from "imagekit/dist/libs/interfaces";
 
 const storage = multer.memoryStorage();
 
@@ -24,5 +25,16 @@ export const upload_on_imagekit = async (file: any, filename: string) => {
 };
 
 export const delete_image_from_imagekit = (id: string) => image_kit.deleteFile(id);
+
+export const listFiles = (config: ListFileOptions) => {
+  image_kit
+    .listFiles(config)
+    .then((response) => {
+      console.log(response);
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+};
 
 export default () => multer({ storage });
