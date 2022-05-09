@@ -52,7 +52,7 @@ export const comparePassword = (password: string, currentPassword: string) => bc
 
 export const catchAsyncError = (fn: AsyncFnType) => (req: NextApiRequest, res: NextApiResponse) => fn(req, res).catch((error) => {
   let status: Status = "400";
-  let message = "";
+  let message = error?.message || "";
 
   if (
     error instanceof PrismaClientKnownRequestError
