@@ -40,8 +40,42 @@ const postHandler = async (req: NextApiRequest, res: NextApiResponse) => {
   return generateResponse("200", "Product marked as favourite.", res, { data: updatedInfo });
 };
 
+const deleteHandler = async (req: NextApiRequest, res: NextApiResponse) => {
+  const user = await getUser(req);
+  const productId = req.query?.id;
+
+  if (!user) {
+    throw new Error("You're not allowed to perform this action.");
+  }
+
+  if (!productId) {
+    throw new Error("Please provide product id.");
+  }
+
+  const isProductExist = await prisma.product.findFirst({ where: { id: productId as string } });
+
+  if (!isProductExist) {
+    throw new Error("Product id not exist in system.");
+  }
+
+  const updatedInfo: PartialBy<User, "password"> = await prisma.user.update({
+    where: { id: user.id },
+    data: {
+      favouriteProducts: {
+        disconnect: {
+          id: productId as string,
+        },
+      },
+    },
+  });
+
+  return generateResponse("200", "Product unmarked as favourite.", res, { data: updatedInfo });
+};
+
 const handler = nc<NextApiRequest, NextApiResponse>({
   onNoMatch: (req, res) => generateResponse("405", `Request type ${req.method} is not allowed.`, res),
-}).use(catchAsyncError(postHandler));
+})
+  .post(catchAsyncError(postHandler))
+  .delete(catchAsyncError(deleteHandler));
 
 export default handler;
