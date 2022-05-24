@@ -24,11 +24,13 @@ const getRequestHandler = async (req: NextApiRequest, res: NextApiResponse) => {
         {
           title: {
             contains: searchText,
+            mode: "insensitive",
           },
         },
         {
           description: {
             contains: searchText,
+            mode: "insensitive",
           },
         },
       ],
