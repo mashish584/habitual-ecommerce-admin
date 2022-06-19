@@ -11,8 +11,8 @@ type CategoryInfo = Pick<Category, "id" | "name">[];
 type ProductInfo = Partial<Product> & { categories?: CategoryInfo };
 
 const getRequestHandler = async (req: NextApiRequest, res: NextApiResponse) => {
-  const skip = parseInt((req.query?.skip || "0") as string);
-  const take = parseInt((req?.query?.take || "10") as string);
+  const take = req.query.take !== undefined ? parseInt(req.query?.take as string) : 10;
+  const skip = req.query.skip !== undefined ? parseInt(req.query?.skip as string) : 0;
 
   const options: Prisma.ProductFindManyArgs = {};
 
@@ -24,11 +24,7 @@ const getRequestHandler = async (req: NextApiRequest, res: NextApiResponse) => {
         {
           title: {
             contains: searchText,
-          },
-        },
-        {
-          description: {
-            contains: searchText,
+            mode: "insensitive",
           },
         },
       ],
@@ -70,10 +66,13 @@ const getRequestHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 
   // 👀 for selection fields
   // expecting to be a string with comma seperated values
-  if (req?.query?.select && typeof req.query?.select === "string") {
-    const selection = req.query?.select
-      .split(",")
-      .reduce((previousValues, currentValue) => ({ ...previousValues, ...{ [currentValue]: true } }), {} as Prisma.ProductSelect);
+  if (req?.query?.select) {
+    const selectedFields = typeof req?.query?.select === "string" ? [req.query.select] : req.query.select;
+
+    const selection = selectedFields.reduce(
+      (previousValues, currentValue) => ({ ...previousValues, ...{ [currentValue]: true } }),
+      {} as Prisma.ProductSelect,
+    );
 
     if (Object.keys(selection).length) {
       // if category field in selection
@@ -93,9 +92,13 @@ const getRequestHandler = async (req: NextApiRequest, res: NextApiResponse) => {
   const totalCountPromise = prisma.product.count({ where: options.where });
   const productsPromise = prisma.product.findMany({ skip, take, ...options });
 
-  const [totalCount, products]: [number, ProductInfo[]] = await Promise.all([totalCountPromise, productsPromise]);
+  const [count, products]: [number, ProductInfo[]] = await Promise.all([totalCountPromise, productsPromise]);
 
-  return generateResponse("200", "Products fetched..", res, { totalCount, products });
+  const prefix = req.headers.host?.includes("localhost") ? "http://" : "htttps://";
+  const nextTake = skip + take;
+  const next = nextTake >= count ? null : `${prefix}${req.headers.host}/api/user/orders/?take=${take}&skip=${nextTake}`;
+
+  return generateResponse("200", "Products fetched..", res, { data: products, next });
 };
 
 const getIndividualProductHandler = async (req: NextApiRequest, res: NextApiResponse) => {

@@ -12,26 +12,28 @@ datasource db {
 }
 
 model User {
-  id                 String         @id @default(auto()) @map("_id") @db.ObjectId
-  email              String         @unique
-  password           String
-  fullname           String?
-  profile            String?
-  profileImageId     String?
-  bio                String?
-  joining_reasons    String[]
-  stripe_customer_id String
-  addresses          Json[]
-  transactions       Transactions[]
-  interestIds        String[]       @db.ObjectId
-  interests          Category[]     @relation(fields: [interestIds], references: [id])
-  createdAt          DateTime       @default(now())
-  updatedAt          DateTime       @default(now())
+  id                  String         @id @default(auto()) @map("_id") @db.ObjectId
+  email               String         @unique
+  password            String
+  fullname            String?
+  profile             String?
+  profileImageId      String?
+  bio                 String?
+  joining_reasons     String[]
+  stripe_customer_id  String
+  addresses           Json[]
+  interestIds         String[]       @db.ObjectId
+  interests           Category[]     @relation(fields: [interestIds], references: [id])
+  favouriteProductIds String[]       @db.ObjectId
+  favouriteProducts   Product[]      @relation(fields: [favouriteProductIds], references: [id])
+  createdAt           DateTime       @default(now())
+  updatedAt           DateTime       @default(now())
+  Transactions        Transactions[]
 }
 
 model Category {
   id                String     @id @default(auto()) @map("_id") @db.ObjectId
-  name              String     
+  name              String
   parentId          String?
   parentCategory    Category?  @relation("CategoryParent", fields: [parentId], references: [id], onUpdate: NoAction, onDelete: NoAction)
   subCategory       Category[] @relation("CategoryParent")
@@ -45,21 +47,23 @@ model Category {
 }
 
 model Product {
-  id          String     @id @default(auto()) @map("_id") @db.ObjectId
-  title       String     @unique
-  description String?
-  images      Json[]
-  variants    Json?
-  slideColors Json[]
-  price       Float
-  discount    Float?     @default(0)
-  quantity    Int
-  categoryIds String[]   @db.ObjectId
-  category    Category[] @relation(fields: [categoryIds], references: [id])
-  isStaffPick Boolean?   @default(false)
-  isFeatured  Boolean?   @default(false)
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @default(now())
+  id                String     @id @default(auto()) @map("_id") @db.ObjectId
+  title             String     @unique
+  description       String?
+  images            Json[]
+  variants          Json?
+  slideColors       Json[]
+  price             Float
+  discount          Float?     @default(0)
+  quantity          Int
+  categoryIds       String[]   @db.ObjectId
+  category          Category[] @relation(fields: [categoryIds], references: [id])
+  addedInFavUserIds String[]   @db.ObjectId
+  addedInFavUsers   User[]     @relation(fields: [addedInFavUserIds], references: [id])
+  isStaffPick       Boolean?   @default(false)
+  isFeatured        Boolean?   @default(false)
+  createdAt         DateTime   @default(now())
+  updatedAt         DateTime   @default(now())
 }
 
 enum Status {
@@ -75,17 +79,17 @@ enum OrderStatus {
 }
 
 model Transactions {
-  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  id            String      @id @default(auto()) @map("_id") @db.ObjectId
   details       Json[]
-  user          User     @relation(fields: [userId], references: [id])
-  userId        String   @db.ObjectId
+  user          User        @relation(fields: [userId], references: [id])
+  userId        String      @db.ObjectId
   transactionId String
   address       Json
   amount        Float
-  status        Status   @default(PENDING)
-  orderStatus   OrderStatus   @default(INPROCESS)
+  status        Status      @default(PENDING)
+  orderStatus   OrderStatus @default(INPROCESS)
   receiptUrl    String?
   productIds    String[]
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @default(now())
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @default(now())
 }

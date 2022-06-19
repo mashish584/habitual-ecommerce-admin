@@ -60,7 +60,7 @@ const patchRequestHandler = async (req: NextApiRequest, res: NextApiResponse) =>
 
     delete user.password;
 
-    return generateResponse("400", "Address successfully updated.", res, { data: user });
+    return generateResponse("200", "Address successfully updated.", res, { data: user });
   } catch (err) {
     return generateResponse("400", "Something went wrong.", res);
   }
@@ -82,7 +82,7 @@ const deleteRequestHandler = async (req: NextApiRequest, res: NextApiResponse) =
 
     delete user.password;
 
-    return generateResponse("400", "Address successfully removed.", res, { data: user });
+    return generateResponse("200", "Address successfully removed.", res, { data: user });
   } catch (err) {
     return generateResponse("400", "Something went wrong.", res);
   }
