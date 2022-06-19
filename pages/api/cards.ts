@@ -1,8 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 
-import {
-  checkRequestType, fetchPaymentMethods, generateResponse, getUser,
-} from "../../utils";
+import { checkRequestType, fetchPaymentMethods, generateResponse, getUser } from "../../utils";
 import { RequestType } from "../../utils/types";
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
@@ -32,7 +30,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     }
 
     return generateResponse("200", "Card fetched successfull.", res, {
-      data: cards,
+      data: cards || [],
     });
   } catch (error) {
     console.log({ error });

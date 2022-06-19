@@ -11,7 +11,7 @@ const postHandler = async (req: NextApiRequest, res: NextApiResponse) => {
   const productId = req?.query?.id;
 
   if (!user) {
-    throw new Error("You're not allowed to perform this action.");
+    throw new Error("Please login to continue.");
   }
 
   if (!productId) {

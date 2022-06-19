@@ -30,7 +30,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     const updatedInfo = await prisma.user.update({ where: { id: user.id }, data: { addresses: [...existingAddresses, body.address] } });
     delete user.password;
 
-    return generateResponse("200", "Address successfully updated.", res, { data: updatedInfo });
+    return generateResponse("200", "Address successfully created.", res, { data: updatedInfo });
   } catch (err) {
     return generateResponse("400", "Something went wrong.", res);
   }
