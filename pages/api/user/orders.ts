@@ -20,7 +20,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
     const [orders, count] = await Promise.all([prisma.transactions.findMany(args), prisma.transactions.count({ where: args.where })]);
 
-    const prefix = req.headers.host?.includes("localhost") ? "http://" : "htttps://";
+    const prefix = req.headers.host?.includes("localhost") ? "http://" : "https://";
     const nextTake = skip + take;
     const next = nextTake >= count ? null : `${prefix}${req.headers.host}/api/user/orders/?take=${take}&skip=${nextTake}`;
 
