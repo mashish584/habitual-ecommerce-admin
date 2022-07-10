@@ -94,7 +94,7 @@ const getRequestHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 
   const [count, products]: [number, ProductInfo[]] = await Promise.all([totalCountPromise, productsPromise]);
 
-  const prefix = req.headers.host?.includes("localhost") ? "http://" : "htttps://";
+  const prefix = req.headers.host?.includes("localhost") ? "http://" : "https://";
   const nextTake = skip + take;
   const next = nextTake >= count ? null : `${prefix}${req.headers.host}/api/user/orders/?take=${take}&skip=${nextTake}`;
 
