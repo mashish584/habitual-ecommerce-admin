@@ -17,4 +17,7 @@ module.exports = {
     // !! WARN !!
     ignoreBuildErrors: true,
   },
+  images: {
+    domains: ["ik.imagekit.io"],
+  },
 };
