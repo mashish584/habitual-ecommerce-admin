@@ -12,6 +12,9 @@
     "analyze-code": "npm run preety && npm run lint:fix && npm run lint"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^6.1.1",
+    "@fortawesome/free-solid-svg-icons": "^6.1.1",
+    "@fortawesome/react-fontawesome": "^0.2.0",
     "@prisma/client": "^3.9.1",
     "bcryptjs": "^2.4.3",
     "imagekit": "^3.2.4",

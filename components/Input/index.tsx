@@ -1,17 +1,27 @@
-import React from "react";
-import styles from "./Input.module.css";
+import React, { useState } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 
 interface InputI extends React.HTMLProps<HTMLInputElement> {
   type: "email" | "password" | "text";
   label?: string;
 }
 
-const Input = ({ label, className, ...inputProps }: InputI) => {
+const Input = ({ type, label, className, ...inputProps }: InputI) => {
+  const [showPassword, setShowPassword] = useState(false);
+
   const labelProps = {} as React.HTMLProps<HTMLLabelElement>;
+  let inputType = type;
 
   if (inputProps.id) {
     labelProps.htmlFor = inputProps.id;
   }
+
+  if (type === "password") {
+    inputType = showPassword ? "text" : "password";
+  }
+
+  const togglePasswordInput = () => setShowPassword(!showPassword);
 
   return (
     <div className="w-full mb-3.5">
@@ -20,8 +30,13 @@ const Input = ({ label, className, ...inputProps }: InputI) => {
           {label}
         </label>
       )}
-      <div className="w-full h-12 rounded-2xl border border-gray">
-        <input {...inputProps} className={`w-full h-full rounded-2xl px-4 ${className || ""}`} />
+      <div className="relative w-full h-12 rounded-2xl border border-gray">
+        <input {...inputProps} type={inputType} className={`w-full h-full rounded-2xl px-4 ${className || ""}`} />
+        {type === "password" && (
+          <button onClick={togglePasswordInput} className="absolute top-3.5 right-4 w-5 h-5">
+            <FontAwesomeIcon icon={showPassword ? faEye : faEyeSlash} />
+          </button>
+        )}
       </div>
     </div>
   );
