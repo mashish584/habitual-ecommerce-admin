@@ -7,9 +7,10 @@ import SectionHeading from "../../components/SectionHeading";
 
 const Index = () => {
   return (
-    <div className="flex flex-row h-full">
+    <div className="flex flex-row w-full h-full">
       <Navigation />
-      <div className="w-5/6 h-full px-16 pt-36">
+      <div />
+      <div className="content-container h-full px-16 pt-36">
         <div className="flex flex-row container mb-16">
           <DashboardCard Icon={SupervisorAccountOutlined} title="Users" count="2220" />
           <DashboardCard Icon={ShoppingBasketOutlined} title="Products" count="50" />
@@ -26,7 +27,7 @@ const Index = () => {
               <ListItem type="text" text="3 items" className="w-16" />
               <ListItem type="text" text="$50" className="w-16" />
               <ListItem type="text" text="Delivered" className="w-20" childClasses="text-success" />
-              <ListItem type="action" text="View All" className="w-40" childClasses="radius-80" />
+              <ListItem type="action" text="View" className="w-40" childClasses="radius-80" />
             </ListRow>
           </ListContainer>
         </div>

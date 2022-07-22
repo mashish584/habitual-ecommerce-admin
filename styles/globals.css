@@ -101,3 +101,7 @@ select {
 .text-success {
   color: var(--color-success);
 }
+
+.content-container {
+  width: calc(100% - 256px);
+}

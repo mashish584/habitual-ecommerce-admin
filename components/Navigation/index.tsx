@@ -39,13 +39,13 @@ const navigationItems: Record<string, NavigationValue> = {
 
 const Navigation = () => {
   return (
-    <aside className="w-1/6 bg-white flex flex-col items-center shadow-lg">
+    <aside className="w-64 bg-white flex flex-col items-center shadow-lg">
       <Link href="">
         <a className="mt-10">
           <Image
             src={"https://ik.imagekit.io/imashish/habitual-ecommerce/portal/logo?ik-sdk-version=javascript-1.4.3&updatedAt=1658368339830"}
-            width={200}
-            height={42}
+            width={185}
+            height={43.21}
           />
         </a>
       </Link>
