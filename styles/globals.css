@@ -8,7 +8,8 @@
 
 :root {
   --ff-lato: "Lato", serif;
-  --color-black: "#3A3A3a";
+  --color-black: #3a3a3a;
+  --color-success: #34a853;
 }
 
 /* ------------------- */
@@ -87,4 +88,16 @@ select {
 
 .dashboard-card-shadow {
   box-shadow: 0px 48px 100px 0px rgba(17, 12, 46, 0.15);
+}
+
+.list-row-shadow {
+  box-shadow: 0px 1px 4px 0px rgba(0, 0, 0, 0.16);
+}
+
+.radius-80 {
+  border-radius: 80px;
+}
+
+.text-success {
+  color: var(--color-success);
 }

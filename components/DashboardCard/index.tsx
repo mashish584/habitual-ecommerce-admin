@@ -1,13 +1,8 @@
-import { SvgIconTypeMap } from "@mui/material";
-import { OverridableComponent } from "@mui/material/OverridableComponent";
 import React from "react";
-
-type Icon = OverridableComponent<SvgIconTypeMap<{}, "svg">> & {
-  muiName: string;
-};
+import { IconType } from "../types";
 
 interface DashboardCardI {
-  Icon: Icon;
+  Icon: IconType;
   title: string;
   count: string;
   className?: string;

@@ -18,6 +18,6 @@ module.exports = {
     ignoreBuildErrors: true,
   },
   images: {
-    domains: ["ik.imagekit.io"],
+    domains: ["ik.imagekit.io", "unsplash.it"],
   },
 };
