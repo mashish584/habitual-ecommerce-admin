@@ -14,7 +14,7 @@ const Index = () => {
         <DashboardCard Icon={ShoppingCartOutlined} title="Orders" count="4" />
       </div>
       <div>
-        <SectionHeading title="Recent Orders" path="/orders" />
+        <SectionHeading title="Recent Orders" isPath={true} path="/orders" />
         <ListContainer>
           <ListRow className="justify-between">
             <ListItem isImage={true} imagePath="https://unsplash.it/100/100" className="w-12" />
