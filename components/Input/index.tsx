@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 
 interface InputI extends React.HTMLProps<HTMLInputElement> {
   type: "email" | "password" | "text";
@@ -33,8 +32,8 @@ const Input = ({ type, label, className, ...inputProps }: InputI) => {
       <div className="relative w-full h-12 rounded-2xl border border-gray">
         <input {...inputProps} type={inputType} className={`w-full h-full rounded-2xl px-4 ${className || ""}`} />
         {type === "password" && (
-          <button onClick={togglePasswordInput} className="absolute top-3.5 right-4 w-5 h-5">
-            <FontAwesomeIcon icon={showPassword ? faEye : faEyeSlash} />
+          <button onClick={togglePasswordInput} className="absolute top-3 right-4 w-6 h-6">
+            {showPassword ? <Visibility /> : <VisibilityOff />}
           </button>
         )}
       </div>

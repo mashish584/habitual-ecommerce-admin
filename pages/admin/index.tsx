@@ -1,25 +1,17 @@
+import { ShoppingBasketOutlined, ShoppingCartOutlined, SupervisorAccountOutlined } from "@mui/icons-material";
 import React from "react";
-import Image from "next/image";
-import loginStyles from "../../styles/Login.module.css";
-import Input from "../../components/Input";
-import Button from "../../components/Button";
+import DashboardCard from "../../components/DashboardCard";
+import Navigation from "../../components/Navigation";
 
 const Index = () => {
   return (
     <div className="flex flex-row h-full">
-      <div className={`basis-3/5 ${loginStyles.loginBg}`}></div>
-      <div className="basis-2/5 flex flex-col justify-center items-center">
-        <Image
-          src={"https://ik.imagekit.io/imashish/habitual-ecommerce/portal/logo?ik-sdk-version=javascript-1.4.3&updatedAt=1658368339830"}
-          width={274}
-          height={64}
-        />
-        <div className="w-7/12 mx-auto mt-16">
-          <Input type="email" label="Email" />
-          <Input type="password" label="Password" />
-          <Button variant="primary" type="button" className="mt-2">
-            Sign In
-          </Button>
+      <Navigation />
+      <div className="w-full h-full ml-64 px-16 pt-36">
+        <div className="flex flex-row container">
+          <DashboardCard Icon={SupervisorAccountOutlined} title="Users" count="2220" />
+          <DashboardCard Icon={ShoppingBasketOutlined} title="Products" count="50" />
+          <DashboardCard Icon={ShoppingCartOutlined} title="Orders" count="4" />
         </div>
       </div>
     </div>

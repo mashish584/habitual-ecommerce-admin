@@ -7,6 +7,8 @@ module.exports = {
       theme: "#FFE202",
       black: "#000000",
       white: "#FFFFFF",
+      lightTheme: "rgba(255, 226, 2, 0.5)",
+      lightBlack: "rgba(0,0,0,0.5)",
     },
     extend: {},
   },
