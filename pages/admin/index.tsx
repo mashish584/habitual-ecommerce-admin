@@ -9,7 +9,7 @@ const Index = () => {
   return (
     <div className="flex flex-row h-full">
       <Navigation />
-      <div className="w-full h-full ml-64 px-16 pt-36">
+      <div className="w-5/6 h-full px-16 pt-36">
         <div className="flex flex-row container mb-16">
           <DashboardCard Icon={SupervisorAccountOutlined} title="Users" count="2220" />
           <DashboardCard Icon={ShoppingBasketOutlined} title="Products" count="50" />
