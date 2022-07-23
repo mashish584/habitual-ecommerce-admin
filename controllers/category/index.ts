@@ -7,7 +7,9 @@ import { validateCategory, validateImageUpload } from "../../utils/validation";
 import { upload_on_imagekit } from "../../utils/upload";
 
 const getRequestHandler = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { parent, child, parentId, childLimit, exclude } = req.query;
+  const {
+    parent, child, parentId, childLimit, exclude,
+  } = req.query;
   const search = req.query.search as string;
 
   const options: Prisma.CategoryFindManyArgs = {};
