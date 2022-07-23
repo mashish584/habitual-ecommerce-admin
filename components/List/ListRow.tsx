@@ -1,5 +1,4 @@
 import React from "react";
-import ListItem from "./ListItem";
 
 interface ListRowI {
   children: React.ReactNode;
@@ -7,7 +6,9 @@ interface ListRowI {
 }
 
 const ListRow = ({ children, className }: ListRowI) => {
-  return <div className={`w-full h-24 flex bg-white list-row-shadow rounded-xl px-10 items-center ${className || ""}`}>{children}</div>;
+  return (
+    <div className={`w-full h-24 flex bg-white list-row-shadow rounded-xl px-10 mb-4 items-center ${className || ""}`}>{children}</div>
+  );
 };
 
 export default ListRow;

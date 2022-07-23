@@ -7,7 +7,6 @@ interface ListContainerI {
 }
 
 const ListContainer = ({ children, className }: ListContainerI) => {
-  console.log({ children });
   return <div className={`w-full h-full ${className || ""}`}>{children}</div>;
 };
 

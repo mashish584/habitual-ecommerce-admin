@@ -3,11 +3,13 @@ import Image from "next/image";
 import Link from "next/link";
 import Button from "../Button";
 import { ArrowForwardIos } from "@mui/icons-material";
+import { IconType } from "../types";
 
 interface ListItemConfig {
   link: string;
   className: string;
   onAction: (event?: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
+  actionIcon?: IconType;
 }
 
 type ListType = "link" | "text" | "action";
@@ -16,6 +18,7 @@ type ListItemProps = {
   className?: string;
   childClasses?: string;
   linkPath?: string;
+  actionIcon?: IconType;
   onAction?: () => void;
 };
 
@@ -34,7 +37,13 @@ function getListChild(type: ListType | undefined, text: string, config?: ListIte
       );
     case "action":
       return (
-        <Button type="button" variant="secondary" rightIcon={ArrowForwardIos} className={config?.className} onClick={config?.onAction}>
+        <Button
+          type="button"
+          variant="secondary"
+          rightIcon={config?.actionIcon || ArrowForwardIos}
+          className={config?.className}
+          onClick={config?.onAction}
+        >
           {text}
         </Button>
       );
@@ -57,6 +66,7 @@ function ListItem(props: ListItemProps & { isImage?: boolean; imagePath?: string
     getListChild(type, text || "", {
       link: props.linkPath || "",
       className: props.childClasses || "",
+      actionIcon: props.actionIcon,
       onAction: props.onAction || (() => {}),
     })
   );
