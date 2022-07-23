@@ -39,7 +39,7 @@ const navigationItems: Record<string, NavigationValue> = {
 
 const Navigation = () => {
   return (
-    <aside className="w-64 bg-white flex flex-col items-center shadow-lg">
+    <aside className="w-64 fixed inset-y-0 bg-white flex flex-col items-center shadow-lg">
       <Link href="">
         <a className="mt-10">
           <Image
