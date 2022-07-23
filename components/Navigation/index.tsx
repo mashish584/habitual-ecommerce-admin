@@ -6,6 +6,7 @@ import {
   SupervisorAccountOutlined,
   ShoppingCartOutlined,
   SettingsOutlined,
+  CategoryOutlined,
 } from "@mui/icons-material";
 import Image from "next/image";
 
@@ -17,23 +18,27 @@ interface NavigationValue {
 const navigationItems: Record<string, NavigationValue> = {
   Home: {
     component: HomeOutlined,
-    path: "/home",
+    path: "/admin",
   },
   Products: {
     component: ShoppingBasketOutlined,
-    path: "",
+    path: "/admin/products",
+  },
+  Categories: {
+    component: CategoryOutlined,
+    path: "/admin/categories",
   },
   Users: {
     component: SupervisorAccountOutlined,
-    path: "",
+    path: "/admin/users",
   },
   Orders: {
     component: ShoppingCartOutlined,
-    path: "",
+    path: "/admin/orders",
   },
   Settings: {
     component: SettingsOutlined,
-    path: "",
+    path: "/admin/settings",
   },
 };
 
