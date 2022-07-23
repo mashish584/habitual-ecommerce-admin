@@ -1,5 +1,6 @@
 import React from "react";
 import Head from "next/head";
+import { UIProvider } from "../../context/UIContext";
 
 const Layout: React.FC = ({ children }) => {
   return (
@@ -10,7 +11,7 @@ const Layout: React.FC = ({ children }) => {
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin=""></link>
         <link href="https://fonts.googleapis.com/css2?family=Lato:wght@100;300;400;700;900&display=swap" rel="stylesheet"></link>
       </Head>
-      {children}
+      <UIProvider>{children}</UIProvider>
     </>
   );
 };

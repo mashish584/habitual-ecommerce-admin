@@ -2,8 +2,11 @@ import React from "react";
 import DashboardLayout from "../../components/Layout/DashboardLayout";
 import { ListContainer, ListRow, ListItem } from "../../components/List";
 import SectionHeading from "../../components/SectionHeading";
+import { useUIContext } from "../../context/UIContext";
 
 const Product = () => {
+  const { toggleSideModal } = useUIContext();
+
   return (
     <DashboardLayout>
       <div className="container">
@@ -19,7 +22,7 @@ const Product = () => {
                 <ListItem type="text" text="50 sold" className="w-16" />
                 <ListItem type="text" text="$999" className="w-16" />
                 <ListItem type="text" text="Active" className="w-20" childClasses="text-success" />
-                <ListItem type="action" text="View" className="w-40" childClasses="radius-80" />
+                <ListItem type="action" text="View" className="w-40" childClasses="radius-80" onAction={() => toggleSideModal?.(true)} />
               </ListRow>
             );
           })}
