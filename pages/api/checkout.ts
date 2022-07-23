@@ -1,8 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 
-import {
-  checkRequestType, createEphemeralKeys, createPaymentIntent, generateResponse, getUser,
-} from "../../utils";
+import { checkRequestType, createEphemeralKeys, createPaymentIntent, generateResponse, getUser } from "../../utils";
 import prisma from "../../utils/prisma";
 import { Address, RequestType } from "../../utils/types";
 
