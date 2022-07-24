@@ -11,6 +11,7 @@ module.exports = {
       lightBlack: "rgba(0,0,0,0.5)",
       darkGray: "#898A8D",
       lightBlack: "#3A3A3A",
+      lightGray: "#F5F5F5",
     },
     extend: {},
   },

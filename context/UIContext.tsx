@@ -17,12 +17,7 @@ const UIProvider: React.FC = ({ children }) => {
 
   const values = { showSideModal, toggleSideModal };
 
-  return (
-    <UIContext.Provider value={values}>
-      {children}
-      <SideModal visible={showSideModal} onClose={() => toggleSideModal(false)} />
-    </UIContext.Provider>
-  );
+  return <UIContext.Provider value={values}>{children}</UIContext.Provider>;
 };
 
 function useUIContext() {

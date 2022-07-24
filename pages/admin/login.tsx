@@ -1,7 +1,7 @@
 import React from "react";
 import Image from "next/image";
 import loginStyles from "../../styles/Login.module.css";
-import Input from "../../components/Input";
+import { Input } from "../../components/Form";
 import Button from "../../components/Button";
 
 const Login = () => {

@@ -8,7 +8,7 @@ const Layout: React.FC = ({ children }) => {
       <Head>
         <title>Habitual Ecommerce</title>
       </Head>
-      <UIProvider>{children}</UIProvider>
+      {children}
     </>
   );
 };

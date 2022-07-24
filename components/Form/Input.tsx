@@ -2,8 +2,9 @@ import React, { useState } from "react";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 
 interface InputI extends React.HTMLProps<HTMLInputElement> {
-  type: "email" | "password" | "text";
+  type: "email" | "password" | "text" | "textarea";
   label?: string;
+  className?: string;
 }
 
 const Input = ({ type, label, className, ...inputProps }: InputI) => {
@@ -23,14 +24,18 @@ const Input = ({ type, label, className, ...inputProps }: InputI) => {
   const togglePasswordInput = () => setShowPassword(!showPassword);
 
   return (
-    <div className="w-full mb-3.5">
+    <div className={`w-full mb-3.5 ${className || ""}`}>
       {label && (
         <label {...labelProps} className="ff-lato text-xs font-extrabold inline-block mb-1">
           {label}
         </label>
       )}
-      <div className="relative w-full h-12 rounded-2xl border border-gray">
-        <input {...inputProps} type={inputType} className={`w-full h-full rounded-2xl px-4 ${className || ""}`} />
+      <div className={`relative w-full ${type === "textarea" ? "h-24" : "h-12"} rounded-2xl border border-gray`}>
+        {type === "textarea" ? (
+          <textarea className={`w-full h-full rounded-2xl p-4 ${className || ""}`}></textarea>
+        ) : (
+          <input {...inputProps} type={inputType} className={`w-full h-full rounded-2xl p-4 ${className || ""}`} />
+        )}
         {type === "password" && (
           <button onClick={togglePasswordInput} className="absolute top-3 right-4 w-6 h-6">
             {showPassword ? <Visibility /> : <VisibilityOff />}

@@ -26,7 +26,7 @@ function SectionHeading(
       )}
       {props.isAction && props.buttonText && (
         <div className="w-40">
-          <Button type="button" variant="primary">
+          <Button type="button" variant="primary" onClick={props.onAction}>
             {props.buttonText}
           </Button>
         </div>
