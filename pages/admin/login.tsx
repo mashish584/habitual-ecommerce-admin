@@ -4,8 +4,7 @@ import loginStyles from "../../styles/Login.module.css";
 import { Input } from "../../components/Form";
 import Button from "../../components/Button";
 
-const Login = () => {
-  return (
+const Login = () => (
     <div className="flex flex-row h-full">
       <div className={`basis-3/5 ${loginStyles.loginBg}`}></div>
       <div className="basis-2/5 flex flex-col justify-center items-center">
@@ -23,7 +22,6 @@ const Login = () => {
         </div>
       </div>
     </div>
-  );
-};
+);
 
 export default Login;

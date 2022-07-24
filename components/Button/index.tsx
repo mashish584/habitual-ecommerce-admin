@@ -25,7 +25,9 @@ function getButtonClassNames(variant: ButtonVariant = "primary", className?: str
   return `${buttonClasses.join(" ")} ${className || ""}`;
 }
 
-const Button = ({ variant, children, className, rightIcon, ...buttonProps }: ButtonI) => {
+const Button = ({
+  variant, children, className, rightIcon, ...buttonProps
+}: ButtonI) => {
   const classNames = getButtonClassNames(variant, className, Boolean(rightIcon));
   const Icon = rightIcon || null;
 

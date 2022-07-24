@@ -25,7 +25,19 @@ module.exports = {
     "no-restricted-globals": 0,
     "no-await-in-loop": 0,
     "guard-for-in": 0,
+    "default-param-last": 0,
+    "object-curly-newline": 0,
+    "import/no-unresolved": 0,
+    "class-methods-use-this": 0,
   },
+  overrides: [
+    {
+      files: ["*.ts", "*.tsx"],
+      rules: {
+        "no-undef": "off",
+      },
+    },
+  ],
   settings: {
     "import/resolver": {
       node: {

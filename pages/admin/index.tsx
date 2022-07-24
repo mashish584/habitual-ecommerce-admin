@@ -5,8 +5,7 @@ import DashboardLayout from "../../components/Layout/DashboardLayout";
 import { ListContainer, ListItem, ListRow } from "../../components/List";
 import SectionHeading from "../../components/SectionHeading";
 
-const Index = () => {
-  return (
+const Index = () => (
     <DashboardLayout>
       <div className="flex flex-row container mb-16">
         <DashboardCard Icon={SupervisorAccountOutlined} title="Users" count="2220" />
@@ -17,8 +16,7 @@ const Index = () => {
         <SectionHeading title="Recent Orders" isPath={true} path="/orders" />
         <div className="w-full h-full overflow-auto px-2 py-1">
           <ListContainer className="mw-1024">
-            {new Array(4).fill(1).map((_, index) => {
-              return (
+            {new Array(4).fill(1).map((_, index) => (
                 <ListRow key={index} className="justify-between">
                   <ListItem isImage={true} imagePath="https://unsplash.it/100/100" className="w-12" />
                   <ListItem type="text" text="Jane Doe" className="w-fit" />
@@ -29,13 +27,11 @@ const Index = () => {
                   <ListItem type="text" text="Delivered" className="w-20" childClasses="text-success" />
                   <ListItem type="action" text="View" className="w-40" childClasses="radius-80" />
                 </ListRow>
-              );
-            })}
+            ))}
           </ListContainer>
         </div>
       </div>
     </DashboardLayout>
-  );
-};
+);
 
 export default Index;

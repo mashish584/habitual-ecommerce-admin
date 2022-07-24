@@ -1,14 +1,14 @@
-import { ArrowDownwardOutlined, KeyboardArrowDown } from "@mui/icons-material";
-import React, { useContext, useState } from "react";
+import { KeyboardArrowDown } from "@mui/icons-material";
+import React, { useContext } from "react";
 import { useCombobox, useMultipleSelection } from "downshift";
 
-type SelectOption = {
+type Option = {
   label: string;
   id: string;
 };
 
 interface SelectI {
-  items: SelectOption[];
+  items: Option[];
   label?: string;
   className?: string;
 }
@@ -29,7 +29,7 @@ function useSelectContext() {
 }
 
 const Select: React.FC<SelectI> = ({ label, className, children, items }) => {
-  const { getSelectedItemProps, getDropdownProps, addSelectedItem, removeSelectedItem, selectedItems } = useMultipleSelection({
+  const { getDropdownProps, addSelectedItem, removeSelectedItem, selectedItems } = useMultipleSelection({
     initialSelectedItems: [],
   });
 

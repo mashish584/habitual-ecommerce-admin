@@ -8,8 +8,7 @@ interface DashboardCardI {
   className?: string;
 }
 
-const DashboardCard = ({ Icon, ...props }: DashboardCardI) => {
-  return (
+const DashboardCard = ({ Icon, ...props }: DashboardCardI) => (
     <div className={`w-80 h-44 bg-white rounded-xl mr-12 p-6 dashboard-card-shadow ${props.className || ""}`}>
       <div className="flex flex-row">
         {Icon && (
@@ -23,7 +22,6 @@ const DashboardCard = ({ Icon, ...props }: DashboardCardI) => {
         </div>
       </div>
     </div>
-  );
-};
+);
 
 export default DashboardCard;

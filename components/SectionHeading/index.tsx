@@ -1,3 +1,5 @@
+/* eslint-disable no-redeclare */
+
 import Link from "next/link";
 import React from "react";
 import Button from "../Button";

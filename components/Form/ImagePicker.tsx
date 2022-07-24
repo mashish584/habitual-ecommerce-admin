@@ -1,9 +1,8 @@
 import { ImageOutlined } from "@mui/icons-material";
 import React from "react";
 
-const ImagePicker = () => {
-  return (
-    <div className={`w-full mb-3.5`}>
+const ImagePicker = () => (
+    <div className={"w-full mb-3.5"}>
       <label className="ff-lato text-xs font-extrabold inline-block mb-1">Add Image</label>
       <div className="flex flex-row flex-wrap">
         {new Array(5).fill(1).map((_, index) => (
@@ -19,7 +18,6 @@ const ImagePicker = () => {
         </label>
       </div>
     </div>
-  );
-};
+);
 
 export default ImagePicker;

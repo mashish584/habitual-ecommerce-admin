@@ -2,7 +2,7 @@ import React from "react";
 import Button from "../Button";
 import { Input, Select } from "../Form";
 import ImagePicker from "../Form/ImagePicker";
-import ComboBoxExample, { SelectOption } from "../Form/Select";
+import { SelectOption } from "../Form/Select";
 import SideModal, { SideModalI } from "./SideModal";
 
 interface AddproductModal extends SideModalI {}
@@ -20,39 +20,35 @@ const books = [
   { value: "Fyodor Dostoevsky", label: "Crime and Punishment" },
 ];
 
-const AddProductModal: React.FC<AddproductModal> = ({ visible, onClose }) => {
-  return (
-    <SideModal visible={visible} onClose={onClose}>
-      <div>
-        <h2 className="ff-lato font-black text-2xl">Add Product</h2>
-        <form className="mt-10">
-          <div>
-            <Input type="text" name="title" label="Title" onChange={() => {}} />
-            <div className="flex justify-between">
-              <Input type="text" name="price" label="Price" onChange={() => {}} className="basis-30" />
-              <Input type="text" name="discount" label="Discount" onChange={() => {}} className="basis-30" />
-              <Input type="text" name="quantity" label="Quantity" onChange={() => {}} className="basis-30 " />
-            </div>
-            <Input type="textarea" name="description" label="Description" onChange={() => {}} className="basis-30 " />
-
-            <Select items={books} label="Categories">
-              {books.map((book, index) => {
-                return (
-                  <SelectOption item={book} index={index} onClick={() => alert(index)}>
-                    {book.label}
-                  </SelectOption>
-                );
-              })}
-            </Select>
-            <ImagePicker />
+const AddProductModal: React.FC<AddproductModal> = ({ visible, onClose }) => (
+  <SideModal visible={visible} onClose={onClose}>
+    <div>
+      <h2 className="ff-lato font-black text-2xl">Add Product</h2>
+      <form className="mt-10">
+        <div>
+          <Input type="text" name="title" label="Title" onChange={() => {}} />
+          <div className="flex justify-between">
+            <Input type="text" name="price" label="Price" onChange={() => {}} className="basis-30" />
+            <Input type="text" name="discount" label="Discount" onChange={() => {}} className="basis-30" />
+            <Input type="text" name="quantity" label="Quantity" onChange={() => {}} className="basis-30 " />
           </div>
-          <Button variant="primary" type="button" className="my-10">
-            Add Product
-          </Button>
-        </form>
-      </div>
-    </SideModal>
-  );
-};
+          <Input type="textarea" name="description" label="Description" onChange={() => {}} className="basis-30 " />
+
+          <Select items={books} label="Categories">
+            {books.map((book, index) => (
+              <SelectOption item={book} index={index} onClick={() => alert(index)}>
+                {book.label}
+              </SelectOption>
+            ))}
+          </Select>
+          <ImagePicker />
+        </div>
+        <Button variant="primary" type="button" className="my-10">
+          Add Product
+        </Button>
+      </form>
+    </div>
+  </SideModal>
+);
 
 export default AddProductModal;

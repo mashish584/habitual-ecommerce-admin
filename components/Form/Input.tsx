@@ -7,7 +7,9 @@ interface InputI extends React.HTMLProps<HTMLInputElement> {
   className?: string;
 }
 
-const Input = ({ type, label, className, ...inputProps }: InputI) => {
+const Input = ({
+  type, label, className, ...inputProps
+}: InputI) => {
   const [showPassword, setShowPassword] = useState(false);
 
   const labelProps = {} as React.HTMLProps<HTMLLabelElement>;

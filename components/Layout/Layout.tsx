@@ -1,16 +1,13 @@
 import React from "react";
 import Head from "next/head";
-import { UIProvider } from "../../context/UIContext";
 
-const Layout: React.FC = ({ children }) => {
-  return (
-    <>
-      <Head>
-        <title>Habitual Ecommerce</title>
-      </Head>
-      {children}
-    </>
-  );
-};
+const Layout: React.FC = ({ children }) => (
+  <>
+    <Head>
+      <title>Habitual Ecommerce</title>
+    </Head>
+    {children}
+  </>
+);
 
 export default Layout;

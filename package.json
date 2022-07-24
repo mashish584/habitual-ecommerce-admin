@@ -6,8 +6,8 @@
     "build": "next build",
     "start": "next start",
     "prepare": "husky install",
-    "lint": "eslint --quiet '**/**/*.ts'",
-    "lint:fix": "eslint --quiet '**/**/*.ts' --fix",
+    "lint": "eslint --quiet '**/**/*.{ts,tsx}'",
+    "lint:fix": "eslint --quiet '**/**/*.{ts,tsx}' --fix",
     "preety": "prettier --write --config .prettierrc.json '**/**/*.ts'",
     "analyze-code": "npm run preety && npm run lint:fix && npm run lint"
   },

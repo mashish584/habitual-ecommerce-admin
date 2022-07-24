@@ -1,6 +1,4 @@
 import React, { useContext, useState } from "react";
-import Layer from "../components/Modals/Layer";
-import SideModal from "../components/Modals/SideModal";
 import { UIContextInterface } from "./types";
 
 const initialValues: UIContextInterface = {

@@ -1,8 +1,10 @@
+/* eslint-disable no-redeclare */
+
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import Button from "../Button";
 import { ArrowForwardIos } from "@mui/icons-material";
+import Button from "../Button";
 import { IconType } from "../types";
 
 interface ListItemConfig {
