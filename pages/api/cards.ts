@@ -1,8 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 
-import {
-  checkRequestType, fetchPaymentMethods, generateResponse, getUser,
-} from "../../utils";
+import { checkRequestType, fetchPaymentMethods, generateResponse, getUser } from "../../utils";
 import { RequestType } from "../../utils/types";
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {

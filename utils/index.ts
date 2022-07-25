@@ -5,9 +5,7 @@ import { User } from "@prisma/client";
 import { PrismaClientKnownRequestError, PrismaClientValidationError } from "@prisma/client/runtime";
 
 import { Stripe } from "stripe";
-import {
-  Address, AsyncFnType, RequestType, Status,
-} from "./types";
+import { Address, AsyncFnType, RequestType, Status } from "./types";
 import { PRISMA_ERRORS } from "./enum";
 import prisma from "./prisma";
 

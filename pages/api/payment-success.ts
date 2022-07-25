@@ -1,8 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 
-import {
-  checkRequestType, fetchPaymentInfo, generateResponse, getUser,
-} from "../../utils";
+import { checkRequestType, fetchPaymentInfo, generateResponse, getUser } from "../../utils";
 import prisma from "../../utils/prisma";
 import { RequestType } from "../../utils/types";
 

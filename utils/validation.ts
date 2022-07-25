@@ -5,9 +5,7 @@ import * as yup from "yup";
 import { isInvalidObject, isValidJSONString } from "./index";
 import prisma from "./prisma";
 
-import {
-  CategoryBody, FileType, ProductBody, ProductVariant, ResponseError, AuthBody, SlideColors,
-} from "./types";
+import { CategoryBody, FileType, ProductBody, ProductVariant, ResponseError, AuthBody, SlideColors } from "./types";
 
 const { ValidationError } = yup;
 
