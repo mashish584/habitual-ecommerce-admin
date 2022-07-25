@@ -10,9 +10,11 @@ type SectionHeadingProps = {
 };
 
 type SectionHeadingPropsWithLink = SectionHeadingProps & { isPath: true; path: string };
+type SectionheadingPropsWithoutLink = SectionHeadingProps & { isPath?: false };
 type SectionHeadingPropsWithAction = SectionHeadingProps & { isAction: true; onAction: () => void; buttonText: string };
 
 function SectionHeading(props: SectionHeadingPropsWithLink): JSX.Element;
+function SectionHeading(props: SectionheadingPropsWithoutLink): JSX.Element;
 function SectionHeading(props: SectionHeadingPropsWithAction): JSX.Element;
 function SectionHeading(
   props: SectionHeadingProps & { isPath?: boolean; isAction?: boolean; path?: string; onAction?: () => void; buttonText?: string },
