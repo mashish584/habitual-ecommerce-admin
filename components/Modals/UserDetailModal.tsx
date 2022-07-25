@@ -6,8 +6,7 @@ import SideModal, { SideModalI } from "./SideModal";
 
 interface UserDetailModalI extends SideModalI {}
 
-const UserDetailModal = ({ visible, onClose }: UserDetailModalI) => {
-  return (
+const UserDetailModal = ({ visible, onClose }: UserDetailModalI) => (
     <SideModal visible={visible} onClose={onClose}>
       <div className="flex flex-row">
         <div className="w-20 h-20 rounded-xl overflow-hidden ">
@@ -27,8 +26,7 @@ const UserDetailModal = ({ visible, onClose }: UserDetailModalI) => {
       <h5 className="font-bold text-lg text-black mb-3.5">Addresses</h5>
 
       <div className="flex flex-wrap h-72 overflow-auto">
-        {new Array(4).fill(1).map((_, index) => {
-          return (
+        {new Array(4).fill(1).map((_, index) => (
             <div key={index} className="basis-5/12 mb-4">
               <span className="text-xs text-darkGray mb-2.5">Address #{index + 1}</span>
               <h6 className="font-bold text-base text-black mb-2">Jane Doe</h6>
@@ -38,8 +36,7 @@ const UserDetailModal = ({ visible, onClose }: UserDetailModalI) => {
                 85486, United States of America
               </address>
             </div>
-          );
-        })}
+        ))}
       </div>
 
       <h5 className="font-bold text-lg text-black mt-3.5">Number of Orders</h5>
@@ -52,7 +49,6 @@ const UserDetailModal = ({ visible, onClose }: UserDetailModalI) => {
         <Chip text="Laptops" />
       </div>
     </SideModal>
-  );
-};
+);
 
 export default UserDetailModal;

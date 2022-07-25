@@ -12,8 +12,7 @@ const options = [
   { label: "Category 2", value: "Cateogry 2" },
 ];
 
-const AddCategoryModal = ({ visible, onClose }: AddCategoryModalI) => {
-  return (
+const AddCategoryModal = ({ visible, onClose }: AddCategoryModalI) => (
     <SideModal visible={visible} onClose={onClose}>
       <div className="h-full">
         <h2 className="ff-lato font-black text-2xl">Add Category</h2>
@@ -35,7 +34,6 @@ const AddCategoryModal = ({ visible, onClose }: AddCategoryModalI) => {
         </form>
       </div>
     </SideModal>
-  );
-};
+);
 
 export default AddCategoryModal;
