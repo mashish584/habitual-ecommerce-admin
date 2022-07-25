@@ -24,7 +24,9 @@ const SideModal: React.FC<SideModalI> = ({ visible, children, onClose }) => {
         <button className="w-8 h-8 bg-transparent border-0 mb-14" onClick={onClose}>
           <CloseOutlined />
         </button>
-        <div className="px-2">{children}</div>
+        <div className="px-2" style={{ height: "calc(100% - 140px)" }}>
+          {children}
+        </div>
       </div>
     </Portal>
   );
