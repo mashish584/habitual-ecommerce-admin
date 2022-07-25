@@ -7,7 +7,7 @@ interface ButtonI extends React.HTMLProps<HTMLButtonElement> {
   type: "submit" | "button";
   variant: "primary" | "secondary";
   rightIcon?: IconType;
-  children: string;
+  children: React.ReactNode;
 }
 
 const buttonThemes: Record<ButtonVariant, string[]> = {
@@ -25,9 +25,7 @@ function getButtonClassNames(variant: ButtonVariant = "primary", className?: str
   return `${buttonClasses.join(" ")} ${className || ""}`;
 }
 
-const Button = ({
-  variant, children, className, rightIcon, ...buttonProps
-}: ButtonI) => {
+const Button = ({ variant, children, className, rightIcon, ...buttonProps }: ButtonI) => {
   const classNames = getButtonClassNames(variant, className, Boolean(rightIcon));
   const Icon = rightIcon || null;
 

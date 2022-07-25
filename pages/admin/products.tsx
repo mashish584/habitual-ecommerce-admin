@@ -3,11 +3,12 @@ import React, { useState } from "react";
 import DashboardLayout from "../../components/Layout/DashboardLayout";
 import { ListContainer, ListRow, ListItem } from "../../components/List";
 import AddProductModal from "../../components/Modals/AddProductModal";
+import ProductDetailModal from "../../components/Modals/ProductDetailModal";
 import SectionHeading from "../../components/SectionHeading";
 
 const Product = () => {
   const [showAddProductForm, setShowAddProductForm] = useState(false);
-  const [, setShowProductDetail] = useState(false);
+  const [showProductDetail, setShowProductDetail] = useState(false);
 
   return (
     <DashboardLayout>
@@ -28,7 +29,9 @@ const Product = () => {
           ))}
         </ListContainer>
       </div>
+
       <AddProductModal visible={showAddProductForm} onClose={() => setShowAddProductForm(false)} />
+      <ProductDetailModal visible={showProductDetail} onClose={() => setShowProductDetail(false)} />
     </DashboardLayout>
   );
 };

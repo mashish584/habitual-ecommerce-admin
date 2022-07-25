@@ -82,6 +82,22 @@ select {
   font: inherit;
 }
 
+/* COlor Picker */
+input:focus + label {
+  border: 2px solid rgb(77, 144, 254);
+}
+
+input[type="color"] {
+  -webkit-appearance: none;
+  border: none;
+}
+input[type="color"]::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+input[type="color"]::-webkit-color-swatch {
+  border: none;
+}
+
 /* remove animations for people who've turned them off */
 @media (prefers-reduced-motion: reduce) {
   *,
@@ -134,19 +150,4 @@ select {
 
 .basis-30 {
   flex-basis: 30%;
-}
-
-input:focus + label {
-  border: 2px solid rgb(77, 144, 254);
-}
-
-input[type="color"] {
-  -webkit-appearance: none;
-  border: none;
-}
-input[type="color"]::-webkit-color-swatch-wrapper {
-  padding: 0;
-}
-input[type="color"]::-webkit-color-swatch {
-  border: none;
 }
