@@ -1,6 +1,6 @@
-import { ImageOutlined } from "@mui/icons-material";
-import Image from "next/image";
 import React from "react";
+import Image from "next/image";
+import { ImageOutlined } from "@mui/icons-material";
 
 interface ImagePickerI {
   label?: string;

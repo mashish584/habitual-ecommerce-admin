@@ -1,8 +1,9 @@
 import React, { useState } from "react";
-import DashboardLayout from "../../components/Layout/DashboardLayout";
-import { ListContainer, ListRow, ListItem } from "../../components/List";
-import UserDetailModal from "../../components/Modals/UserDetailModal";
+
 import SectionHeading from "../../components/SectionHeading";
+import { DashboardLayout } from "../../components/Layout";
+import { UserDetailModal } from "../../components/Modals";
+import { ListContainer, ListRow, ListItem } from "../../components/List";
 
 const Users = () => {
   const [showUserDetailModal, setShowUserDetailModal] = useState(false);

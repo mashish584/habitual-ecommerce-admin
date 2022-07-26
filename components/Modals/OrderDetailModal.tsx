@@ -3,6 +3,7 @@ import Image from "next/image";
 import React from "react";
 import Button from "../Button";
 import Chip from "../Chip";
+import { Address } from "../Layout";
 import Line from "../Layout/Line";
 import SideModal, { SideModalI } from "./SideModal";
 
@@ -58,12 +59,7 @@ const OrderDetailModal = ({ visible, onClose }: OrderDetailsModalI) => (
       </div>
       <div>
         <h6 className="font-bold text-lg text-black mb-2">Delivery</h6>
-        <h6 className="font-bold text-base text-black mb-2">Jane Doe</h6>
-        <address className="text-base font-normal not-italic text-lightBlack">
-          2972 Westheimer Rd. <br />
-          Santa Ana, Illinois <br />
-          85486, United States of America
-        </address>
+        <Address index={0} username="abc" />
       </div>
     </div>
     <Line />

@@ -1,9 +1,10 @@
-import { EditOutlined } from "@mui/icons-material";
 import React, { useState } from "react";
-import DashboardLayout from "../../components/Layout/DashboardLayout";
-import { ListContainer, ListRow, ListItem } from "../../components/List";
-import AddCategoryModal from "../../components/Modals/AddCategoryModal";
+import { EditOutlined } from "@mui/icons-material";
+
 import SectionHeading from "../../components/SectionHeading";
+import { DashboardLayout } from "../../components/Layout";
+import { ListContainer, ListRow, ListItem } from "../../components/List";
+import { AddCategoryModal } from "../../components/Modals";
 
 const Category = () => {
   const [showAddCategoryModal, setShowAddCategoryModal] = useState(false);

@@ -1,9 +1,8 @@
 import React, { useState } from "react";
 
-import DashboardLayout from "../../components/Layout/DashboardLayout";
+import { DashboardLayout } from "../../components/Layout";
 import { ListContainer, ListRow, ListItem } from "../../components/List";
-import AddProductModal from "../../components/Modals/AddProductModal";
-import ProductDetailModal from "../../components/Modals/ProductDetailModal";
+import { AddProductModal, ProductDetailModal } from "../../components/Modals";
 import SectionHeading from "../../components/SectionHeading";
 
 const Product = () => {

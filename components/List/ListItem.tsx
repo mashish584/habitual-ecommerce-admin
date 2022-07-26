@@ -4,6 +4,7 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowForwardIos } from "@mui/icons-material";
+
 import Button from "../Button";
 import { IconType } from "../types";
 

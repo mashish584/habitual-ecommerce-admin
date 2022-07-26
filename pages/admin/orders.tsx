@@ -1,8 +1,9 @@
 import React, { useState } from "react";
-import DashboardLayout from "../../components/Layout/DashboardLayout";
-import { ListContainer, ListItem, ListRow } from "../../components/List";
-import OrderDetailModal from "../../components/Modals/OrderDetailModal";
+
 import SectionHeading from "../../components/SectionHeading";
+import { DashboardLayout } from "../../components/Layout";
+import { ListContainer, ListItem, ListRow } from "../../components/List";
+import { OrderDetailModal } from "../../components/Modals";
 
 const Orders = () => {
   const [showOrderDetailModal, setShowOrderDetailModal] = useState(false);
