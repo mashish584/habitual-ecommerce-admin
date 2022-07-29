@@ -9,10 +9,6 @@ export interface SideModalI {
 }
 
 const SideModal: React.FC<SideModalI> = ({ visible, children, onClose }) => (
-  // useEffect(() => {
-  //   document.body.style.overflow = visible ? "hidden" : "visible";
-  // }, [visible]);
-
   <Portal>
     <Layer visible={visible} />
     <div

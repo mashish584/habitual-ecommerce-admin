@@ -4,9 +4,10 @@ import "../styles/globals.css";
 import { Layout } from "../components/Layout";
 
 function MyApp({ Component, pageProps }: AppProps) {
+  const NextComponent = Component as any;
   return (
     <Layout>
-      <Component {...pageProps} />
+      <NextComponent {...pageProps} />
     </Layout>
   );
 }
