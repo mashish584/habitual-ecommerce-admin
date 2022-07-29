@@ -42,8 +42,16 @@ const navigationItems: Record<string, NavigationValue> = {
   },
 };
 
-const Navigation = () => (
-  <aside className="w-64 fixed inset-y-0 bg-white flex flex-col items-center shadow-lg">
+interface NavigationI {
+  visible: boolean;
+}
+
+const Navigation = ({ visible }: NavigationI) => (
+  <aside
+    className={`w-64 fixed inset-y-0 bg-white flex flex-col items-center shadow-lg ${
+      !visible ? "lgMax:-translate-x-full" : "translate-x-0"
+    }`}
+  >
     <Link href="">
       <a className="mt-10">
         <Image

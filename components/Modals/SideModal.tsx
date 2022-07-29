@@ -17,7 +17,7 @@ const SideModal: React.FC<SideModalI> = ({ visible, children, onClose }) => {
     <Portal>
       <Layer visible={visible} />
       <div
-        className={`absolute w-2/5 bg-white inset-y-0 right-0 p-10 transition-transform duration-300 ease-in overflow-auto ${
+        className={`absolute bg-white inset-y-0 right-0 p-10 transition-transform duration-300 ease-in overflow-auto xl:w-2/5 xlMax:w-7/12 lgMax:w-9/12 mdMax:w-full ${
           !visible ? "translate-x-full" : "translate-x-0"
         }`}
       >

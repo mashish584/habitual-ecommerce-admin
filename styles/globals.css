@@ -42,6 +42,7 @@ picture {
 body {
   font-family: var(--ff-lato);
   line-height: 1.5;
+  overflow-x: hidden;
 }
 
 html,
@@ -150,4 +151,11 @@ input[type="color"]::-webkit-color-swatch {
 
 .basis-30 {
   flex-basis: 30%;
+}
+
+/* Media Query */
+@media (max-width: 1023px) {
+  .content-container {
+    width: 100%;
+  }
 }
