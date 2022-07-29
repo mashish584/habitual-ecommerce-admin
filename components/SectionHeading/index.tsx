@@ -21,7 +21,7 @@ function SectionHeading(
 ) {
   const { title, path, className } = props;
   return (
-    <div className={`mb-10 flex flex-row justify-between items-center ${className || ""}`}>
+    <div className={`mb-10 flex flex-row justify-between items-center px-2 ${className || ""}`}>
       <h4 className="text-3xl font-extrabold opacity-70">{title}</h4>
       {props.isPath && (
         <Link href={path || ""}>

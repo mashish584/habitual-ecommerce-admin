@@ -12,8 +12,6 @@ const DashboardLayout: React.FC = ({ children }) => {
 
   const isMobileNavigationActive = width < 1024;
 
-  console.log({ showMobileNavigation, isMobileNavigationActive });
-
   return (
     <div className="flex flex-row w-full h-full">
       <Navigation visible={isMobileNavigationActive && showMobileNavigation} />
