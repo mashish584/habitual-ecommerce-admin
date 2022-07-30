@@ -10,6 +10,7 @@ type Option = {
 interface SelectI {
   items: Option[];
   isSingle?: boolean;
+  placeholder?: string;
   label?: string;
   className?: string;
   onChange: (items: Option[]) => void;
@@ -44,7 +45,7 @@ function useSelectContext() {
   return context;
 }
 
-const Select: React.FC<SelectI> = ({ label, className, children, items, onChange, isSingle }) => {
+const Select: React.FC<SelectI> = ({ label, className, children, items, onChange, isSingle, placeholder }) => {
   const { getDropdownProps, addSelectedItem, removeSelectedItem, selectedItems, setSelectedItems } = useMultipleSelection<Option>({
     initialSelectedItems: [],
   });
@@ -104,7 +105,7 @@ const Select: React.FC<SelectI> = ({ label, className, children, items, onChange
     },
   });
 
-  let value = "";
+  let value = placeholder || "";
 
   if (isSingle && selectedItems.length) {
     value = selectedItems[0].label;

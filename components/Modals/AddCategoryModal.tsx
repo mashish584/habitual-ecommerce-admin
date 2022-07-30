@@ -7,6 +7,7 @@ import ImagePicker from "../Form/ImagePicker";
 import { SelectOption } from "../Form/Select";
 import SideModal, { SideModalI } from "./SideModal";
 import { Category } from "../../hooks/useCategory";
+import { MessageT } from "../Form/Input";
 
 interface AddCategoryModalI extends SideModalI {}
 
@@ -22,7 +23,7 @@ const AddCategoryModal = ({ visible, onClose }: AddCategoryModalI) => {
     handleSubmit,
     // watch,
     control,
-    // formState: { errors },
+    formState: { errors },
   } = useForm<Category>();
 
   const onSubmit = (data: any) => console.log({ data });
@@ -37,13 +38,22 @@ const AddCategoryModal = ({ visible, onClose }: AddCategoryModalI) => {
               name="name"
               control={control}
               rules={{ required: "Please enter category name." }}
-              render={({ field }) => <Input type="text" label="Category Name" {...field} />}
+              render={({ field }) => {
+                const additionalInputProps = {} as MessageT;
+
+                if (errors.name) {
+                  additionalInputProps.messageType = "error";
+                  additionalInputProps.message = errors.name.message;
+                }
+
+                return <Input type="text" label="Category Name" {...field} {...additionalInputProps} />;
+              }}
             />
             <Controller
               name="parent"
               control={control}
               render={({ field: { onChange } }) => (
-                <Select items={options} label="Parent Category" onChange={onChange} isSingle={true}>
+                <Select items={options} label="Parent Category" placeholder="Select parent category" onChange={onChange} isSingle={true}>
                   {options.map((option, index) => (
                     <SelectOption item={option} index={index}>
                       {option.label}
@@ -61,7 +71,7 @@ const AddCategoryModal = ({ visible, onClose }: AddCategoryModalI) => {
                   actionText="Upload Image"
                   showColorPicker={false}
                   selectedFiles={value || []}
-                  maxUpload={2}
+                  maxUpload={1}
                   onChange={onChange}
                 />
               )}

@@ -15,6 +15,7 @@ module.exports = {
       lightGray: "#F5F5F5",
       green: "#34a853",
       lightGreen: "#51B960",
+      danger: "#FE8668",
     },
     screens: {
       xlMax: { max: "1536px" },

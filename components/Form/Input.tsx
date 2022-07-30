@@ -1,18 +1,20 @@
 import React, { useState } from "react";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { PartialBy } from "../../utils/types";
+import Message, { MessageI } from "./Message";
 
-interface InputI extends React.HTMLProps<HTMLInputElement> {
+export type MessageT = PartialBy<MessageI, "message" | "messageType">;
+interface InputI extends React.HTMLProps<HTMLInputElement>, MessageT {
   type: "email" | "password" | "text" | "textarea";
   label?: string;
   className?: string;
-  errorMessage?: string;
 }
 
 export type InputRef = HTMLInputElement;
 export type TextAreaRef = HTMLTextAreaElement;
 
 const Input = React.forwardRef<InputRef & TextAreaRef, InputI>((props, ref) => {
-  const { type, label, className, ...inputProps } = props;
+  const { type, label, className, message, messageType, ...inputProps } = props;
   const [showPassword, setShowPassword] = useState(false);
 
   const labelProps = {} as React.HTMLProps<HTMLLabelElement>;
@@ -27,6 +29,7 @@ const Input = React.forwardRef<InputRef & TextAreaRef, InputI>((props, ref) => {
   }
 
   const togglePasswordInput = () => setShowPassword(!showPassword);
+  const isError = messageType === "error";
 
   return (
     <div className={`w-full mb-3.5 ${className || ""}`}>
@@ -35,7 +38,11 @@ const Input = React.forwardRef<InputRef & TextAreaRef, InputI>((props, ref) => {
           {label}
         </label>
       )}
-      <div className={`relative w-full ${type === "textarea" ? "h-24" : "h-12"} rounded-2xl border border-gray`}>
+      <div
+        className={`relative w-full ${type === "textarea" ? "h-24" : "h-12"}  ${
+          isError ? "border-danger" : ""
+        }  rounded-2xl border border-gray`}
+      >
         {type === "textarea" ? (
           <textarea ref={ref} className={`w-full h-full rounded-2xl p-4 ${className || ""}`}></textarea>
         ) : (
@@ -47,6 +54,7 @@ const Input = React.forwardRef<InputRef & TextAreaRef, InputI>((props, ref) => {
           </button>
         )}
       </div>
+      {message && messageType ? <Message {...{ message, messageType }} /> : null}
     </div>
   );
 });
