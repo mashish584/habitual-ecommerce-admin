@@ -1,5 +1,5 @@
 import { KeyboardArrowDown } from "@mui/icons-material";
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { useCombobox, UseComboboxGetItemPropsOptions, useMultipleSelection } from "downshift";
 
 type Option = {
@@ -9,15 +9,17 @@ type Option = {
 
 interface SelectI {
   items: Option[];
+  isSingle?: boolean;
   label?: string;
   className?: string;
+  onChange: (items: Option[]) => void;
 }
 
 interface SelectOptionI {
   item: Option;
   index: number;
   children: string;
-  onClick: () => void;
+  onClick?: () => void;
 }
 
 interface SelectContextI {
@@ -42,8 +44,8 @@ function useSelectContext() {
   return context;
 }
 
-const Select: React.FC<SelectI> = ({ label, className, children, items }) => {
-  const { getDropdownProps, addSelectedItem, removeSelectedItem, selectedItems } = useMultipleSelection({
+const Select: React.FC<SelectI> = ({ label, className, children, items, onChange, isSingle }) => {
+  const { getDropdownProps, addSelectedItem, removeSelectedItem, selectedItems, setSelectedItems } = useMultipleSelection<Option>({
     initialSelectedItems: [],
   });
 
@@ -73,9 +75,10 @@ const Select: React.FC<SelectI> = ({ label, className, children, items }) => {
         case useCombobox.stateChangeTypes.InputBlur:
           return {
             ...changes,
-            isOpen: !!changes.selectedItem, // keep the menu open after selection.
+            isOpen: !!changes.selectedItem,
           };
       }
+
       return changes;
     },
     onStateChange({ inputValue, type, selectedItem }) {
@@ -85,7 +88,11 @@ const Select: React.FC<SelectI> = ({ label, className, children, items }) => {
           if (selectedItem) {
             const isItemExist = selectedItems.some((item) => item.value === selectedItem.value);
             if (!isItemExist) {
-              addSelectedItem(selectedItem);
+              if (isSingle) {
+                setSelectedItems([selectedItem]);
+              } else {
+                addSelectedItem(selectedItem);
+              }
             } else {
               removeSelectedItem(selectedItem);
             }
@@ -96,6 +103,10 @@ const Select: React.FC<SelectI> = ({ label, className, children, items }) => {
       }
     },
   });
+
+  useEffect(() => {
+    onChange(selectedItems);
+  }, [selectedItems]);
 
   return (
     <SelectContext.Provider value={{ getItemProps, selectedItem, highlightedIndex }}>
@@ -120,7 +131,7 @@ const Select: React.FC<SelectI> = ({ label, className, children, items }) => {
           </div>
         </div>
 
-        <ul className="absolute w-full bg-white shadow-md max-h-80 overflow-scroll w-inherit " {...getMenuProps()}>
+        <ul className="absolute w-full bg-white shadow-md max-h-80 overflow-scroll w-inherit z-50" {...getMenuProps()}>
           {isOpen && children}
         </ul>
       </div>
@@ -128,7 +139,7 @@ const Select: React.FC<SelectI> = ({ label, className, children, items }) => {
   );
 };
 
-const SelectOption = ({ children, onClick, index, item }: SelectOptionI) => {
+const SelectOption = ({ children, index, item }: SelectOptionI) => {
   const { getItemProps, selectedItem, highlightedIndex } = useSelectContext();
   const isSelected = selectedItem?.value === item.value;
   const isHighlighted = highlightedIndex === index;

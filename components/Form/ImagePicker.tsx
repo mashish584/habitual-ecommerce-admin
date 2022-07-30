@@ -6,9 +6,11 @@ interface ImagePickerI {
   label?: string;
   actionText?: string;
   showColorPicker?: boolean;
+  selectedFiles: any[];
+  onChange: (files: any[]) => void;
 }
 
-const ImagePicker = ({ showColorPicker, label, actionText }: ImagePickerI) => (
+const ImagePicker = ({ showColorPicker, label, actionText, selectedFiles, onChange }: ImagePickerI) => (
   <div className={"w-full mb-3.5"}>
     <label className="ff-lato text-xs font-extrabold inline-block mb-1">{label || "Add Image"}</label>
     <div className="flex flex-row flex-wrap">
@@ -22,7 +24,14 @@ const ImagePicker = ({ showColorPicker, label, actionText }: ImagePickerI) => (
           )}
         </div>
       ))}
-      <input type="file" id="file" name="file" className="w-0 h-0 opacity-0" />
+      <input
+        type="file"
+        id="file"
+        name="file"
+        className="w-0 h-0 opacity-0"
+        accept="image/png, image/jpeg"
+        onChange={(file) => onChange(file)}
+      />
       <label
         className="w-24 h-24 bg-lightGray border-gray border-1 flex flex-col items-center justify-center rounded-lg font-bold text-lightBlack text-xs mt-1"
         htmlFor="file"

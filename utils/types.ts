@@ -70,3 +70,40 @@ export type Address = {
 
 // TS Utils
 export type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
+
+// Frontend Fetch Types
+export type FetchHeader = {
+  "Content-Type": "application/json" | "multipart/form-data";
+  Authorization?: string;
+};
+
+export type RequestMethods = "POST" | "GET" | "PATCH" | "DELETE" | "PUT";
+
+export type ErrorMessage<T> = {
+  key: T;
+  message: string;
+};
+
+// Frontend Fetch Interface
+
+export interface FetchConfig {
+  method: RequestMethods;
+  headers: FetchHeader;
+  body?: any;
+  path?: string;
+  query?: string;
+  url?: string;
+}
+
+export interface ErrorResponse<T> {
+  errorMessage: ErrorMessage<T>;
+  errors: ErrorMessage<T>[];
+  message: string;
+}
+
+export interface SuccessResponse<T> {
+  message: string;
+  token: string;
+  data: T;
+  next: string;
+}

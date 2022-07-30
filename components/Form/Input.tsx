@@ -7,9 +7,11 @@ interface InputI extends React.HTMLProps<HTMLInputElement> {
   className?: string;
 }
 
-const Input = ({
-  type, label, className, ...inputProps
-}: InputI) => {
+export type InputRef = HTMLInputElement;
+export type TextAreaRef = HTMLTextAreaElement;
+
+const Input = React.forwardRef<InputRef & TextAreaRef, InputI>((props, ref) => {
+  const { type, label, className, onChange, ...inputProps } = props;
   const [showPassword, setShowPassword] = useState(false);
 
   const labelProps = {} as React.HTMLProps<HTMLLabelElement>;
@@ -34,9 +36,15 @@ const Input = ({
       )}
       <div className={`relative w-full ${type === "textarea" ? "h-24" : "h-12"} rounded-2xl border border-gray`}>
         {type === "textarea" ? (
-          <textarea className={`w-full h-full rounded-2xl p-4 ${className || ""}`}></textarea>
+          <textarea ref={ref} className={`w-full h-full rounded-2xl p-4 ${className || ""}`}></textarea>
         ) : (
-          <input {...inputProps} type={inputType} className={`w-full h-full rounded-2xl p-4 ${className || ""}`} />
+          <input
+            {...inputProps}
+            ref={ref}
+            onChange={(e) => onChange}
+            type={inputType}
+            className={`w-full h-full rounded-2xl p-4 ${className || ""}`}
+          />
         )}
         {type === "password" && (
           <button onClick={togglePasswordInput} className="absolute top-3 right-4 w-6 h-6">
@@ -46,6 +54,6 @@ const Input = ({
       </div>
     </div>
   );
-};
+});
 
 export default Input;
