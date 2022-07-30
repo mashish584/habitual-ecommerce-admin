@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import Image from "next/image";
 import { ImageOutlined } from "@mui/icons-material";
 
@@ -26,8 +26,33 @@ function generateURLFromFiles(files: File[]) {
   return urls;
 }
 
+function isValidMediaSelected(files: File[]) {
+  const isInvalidFileExist = files.some((file) => !file.type.includes("image"));
+  return !isInvalidFileExist;
+}
+
 const ImagePicker = ({ showColorPicker, label, actionText, selectedFiles, maxUpload, onChange }: ImagePickerI) => {
+  const fileRef = useRef<HTMLInputElement | null>(null);
   const [previewImages, setPreviewImages] = useState<PreviewImage[]>([]);
+
+  const onFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const fileList = e.target.files;
+
+    if (fileList?.length) {
+      if (!isValidMediaSelected(Array.from(fileList))) {
+        alert("Please select valid image media.");
+      } else {
+        const files = maxUpload > 1 ? Array.from(fileList).concat(Array.from(selectedFiles)) : Array.from(fileList);
+        const urls = generateURLFromFiles(files);
+        setPreviewImages(urls);
+        onChange(files);
+      }
+    }
+
+    if (fileRef.current) {
+      fileRef.current.value = "";
+    }
+  };
 
   return (
     <div className={"w-full mb-3.5"}>
@@ -46,22 +71,7 @@ const ImagePicker = ({ showColorPicker, label, actionText, selectedFiles, maxUpl
             )}
           </div>
         ))}
-        <input
-          type="file"
-          id="file"
-          name="file"
-          className="w-0 h-0 opacity-0"
-          accept="image/png, image/jpeg"
-          onChange={(e) => {
-            const fileList = e.target.files;
-            if (fileList?.length) {
-              const files = maxUpload > 1 ? Array.from(fileList).concat(Array.from(selectedFiles)) : Array.from(fileList);
-              const urls = generateURLFromFiles(files);
-              setPreviewImages(urls);
-              onChange(files);
-            }
-          }}
-        />
+        <input type="file" id="file" name="file" className="w-0 h-0 opacity-0" ref={fileRef} accept="image/*" onChange={onFileSelect} />
         <label
           className="w-24 h-24 bg-lightGray border-gray border-1 flex flex-col items-center justify-center rounded-lg font-bold text-lightBlack text-xs mt-1"
           htmlFor="file"
