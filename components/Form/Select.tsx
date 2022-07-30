@@ -104,6 +104,14 @@ const Select: React.FC<SelectI> = ({ label, className, children, items, onChange
     },
   });
 
+  let value = "";
+
+  if (isSingle && selectedItems.length) {
+    value = selectedItems[0].label;
+  } else if (selectedItems.length) {
+    value = `${selectedItems.length} items selected.`;
+  }
+
   useEffect(() => {
     onChange(selectedItems);
   }, [selectedItems]);
@@ -125,7 +133,7 @@ const Select: React.FC<SelectI> = ({ label, className, children, items, onChange
               className="w-full border-0 rounded-2xl h-full right-3 w-full border flex items-center px-3 justify-between"
               {...getToggleButtonProps(getDropdownProps({ preventKeyAction: isOpen, tabIndex: 0 }))}
             >
-              <div />
+              <div>{value}</div>
               <KeyboardArrowDown />
             </button>
           </div>

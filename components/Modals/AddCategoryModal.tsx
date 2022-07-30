@@ -22,12 +22,10 @@ const AddCategoryModal = ({ visible, onClose }: AddCategoryModalI) => {
     handleSubmit,
     // watch,
     control,
-    formState: { errors },
+    // formState: { errors },
   } = useForm<Category>();
 
   const onSubmit = (data: any) => console.log({ data });
-
-  console.log({ errors });
 
   return (
     <SideModal visible={visible} onClose={onClose}>
@@ -38,13 +36,13 @@ const AddCategoryModal = ({ visible, onClose }: AddCategoryModalI) => {
             <Controller
               name="name"
               control={control}
-              rules={{ required: true }}
+              rules={{ required: "Please enter category name." }}
               render={({ field }) => <Input type="text" label="Category Name" {...field} />}
             />
             <Controller
               name="parent"
               control={control}
-              render={({ field: { onChange, value } }) => (
+              render={({ field: { onChange } }) => (
                 <Select items={options} label="Parent Category" onChange={onChange} isSingle={true}>
                   {options.map((option, index) => (
                     <SelectOption item={option} index={index}>
@@ -57,18 +55,16 @@ const AddCategoryModal = ({ visible, onClose }: AddCategoryModalI) => {
             <Controller
               name="image"
               control={control}
-              render={({ field: { onChange, value } }) => {
-                console.log({ value });
-                return (
-                  <ImagePicker
-                    label="Upload Image"
-                    actionText="Upload Image"
-                    showColorPicker={false}
-                    selectedFiles={value}
-                    onChange={onChange}
-                  />
-                );
-              }}
+              render={({ field: { onChange, value } }) => (
+                <ImagePicker
+                  label="Upload Image"
+                  actionText="Upload Image"
+                  showColorPicker={false}
+                  selectedFiles={value || []}
+                  maxUpload={2}
+                  onChange={onChange}
+                />
+              )}
             />
           </div>
           <Button variant="primary" type="submit" className="my-10">
