@@ -55,7 +55,7 @@ const AddCategoryModal = ({ visible, onClose }: AddCategoryModalI) => {
               render={({ field: { onChange } }) => (
                 <Select items={options} label="Parent Category" placeholder="Select parent category" onChange={onChange} isSingle={true}>
                   {options.map((option, index) => (
-                    <SelectOption item={option} index={index}>
+                    <SelectOption key={`${option.label}_${index}`} item={option} index={index}>
                       {option.label}
                     </SelectOption>
                   ))}
