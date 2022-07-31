@@ -1,4 +1,5 @@
 import { useCallback, useState } from "react";
+import { Category as CategoryI } from "@prisma/client";
 import { appFetch } from "../utils/api";
 
 const endpoint = "category/";
@@ -9,8 +10,18 @@ export interface Category {
   image?: any;
 }
 
-function useCategory() {
-  const [categories] = useState([]);
+interface UseCategory {
+  categories: CategoryI[];
+  parentCategories: CategoryI[];
+  deleteCategory: (categoryId: string) => Promise<any>;
+  addCategory: (data: Category) => Promise<any>;
+  getCategories: (isParent: boolean) => Promise<any>;
+  updateCategory: (data: any) => Promise<any>;
+}
+
+function useCategory(): UseCategory {
+  const [categories] = useState<CategoryI[]>([]);
+  const [parentCategories, setParentCategories] = useState<CategoryI[]>([]);
 
   const deleteCategory = useCallback(async (categoryId: string) => {
     const response = await appFetch(`${endpoint}${categoryId}`, {
@@ -40,6 +51,7 @@ function useCategory() {
         "Content-Type": "multipart/form-data",
       },
     });
+
     return response;
   }, []);
 
@@ -52,10 +64,15 @@ function useCategory() {
         "Content-Type": "application/json",
       },
     });
+
+    if (response.data) {
+      setParentCategories(response.data);
+    }
+
     return response;
   }, []);
 
-  return { categories, deleteCategory, addCategory, getCategories, updateCategory };
+  return { categories, parentCategories, deleteCategory, addCategory, getCategories, updateCategory };
 }
 
 export default useCategory;
