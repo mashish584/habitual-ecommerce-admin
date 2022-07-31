@@ -1,9 +1,15 @@
 import { useCallback, useState } from "react";
-import { Category as CategoryI } from "@prisma/client";
+import { Category as CategoryType } from "@prisma/client";
 import { appFetch } from "../utils/api";
 
 const endpoint = "category/";
 
+export interface CategoryI extends CategoryType {
+  parentCategory: {
+    id: string;
+    name: string;
+  };
+}
 export interface Category {
   name?: string;
   parent?: string;
@@ -20,7 +26,7 @@ interface UseCategory {
 }
 
 function useCategory(): UseCategory {
-  const [categories] = useState<CategoryI[]>([]);
+  const [categories, setCategories] = useState<CategoryI[]>([]);
   const [parentCategories, setParentCategories] = useState<CategoryI[]>([]);
 
   const deleteCategory = useCallback(async (categoryId: string) => {
@@ -69,7 +75,11 @@ function useCategory(): UseCategory {
     });
 
     if (response.data) {
-      setParentCategories(response.data);
+      if (isParent) {
+        setParentCategories(response.data);
+      } else {
+        setCategories(response.data);
+      }
     }
 
     return response;

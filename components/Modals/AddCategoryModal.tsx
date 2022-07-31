@@ -6,12 +6,14 @@ import { Input, Select } from "../Form";
 import ImagePicker from "../Form/ImagePicker";
 import { SelectOption } from "../Form/Select";
 import SideModal, { SideModalI } from "./SideModal";
-import useCategory, { Category } from "../../hooks/useCategory";
+import useCategory, { Category, CategoryI } from "../../hooks/useCategory";
 import { MessageT } from "../Form/Input";
 
-interface AddCategoryModalI extends SideModalI {}
+interface AddCategoryModalI extends SideModalI {
+  selectedCategory: CategoryI | null;
+}
 
-const AddCategoryModal = ({ visible, onClose }: AddCategoryModalI) => {
+const AddCategoryModal = ({ visible, onClose, selectedCategory }: AddCategoryModalI) => {
   const { getCategories, parentCategories, addCategory } = useCategory();
   const {
     // register,
