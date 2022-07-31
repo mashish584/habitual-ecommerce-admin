@@ -7,7 +7,7 @@ const endpoint = "category/";
 export interface Category {
   name?: string;
   parent?: string;
-  image?: any;
+  image?: File;
 }
 
 interface UseCategory {
@@ -36,11 +36,14 @@ function useCategory(): UseCategory {
   const addCategory = useCallback(async (data: Category) => {
     const response = await appFetch(endpoint, {
       method: "POST",
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
       body: data,
+      isFormData: true,
     });
+
+    if (response.data) {
+      alert("Category added");
+    }
+
     return response;
   }, []);
 

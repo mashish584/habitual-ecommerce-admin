@@ -12,7 +12,7 @@ import { MessageT } from "../Form/Input";
 interface AddCategoryModalI extends SideModalI {}
 
 const AddCategoryModal = ({ visible, onClose }: AddCategoryModalI) => {
-  const { getCategories, parentCategories } = useCategory();
+  const { getCategories, parentCategories, addCategory } = useCategory();
   const {
     // register,
     handleSubmit,
@@ -21,16 +21,19 @@ const AddCategoryModal = ({ visible, onClose }: AddCategoryModalI) => {
     formState: { errors },
   } = useForm<Category>();
 
-  const onSubmit = (data: any) => console.log({ data });
-
   useEffect(() => {
     if (parentCategories?.length === 0 && visible) {
-      console.log("CALLED");
       getCategories(true);
     }
   }, [visible, parentCategories]);
 
   const categories = parentCategories.map((category) => ({ label: category.name, value: category.id }));
+
+  const onSubmit = (data: Category) => {
+    if (!data.image) delete data.image;
+    if (data.parent?.trim() === "") delete data.parent;
+    addCategory(data);
+  };
 
   return (
     <SideModal visible={visible} onClose={onClose}>
@@ -42,6 +45,7 @@ const AddCategoryModal = ({ visible, onClose }: AddCategoryModalI) => {
               name="name"
               control={control}
               rules={{ required: "Please enter category name." }}
+              defaultValue=""
               render={({ field }) => {
                 const additionalInputProps = {} as MessageT;
 

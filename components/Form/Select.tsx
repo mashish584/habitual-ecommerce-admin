@@ -13,7 +13,7 @@ interface SelectI {
   placeholder?: string;
   label?: string;
   className?: string;
-  onChange: (items: Option[]) => void;
+  onChange: (items: string | string[]) => void;
 }
 
 interface SelectOptionI {
@@ -114,7 +114,9 @@ const Select: React.FC<SelectI> = ({ label, className, children, items, onChange
   }
 
   useEffect(() => {
-    onChange(selectedItems);
+    if (onChange) {
+      onChange(isSingle ? selectedItems[0]?.value || "" : selectedItems.map((item) => item.value));
+    }
   }, [selectedItems]);
 
   return (

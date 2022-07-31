@@ -6,9 +6,9 @@ interface ImagePickerI {
   label?: string;
   actionText?: string;
   showColorPicker?: boolean;
-  selectedFiles: File[];
+  selectedFiles: File | File[];
   maxUpload: number;
-  onChange: (files: File[]) => void;
+  onChange: (files: File[] | File) => void;
 }
 
 type PreviewImage = {
@@ -35,6 +35,8 @@ const ImagePicker = ({ showColorPicker, label, actionText, selectedFiles, maxUpl
   const fileRef = useRef<HTMLInputElement | null>(null);
   const [previewImages, setPreviewImages] = useState<PreviewImage[]>([]);
 
+  const previouseSelectedFiles = Array.isArray(selectedFiles) ? selectedFiles : [selectedFiles];
+
   const onFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const fileList = e.target.files;
 
@@ -42,10 +44,11 @@ const ImagePicker = ({ showColorPicker, label, actionText, selectedFiles, maxUpl
       if (!isValidMediaSelected(Array.from(fileList))) {
         alert("Please select valid image media.");
       } else {
-        const files = maxUpload > 1 ? Array.from(fileList).concat(Array.from(selectedFiles)) : Array.from(fileList);
+        const isSingleUpload = maxUpload === 1;
+        const files = !isSingleUpload ? Array.from(fileList).concat(Array.from(previouseSelectedFiles)) : Array.from(fileList);
         const urls = generateURLFromFiles(files);
         setPreviewImages(urls);
-        onChange(files);
+        onChange(isSingleUpload ? files[0] : files);
       }
     }
 

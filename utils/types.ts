@@ -88,11 +88,12 @@ export type ErrorMessage<T> = {
 
 export interface FetchConfig {
   method: RequestMethods;
-  headers: FetchHeader;
+  headers?: FetchHeader;
   body?: any;
   path?: string;
   query?: string;
   url?: string;
+  isFormData?: boolean;
 }
 
 export interface ErrorResponse<T> {
