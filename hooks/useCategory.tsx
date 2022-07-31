@@ -1,10 +1,11 @@
 import { useCallback, useState } from "react";
 import { Category as CategoryType } from "@prisma/client";
 import { appFetch } from "../utils/api";
-import { ResponseI } from "../utils/types";
+import { LoadingI } from "../utils/types";
 
 const endpoint = "category/";
 
+type CategoryLoadingType = "categories" | "addCateogry" | "updateCategory" | "parentCategories" | "delete" | null;
 export interface CategoryI extends CategoryType {
   parentCategory: {
     id: string;
@@ -17,11 +18,8 @@ export interface Category {
   image?: File;
 }
 
-interface CategoryResponse extends ResponseI<CategoryI[]> {}
-
 interface UseCategory {
-  categories: CategoryResponse;
-  parentCategories: CategoryResponse;
+  loading: LoadingI<CategoryLoadingType>;
   deleteCategory: (categoryId: string) => Promise<any>;
   addCategory: (data: Category) => Promise<any>;
   getCategories: (isParent: boolean) => Promise<any>;
@@ -29,29 +27,13 @@ interface UseCategory {
 }
 
 function useCategory(): UseCategory {
-  const [categories, setCategories] = useState<CategoryResponse>({ data: [], isLoading: false });
-  const [parentCategories, setParentCategories] = useState<CategoryResponse>({ data: [], isLoading: false });
+  const [loading, setLoading] = useState<LoadingI<CategoryLoadingType>>({ type: "categories", isLoading: false });
 
-  const startLoading = (isParent = false) => {
-    const callback = (prev: CategoryResponse) => ({ ...prev, isLoading: true });
-    if (isParent) {
-      setParentCategories(callback);
-    } else {
-      setCategories(callback);
-    }
-  };
-
-  const stopLoading = (isParent = false) => {
-    const callback = (prev: CategoryResponse) => ({ ...prev, isLoading: false });
-    if (isParent) {
-      setParentCategories(callback);
-    } else {
-      setCategories(callback);
-    }
-  };
+  const startLoading = (type: CategoryLoadingType) => setLoading({ type, isLoading: true });
+  const stopLoading = () => setLoading({ type: null, isLoading: false });
 
   const deleteCategory = useCallback(async (categoryId: string) => {
-    startLoading();
+    startLoading("delete");
     const response = await appFetch(`${endpoint}${categoryId}`, {
       method: "DELETE",
     });
@@ -60,23 +42,20 @@ function useCategory(): UseCategory {
   }, []);
 
   const addCategory = useCallback(async (data: Category) => {
-    startLoading();
+    startLoading("addCateogry");
     const response = await appFetch(endpoint, {
       method: "POST",
       body: data,
       isFormData: true,
     });
 
-    if (response.data) {
-      stopLoading();
-      alert("Category added");
-    }
+    stopLoading();
 
     return response;
   }, []);
 
   const updateCategory = useCallback(async (path: string, data: Category) => {
-    startLoading();
+    startLoading("updateCategory");
     const response = await appFetch(`${endpoint}${path}/`, {
       method: "PATCH",
       body: data,
@@ -93,7 +72,7 @@ function useCategory(): UseCategory {
 
   const getCategories = useCallback(async (isParent: boolean) => {
     const query = isParent ? "?parent=true" : "";
-    startLoading(isParent);
+    startLoading(isParent ? "parentCategories" : "categories");
     const response = await appFetch(`${endpoint}${query}`, {
       method: "GET",
       headers: {
@@ -101,20 +80,11 @@ function useCategory(): UseCategory {
       },
     });
 
-    if (response.data) {
-      stopLoading(isParent);
-      const updatedState = { isLoading: false, data: response.data };
-      if (isParent) {
-        setParentCategories(updatedState);
-      } else {
-        setCategories(updatedState);
-      }
-    }
-
-    return response;
+    stopLoading();
+    return response.data;
   }, []);
 
-  return { categories, parentCategories, deleteCategory, addCategory, getCategories, updateCategory };
+  return { loading, deleteCategory, addCategory, getCategories, updateCategory };
 }
 
 export default useCategory;

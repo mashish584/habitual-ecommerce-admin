@@ -8,37 +8,40 @@ import { AddCategoryModal } from "../../components/Modals";
 import useCategory, { CategoryI } from "../../hooks/useCategory";
 
 const Category = () => {
-  const { categories, getCategories } = useCategory();
+  const { getCategories } = useCategory();
+  const [categories, setCategories] = useState<CategoryI[]>([]);
   const [showAddCategoryModal, setShowAddCategoryModal] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<CategoryI | null>(null);
 
   const updateSelectedCategory = useCallback(
     (index: number) => {
-      const { data } = categories;
-      if (data[index]) {
+      if (categories[index]) {
         setShowAddCategoryModal(true);
-        setSelectedCategory(data[index]);
+        setSelectedCategory(categories[index]);
       }
     },
-    [categories.data],
+    [categories],
   );
 
   useEffect(() => {
-    getCategories(false);
+    (async () => {
+      const categories = await getCategories(false);
+      setCategories(categories);
+    })();
   }, []);
 
   return (
     <DashboardLayout>
       <div className="lg:container">
         <SectionHeading
-          title={`Category (${categories.data.length})`}
+          title={`Category (${categories.length})`}
           isAction={true}
           buttonText="Add Category"
           onAction={() => setShowAddCategoryModal(true)}
         />
         <div className="w-full h-full overflow-auto px-2 py-1">
           <ListContainer className="mw-1024 tableMaxHeight px-2 py-2">
-            {categories.data.map((category, index) => (
+            {categories.map((category, index) => (
               <ListRow key={category.id} className="justify-between">
                 <ListItem isImage={true} imagePath="https://unsplash.it/100/100" className="w-20" />
                 <ListItem type="text" text={category.name} className="w-36" />

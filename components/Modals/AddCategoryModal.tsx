@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 
 import Button from "../Button";
@@ -14,19 +14,22 @@ interface AddCategoryModalI extends SideModalI {
 }
 
 const AddCategoryModal = ({ visible, onClose, selectedCategory }: AddCategoryModalI) => {
-  const { getCategories, parentCategories, addCategory, updateCategory, deleteCategory } = useCategory();
+  const { getCategories, addCategory, updateCategory, deleteCategory, loading } = useCategory();
+  const [parentCategories, setParentCategories] = useState<CategoryI[]>([]);
   const {
-    // register,
+    reset,
     handleSubmit,
-    // watch,
     control,
     setValue,
     formState: { errors },
   } = useForm<Category>();
 
   useEffect(() => {
-    if (parentCategories?.data.length === 0 && visible) {
-      getCategories(true);
+    if (parentCategories?.length === 0 && visible) {
+      (async () => {
+        const categories = await getCategories(true);
+        setParentCategories(categories);
+      })();
     }
   }, [visible, parentCategories]);
 
@@ -37,7 +40,7 @@ const AddCategoryModal = ({ visible, onClose, selectedCategory }: AddCategoryMod
     }
   }, [selectedCategory]);
 
-  const categories = parentCategories.data.map((category) => ({ label: category.name, value: category.id }));
+  const categories = parentCategories.map((category) => ({ label: category.name, value: category.id }));
   const previousUploadUrls: PreviewImage[] = selectedCategory?.image
     ? [
       {
@@ -47,21 +50,24 @@ const AddCategoryModal = ({ visible, onClose, selectedCategory }: AddCategoryMod
     ]
     : [];
 
-  const onCategoryRemove = useCallback(() => {
+  const onCategoryRemove = useCallback(async () => {
     if (selectedCategory?.id) {
       deleteCategory(selectedCategory?.id);
     }
   }, [selectedCategory]);
 
-  const onSubmit = (data: Category) => {
-    if (!data.image) delete data.image;
-    if (data.parent?.trim() === "" || data.parent === selectedCategory?.parentId) delete data.parent;
+  const onSubmit = async (data: Category) => {
+    const info = { ...data };
+    if (!info.image) delete info.image;
+    if (info.parent?.trim() === "" || info.parent === selectedCategory?.parentId) delete info.parent;
 
     if (selectedCategory) {
-      updateCategory(selectedCategory.id, data);
+      await updateCategory(selectedCategory.id, info);
     } else {
-      addCategory(data);
+      await addCategory(info);
     }
+
+    reset();
   };
 
   return (
@@ -109,24 +115,35 @@ const AddCategoryModal = ({ visible, onClose, selectedCategory }: AddCategoryMod
               name="image"
               control={control}
               render={({ field: { onChange, value } }) => (
-                <ImagePicker
-                  label="Upload Image"
-                  actionText="Upload Image"
-                  showColorPicker={false}
-                  previousUploadUrls={previousUploadUrls}
-                  selectedFiles={value || []}
-                  maxUpload={1}
-                  onChange={onChange}
-                />
+                  <ImagePicker
+                    label="Upload Image"
+                    actionText="Upload Image"
+                    showColorPicker={false}
+                    previousUploadUrls={previousUploadUrls}
+                    selectedFiles={value || []}
+                    maxUpload={1}
+                    onChange={onChange}
+                  />
               )}
             />
           </div>
           <div className="mb-10">
-            <Button variant="primary" type="submit" className="my-1">
+            <Button
+              variant="primary"
+              type="submit"
+              isLoading={(loading.type === "addCateogry" || loading.type === "updateCategory") && loading.isLoading}
+              className="my-1"
+            >
               Add Category
             </Button>
             {selectedCategory !== null ? (
-              <Button variant="danger" type="button" className="my-1" onClick={onCategoryRemove}>
+              <Button
+                variant="danger"
+                type="button"
+                className="my-1"
+                isLoading={loading.type === "delete" && loading.isLoading}
+                onClick={onCategoryRemove}
+              >
                 Remove Category
               </Button>
             ) : null}

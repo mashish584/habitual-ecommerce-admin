@@ -109,7 +109,7 @@ export interface SuccessResponse<T> {
   next: string;
 }
 
-export interface ResponseI<T> {
-  data: T;
+export interface LoadingI<T> {
+  type: T;
   isLoading: boolean;
 }

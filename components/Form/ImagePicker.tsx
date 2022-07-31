@@ -60,7 +60,8 @@ const ImagePicker = ({ showColorPicker, label, actionText, selectedFiles, previo
 
   useEffect(() => {
     if (previousUploadUrls) {
-      setPreviewImages(previousUploadUrls);
+      const urls = generateURLFromFiles(previouseSelectedFiles);
+      setPreviewImages([...urls, ...previousUploadUrls]);
     }
   }, [previousUploadUrls]);
 
