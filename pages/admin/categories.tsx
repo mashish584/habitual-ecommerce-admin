@@ -14,12 +14,13 @@ const Category = () => {
 
   const updateSelectedCategory = useCallback(
     (index: number) => {
-      if (categories[index]) {
+      const { data } = categories;
+      if (data[index]) {
         setShowAddCategoryModal(true);
-        setSelectedCategory(categories[index]);
+        setSelectedCategory(data[index]);
       }
     },
-    [categories],
+    [categories.data],
   );
 
   useEffect(() => {
@@ -30,14 +31,14 @@ const Category = () => {
     <DashboardLayout>
       <div className="lg:container">
         <SectionHeading
-          title={`Category (${categories.length})`}
+          title={`Category (${categories.data.length})`}
           isAction={true}
           buttonText="Add Category"
           onAction={() => setShowAddCategoryModal(true)}
         />
         <div className="w-full h-full overflow-auto px-2 py-1">
           <ListContainer className="mw-1024 tableMaxHeight px-2 py-2">
-            {categories.map((category, index) => (
+            {categories.data.map((category, index) => (
               <ListRow key={category.id} className="justify-between">
                 <ListItem isImage={true} imagePath="https://unsplash.it/100/100" className="w-20" />
                 <ListItem type="text" text={category.name} className="w-36" />

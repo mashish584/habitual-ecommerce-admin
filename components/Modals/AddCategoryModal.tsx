@@ -13,7 +13,7 @@ interface AddCategoryModalI extends SideModalI {
   selectedCategory: CategoryI | null;
 }
 
-const AddCategoryModal = ({ visible, onClose, selectedCategory, onRemove }: AddCategoryModalI) => {
+const AddCategoryModal = ({ visible, onClose, selectedCategory }: AddCategoryModalI) => {
   const { getCategories, parentCategories, addCategory, updateCategory, deleteCategory } = useCategory();
   const {
     // register,
@@ -25,7 +25,7 @@ const AddCategoryModal = ({ visible, onClose, selectedCategory, onRemove }: AddC
   } = useForm<Category>();
 
   useEffect(() => {
-    if (parentCategories?.length === 0 && visible) {
+    if (parentCategories?.data.length === 0 && visible) {
       getCategories(true);
     }
   }, [visible, parentCategories]);
@@ -37,14 +37,14 @@ const AddCategoryModal = ({ visible, onClose, selectedCategory, onRemove }: AddC
     }
   }, [selectedCategory]);
 
-  const categories = parentCategories.map((category) => ({ label: category.name, value: category.id }));
+  const categories = parentCategories.data.map((category) => ({ label: category.name, value: category.id }));
   const previousUploadUrls: PreviewImage[] = selectedCategory?.image
     ? [
-        {
-          id: null,
-          url: selectedCategory.image,
-        },
-      ]
+      {
+        id: null,
+        url: selectedCategory.image,
+      },
+    ]
     : [];
 
   const onCategoryRemove = useCallback(() => {

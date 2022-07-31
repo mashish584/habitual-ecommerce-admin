@@ -1,4 +1,5 @@
 import React from "react";
+import Loader from "../Loader";
 import { IconType } from "../types";
 
 type ButtonVariant = "primary" | "secondary" | "danger";
@@ -6,8 +7,9 @@ type ButtonVariant = "primary" | "secondary" | "danger";
 interface ButtonI extends React.HTMLProps<HTMLButtonElement> {
   type: "submit" | "button";
   variant: "primary" | "secondary" | "danger";
-  rightIcon?: IconType;
   children: React.ReactNode;
+  isLoading?: boolean;
+  rightIcon?: IconType;
 }
 
 const buttonThemes: Record<ButtonVariant, string[]> = {
@@ -26,14 +28,15 @@ function getButtonClassNames(variant: ButtonVariant = "primary", className?: str
   return `${buttonClasses.join(" ")} ${className || ""}`;
 }
 
-const Button = ({ variant, children, className, rightIcon, ...buttonProps }: ButtonI) => {
+const Button = ({ variant, children, className, rightIcon, isLoading, ...buttonProps }: ButtonI) => {
   const classNames = getButtonClassNames(variant, className, Boolean(rightIcon));
   const Icon = rightIcon || null;
 
   return (
-    <button {...buttonProps} className={classNames}>
+    <button {...buttonProps} className={`relative ${classNames}`}>
       {children}
       {Icon && <Icon fontSize={"small"} style={{ width: 15 }} />}
+      {isLoading && <Loader className="ml-2  right-7 border-black top-4 absolute" />}
     </button>
   );
 };

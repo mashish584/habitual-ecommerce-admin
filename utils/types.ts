@@ -108,3 +108,8 @@ export interface SuccessResponse<T> {
   data: T;
   next: string;
 }
+
+export interface ResponseI<T> {
+  data: T;
+  isLoading: boolean;
+}
