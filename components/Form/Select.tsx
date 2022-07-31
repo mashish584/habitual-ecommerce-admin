@@ -20,6 +20,7 @@ interface SelectOptionI {
   item: Option;
   index: number;
   children: string;
+  isSelectedItem?: boolean;
   onClick?: () => void;
 }
 
@@ -150,9 +151,9 @@ const Select: React.FC<SelectI> = ({ label, className, children, items, onChange
   );
 };
 
-const SelectOption = ({ children, index, item }: SelectOptionI) => {
+const SelectOption = ({ children, index, item, isSelectedItem }: SelectOptionI) => {
   const { getItemProps, selectedItem, highlightedIndex } = useSelectContext();
-  const isSelected = selectedItem?.value === item.value;
+  const isSelected = isSelectedItem || selectedItem?.value === item.value;
   const isHighlighted = highlightedIndex === index;
 
   let props: any = {};

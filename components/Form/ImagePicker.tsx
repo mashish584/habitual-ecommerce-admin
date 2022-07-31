@@ -1,21 +1,22 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { ImageOutlined } from "@mui/icons-material";
+
+export type PreviewImage = {
+  id: string | null;
+  url: string;
+  color?: string;
+};
 
 interface ImagePickerI {
   label?: string;
   actionText?: string;
   showColorPicker?: boolean;
+  previousUploadUrls?: PreviewImage[];
   selectedFiles: File | File[];
   maxUpload: number;
   onChange: (files: File[] | File) => void;
 }
-
-type PreviewImage = {
-  id: string | null;
-  url: string;
-  color?: string;
-};
 
 function generateURLFromFiles(files: File[]) {
   const urls: PreviewImage[] = [];
@@ -31,7 +32,7 @@ function isValidMediaSelected(files: File[]) {
   return !isInvalidFileExist;
 }
 
-const ImagePicker = ({ showColorPicker, label, actionText, selectedFiles, maxUpload, onChange }: ImagePickerI) => {
+const ImagePicker = ({ showColorPicker, label, actionText, selectedFiles, previousUploadUrls, maxUpload, onChange }: ImagePickerI) => {
   const fileRef = useRef<HTMLInputElement | null>(null);
   const [previewImages, setPreviewImages] = useState<PreviewImage[]>([]);
 
@@ -56,6 +57,12 @@ const ImagePicker = ({ showColorPicker, label, actionText, selectedFiles, maxUpl
       fileRef.current.value = "";
     }
   };
+
+  useEffect(() => {
+    if (previousUploadUrls) {
+      setPreviewImages(previousUploadUrls);
+    }
+  }, [previousUploadUrls]);
 
   return (
     <div className={"w-full mb-3.5"}>

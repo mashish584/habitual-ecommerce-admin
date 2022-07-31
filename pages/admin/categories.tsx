@@ -12,11 +12,15 @@ const Category = () => {
   const [showAddCategoryModal, setShowAddCategoryModal] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<CategoryI | null>(null);
 
-  const updateSelectedCategory = useCallback((index: number) => {
-    if (categories[index]) {
-      setSelectedCategory(categories[index]);
-    }
-  }, []);
+  const updateSelectedCategory = useCallback(
+    (index: number) => {
+      if (categories[index]) {
+        setShowAddCategoryModal(true);
+        setSelectedCategory(categories[index]);
+      }
+    },
+    [categories],
+  );
 
   useEffect(() => {
     getCategories(false);

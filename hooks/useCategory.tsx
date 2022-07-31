@@ -20,7 +20,7 @@ interface UseCategory {
   categories: CategoryI[];
   parentCategories: CategoryI[];
   deleteCategory: (categoryId: string) => Promise<any>;
-  addCategory: (data: Category) => Promise<any>;
+  addCategory: (categoryId: string, data: Category) => Promise<any>;
   getCategories: (isParent: boolean) => Promise<any>;
   updateCategory: (data: any) => Promise<any>;
 }
@@ -53,13 +53,16 @@ function useCategory(): UseCategory {
     return response;
   }, []);
 
-  const updateCategory = useCallback(async (data: any) => {
-    const response = await appFetch(endpoint, {
+  const updateCategory = useCallback(async (path: string, data: Category) => {
+    const response = await appFetch(`${endpoint}${path}/`, {
       method: "PATCH",
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
+      body: data,
+      isFormData: true,
     });
+
+    if (response.data) {
+      alert("Category updated");
+    }
 
     return response;
   }, []);

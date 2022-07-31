@@ -3,7 +3,7 @@ import { useForm, Controller } from "react-hook-form";
 
 import Button from "../Button";
 import { Input, Select } from "../Form";
-import ImagePicker from "../Form/ImagePicker";
+import ImagePicker, { PreviewImage } from "../Form/ImagePicker";
 import { SelectOption } from "../Form/Select";
 import SideModal, { SideModalI } from "./SideModal";
 import useCategory, { Category, CategoryI } from "../../hooks/useCategory";
@@ -14,12 +14,13 @@ interface AddCategoryModalI extends SideModalI {
 }
 
 const AddCategoryModal = ({ visible, onClose, selectedCategory }: AddCategoryModalI) => {
-  const { getCategories, parentCategories, addCategory } = useCategory();
+  const { getCategories, parentCategories, addCategory, updateCategory } = useCategory();
   const {
     // register,
     handleSubmit,
     // watch,
     control,
+    setValue,
     formState: { errors },
   } = useForm<Category>();
 
@@ -29,12 +30,32 @@ const AddCategoryModal = ({ visible, onClose, selectedCategory }: AddCategoryMod
     }
   }, [visible, parentCategories]);
 
+  useEffect(() => {
+    if (selectedCategory) {
+      setValue("name", selectedCategory.name);
+      setValue("parent", selectedCategory?.parentId || "");
+    }
+  }, [selectedCategory]);
+
   const categories = parentCategories.map((category) => ({ label: category.name, value: category.id }));
+  const previousUploadUrls: PreviewImage[] = selectedCategory?.image
+    ? [
+      {
+        id: null,
+        url: selectedCategory.image,
+      },
+    ]
+    : [];
 
   const onSubmit = (data: Category) => {
     if (!data.image) delete data.image;
-    if (data.parent?.trim() === "") delete data.parent;
-    addCategory(data);
+    if (data.parent?.trim() === "" || data.parent === selectedCategory?.parentId) delete data.parent;
+
+    if (selectedCategory) {
+      updateCategory(selectedCategory.id, data);
+    } else {
+      addCategory(data);
+    }
   };
 
   return (
@@ -46,8 +67,8 @@ const AddCategoryModal = ({ visible, onClose, selectedCategory }: AddCategoryMod
             <Controller
               name="name"
               control={control}
-              rules={{ required: "Please enter category name." }}
               defaultValue=""
+              rules={{ required: "Please enter category name." }}
               render={({ field }) => {
                 const additionalInputProps = {} as MessageT;
 
@@ -62,12 +83,18 @@ const AddCategoryModal = ({ visible, onClose, selectedCategory }: AddCategoryMod
             <Controller
               name="parent"
               control={control}
-              render={({ field: { onChange } }) => (
-                <Select items={categories} label="Parent Category" placeholder="Select parent category" onChange={onChange} isSingle={true}>
+              render={({ field: { onChange, value } }) => (
+                <Select
+                  items={categories}
+                  label="Parent Category"
+                  placeholder={selectedCategory?.parentCategory?.name || "Select parent category"}
+                  onChange={onChange}
+                  isSingle={true}
+                >
                   {categories.map((option, index) => (
-                    <SelectOption key={option.value} item={option} index={index}>
-                      {option.label}
-                    </SelectOption>
+                      <SelectOption key={option.value} isSelectedItem={option.value === value} item={option} index={index}>
+                        {option.label}
+                      </SelectOption>
                   ))}
                 </Select>
               )}
@@ -80,6 +107,7 @@ const AddCategoryModal = ({ visible, onClose, selectedCategory }: AddCategoryMod
                   label="Upload Image"
                   actionText="Upload Image"
                   showColorPicker={false}
+                  previousUploadUrls={previousUploadUrls}
                   selectedFiles={value || []}
                   maxUpload={1}
                   onChange={onChange}
