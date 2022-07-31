@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useCallback, useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
 
 import Button from "../Button";
@@ -13,8 +13,8 @@ interface AddCategoryModalI extends SideModalI {
   selectedCategory: CategoryI | null;
 }
 
-const AddCategoryModal = ({ visible, onClose, selectedCategory }: AddCategoryModalI) => {
-  const { getCategories, parentCategories, addCategory, updateCategory } = useCategory();
+const AddCategoryModal = ({ visible, onClose, selectedCategory, onRemove }: AddCategoryModalI) => {
+  const { getCategories, parentCategories, addCategory, updateCategory, deleteCategory } = useCategory();
   const {
     // register,
     handleSubmit,
@@ -40,12 +40,18 @@ const AddCategoryModal = ({ visible, onClose, selectedCategory }: AddCategoryMod
   const categories = parentCategories.map((category) => ({ label: category.name, value: category.id }));
   const previousUploadUrls: PreviewImage[] = selectedCategory?.image
     ? [
-      {
-        id: null,
-        url: selectedCategory.image,
-      },
-    ]
+        {
+          id: null,
+          url: selectedCategory.image,
+        },
+      ]
     : [];
+
+  const onCategoryRemove = useCallback(() => {
+    if (selectedCategory?.id) {
+      deleteCategory(selectedCategory?.id);
+    }
+  }, [selectedCategory]);
 
   const onSubmit = (data: Category) => {
     if (!data.image) delete data.image;
@@ -92,9 +98,9 @@ const AddCategoryModal = ({ visible, onClose, selectedCategory }: AddCategoryMod
                   isSingle={true}
                 >
                   {categories.map((option, index) => (
-                      <SelectOption key={option.value} isSelectedItem={option.value === value} item={option} index={index}>
-                        {option.label}
-                      </SelectOption>
+                    <SelectOption key={option.value} isSelectedItem={option.value === value} item={option} index={index}>
+                      {option.label}
+                    </SelectOption>
                   ))}
                 </Select>
               )}
@@ -115,9 +121,16 @@ const AddCategoryModal = ({ visible, onClose, selectedCategory }: AddCategoryMod
               )}
             />
           </div>
-          <Button variant="primary" type="submit" className="my-10">
-            Add Category
-          </Button>
+          <div className="mb-10">
+            <Button variant="primary" type="submit" className="my-1">
+              Add Category
+            </Button>
+            {selectedCategory !== null ? (
+              <Button variant="danger" type="button" className="my-1" onClick={onCategoryRemove}>
+                Remove Category
+              </Button>
+            ) : null}
+          </div>
         </form>
       </div>
     </SideModal>

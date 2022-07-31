@@ -20,9 +20,9 @@ interface UseCategory {
   categories: CategoryI[];
   parentCategories: CategoryI[];
   deleteCategory: (categoryId: string) => Promise<any>;
-  addCategory: (categoryId: string, data: Category) => Promise<any>;
+  addCategory: (data: Category) => Promise<any>;
   getCategories: (isParent: boolean) => Promise<any>;
-  updateCategory: (data: any) => Promise<any>;
+  updateCategory: (categoryId: string, data: any) => Promise<any>;
 }
 
 function useCategory(): UseCategory {
@@ -32,10 +32,8 @@ function useCategory(): UseCategory {
   const deleteCategory = useCallback(async (categoryId: string) => {
     const response = await appFetch(`${endpoint}${categoryId}`, {
       method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-      },
     });
+    window.location.reload();
     return response;
   }, []);
 

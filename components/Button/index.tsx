@@ -1,11 +1,11 @@
 import React from "react";
 import { IconType } from "../types";
 
-type ButtonVariant = "primary" | "secondary";
+type ButtonVariant = "primary" | "secondary" | "danger";
 
 interface ButtonI extends React.HTMLProps<HTMLButtonElement> {
   type: "submit" | "button";
-  variant: "primary" | "secondary";
+  variant: "primary" | "secondary" | "danger";
   rightIcon?: IconType;
   children: React.ReactNode;
 }
@@ -13,6 +13,7 @@ interface ButtonI extends React.HTMLProps<HTMLButtonElement> {
 const buttonThemes: Record<ButtonVariant, string[]> = {
   primary: ["bg-theme", "text-black"],
   secondary: ["bg-black", "text-white"],
+  danger: ["bg-danger", "text-white"],
 };
 
 function getButtonClassNames(variant: ButtonVariant = "primary", className?: string, isRightIcon?: boolean) {

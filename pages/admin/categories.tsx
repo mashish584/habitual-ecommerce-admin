@@ -29,7 +29,12 @@ const Category = () => {
   return (
     <DashboardLayout>
       <div className="lg:container">
-        <SectionHeading title="Category(10)" isAction={true} buttonText="Add Category" onAction={() => setShowAddCategoryModal(true)} />
+        <SectionHeading
+          title={`Category (${categories.length})`}
+          isAction={true}
+          buttonText="Add Category"
+          onAction={() => setShowAddCategoryModal(true)}
+        />
         <div className="w-full h-full overflow-auto px-2 py-1">
           <ListContainer className="mw-1024 tableMaxHeight px-2 py-2">
             {categories.map((category, index) => (
