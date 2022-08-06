@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import useCategory from "../../hooks/useCategory";
+import useProduct, { Product } from "../../hooks/useProduct";
 import Button from "../Button";
 import { Input, Select } from "../Form";
 import ImagePicker from "../Form/ImagePicker";
@@ -11,18 +12,9 @@ import SideModal, { SideModalI } from "./SideModal";
 
 interface AddproductModal extends SideModalI {}
 
-export interface Product {
-  title: string;
-  description: string;
-  image: File[];
-  price: number;
-  discount: number;
-  quantity: number;
-  categories: String[];
-}
-
 const AddProductModal: React.FC<AddproductModal> = ({ visible, onClose }) => {
   const { getCategories } = useCategory();
+  const { addProduct } = useProduct();
   const [categories, setCategories] = useState<Option[]>([]);
   const {
     // reset,
@@ -33,8 +25,9 @@ const AddProductModal: React.FC<AddproductModal> = ({ visible, onClose }) => {
     formState: { errors },
   } = useForm<Product>();
 
-  console.log({ errors });
-  const onSubmit = async (data: Product) => {};
+  const onSubmit = async (data: Product) => {
+    await addProduct(data);
+  };
 
   useEffect(() => {
     if (categories.length === 0 && visible) {
@@ -149,7 +142,6 @@ const AddProductModal: React.FC<AddproductModal> = ({ visible, onClose }) => {
                   >
                     {categories.map((category, index) => {
                       const isSelected = value?.includes(category.value);
-                      console.log({ value, cat: category.value });
                       return (
                         <SelectOption
                           key={category.value}

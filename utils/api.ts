@@ -17,7 +17,11 @@ export const appFetch = async (url: string, options: FetchConfig) => {
       const data = { ...options.body };
       const formData = new FormData();
       for (const key in data) {
-        formData.append(key, data[key]);
+        if (key !== "image") {
+          formData.append(key, data[key]);
+        } else {
+          data.image.map((image: any) => formData.append("image", image));
+        }
       }
       options.body = formData;
     }
