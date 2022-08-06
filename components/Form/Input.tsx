@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { ControllerRenderProps } from "react-hook-form";
 import { PartialBy } from "../../utils/types";
 import Message, { MessageI } from "./Message";
 
 export type MessageT = PartialBy<MessageI, "message" | "messageType">;
-interface InputI extends React.HTMLProps<HTMLInputElement>, MessageT {
+interface InputI extends Omit<React.HTMLProps<HTMLInputElement>, "onChange">, Pick<ControllerRenderProps, "onChange">, MessageT {
   type: "email" | "password" | "text" | "textarea";
   label?: string;
+  id?: string;
   className?: string;
 }
 
@@ -44,7 +46,12 @@ const Input = React.forwardRef<InputRef & TextAreaRef, InputI>((props, ref) => {
         }  rounded-2xl border border-gray`}
       >
         {type === "textarea" ? (
-          <textarea ref={ref} className={`w-full h-full rounded-2xl p-4 ${className || ""}`}></textarea>
+          <textarea
+            name={inputProps.name}
+            onChange={inputProps.onChange}
+            ref={ref}
+            className={`w-full h-full rounded-2xl p-4 ${className || ""}`}
+          />
         ) : (
           <input {...inputProps} ref={ref} type={inputType} className={`w-full h-full rounded-2xl p-4 ${className || ""}`} />
         )}

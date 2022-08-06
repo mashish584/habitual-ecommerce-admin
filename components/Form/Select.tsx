@@ -2,7 +2,7 @@ import { KeyboardArrowDown } from "@mui/icons-material";
 import React, { useContext, useEffect } from "react";
 import { useCombobox, UseComboboxGetItemPropsOptions, useMultipleSelection } from "downshift";
 
-type Option = {
+export type Option = {
   label: string;
   value: string;
 };

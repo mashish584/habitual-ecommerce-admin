@@ -153,6 +153,10 @@ input[type="color"]::-webkit-color-swatch {
   flex-basis: 30%;
 }
 
+.text-xxs {
+  font-size: 0.7rem;
+}
+
 /* Media Query */
 @media (max-width: 1023px) {
   .content-container {

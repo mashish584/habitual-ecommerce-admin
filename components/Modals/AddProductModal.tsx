@@ -1,54 +1,202 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+import useCategory from "../../hooks/useCategory";
 import Button from "../Button";
 import { Input, Select } from "../Form";
 import ImagePicker from "../Form/ImagePicker";
-import { SelectOption } from "../Form/Select";
+import { MessageT } from "../Form/Input";
+import Message from "../Form/Message";
+import { Option, SelectOption } from "../Form/Select";
 import SideModal, { SideModalI } from "./SideModal";
 
 interface AddproductModal extends SideModalI {}
 
-const books = [
-  { value: "Harper Lee", label: "To Kill a Mockingbird" },
-  { value: "Lev Tolstoy", label: "War and Peace" },
-  { value: "Fyodor Dostoyevsy", label: "The Idiot" },
-  { value: "Oscar Wilde", label: "A Picture of Dorian Gray" },
-  { value: "George Orwell", label: "1984" },
-  { value: "Jane Austen", label: "Pride and Prejudice" },
-  { value: "Marcus Aurelius", label: "Meditations" },
-  { value: "Fyodor Dostoevsky", label: "The Brothers Karamazov" },
-  { value: "Lev Tolstoy", label: "Anna Karenina" },
-  { value: "Fyodor Dostoevsky", label: "Crime and Punishment" },
-];
+export interface Product {
+  title: string;
+  description: string;
+  image: File[];
+  price: number;
+  discount: number;
+  quantity: number;
+  categories: String[];
+}
 
-const AddProductModal: React.FC<AddproductModal> = ({ visible, onClose }) => (
-  <SideModal visible={visible} onClose={onClose}>
-    <div>
-      <h2 className="ff-lato font-black text-2xl">Add Product</h2>
-      <form className="mt-10">
-        <div>
-          <Input type="text" name="title" label="Title" onChange={() => {}} />
-          <div className="flex justify-between">
-            <Input type="text" name="price" label="Price" onChange={() => {}} className="basis-30" />
-            <Input type="text" name="discount" label="Discount" onChange={() => {}} className="basis-30" />
-            <Input type="text" name="quantity" label="Quantity" onChange={() => {}} className="basis-30 " />
+const AddProductModal: React.FC<AddproductModal> = ({ visible, onClose }) => {
+  const { getCategories } = useCategory();
+  const [categories, setCategories] = useState<Option[]>([]);
+  const {
+    // reset,
+    handleSubmit,
+    control,
+    // setValue,
+    // setError,
+    formState: { errors },
+  } = useForm<Product>();
+
+  console.log({ errors });
+  const onSubmit = async (data: Product) => {};
+
+  useEffect(() => {
+    if (categories.length === 0 && visible) {
+      (async () => {
+        const categories = await getCategories(true);
+        setCategories(categories.map((category) => ({ label: category.name, value: category.id })));
+      })();
+    }
+  }, [visible, categories]);
+
+  return (
+    <SideModal visible={visible} onClose={onClose}>
+      <div>
+        <h2 className="ff-lato font-black text-2xl">Add Product</h2>
+        <form onSubmit={handleSubmit(onSubmit)} className="mt-10">
+          <div>
+            <Controller
+              name="title"
+              control={control}
+              defaultValue=""
+              rules={{ required: "Please enter product title." }}
+              render={({ field }) => {
+                const additionalInputProps = {} as MessageT;
+
+                if (errors.title) {
+                  additionalInputProps.messageType = "error";
+                  additionalInputProps.message = errors.title.message;
+                }
+                return <Input type="text" label="Title" {...field} {...additionalInputProps} />;
+              }}
+            />
+
+            <div className="flex justify-between">
+              <Controller
+                name="price"
+                control={control}
+                defaultValue={0}
+                rules={{ required: "Please enter product price." }}
+                render={({ field }) => {
+                  const additionalInputProps = {} as MessageT;
+
+                  if (errors.price) {
+                    additionalInputProps.messageType = "error";
+                    additionalInputProps.message = errors.price.message;
+                  }
+                  return <Input type="text" label="Price" className="basis-30" {...field} {...additionalInputProps} />;
+                }}
+              />
+
+              <Controller
+                name="discount"
+                control={control}
+                defaultValue={0}
+                rules={{ required: "Please add product discount percentage." }}
+                render={({ field }) => {
+                  const additionalInputProps = {} as MessageT;
+
+                  if (errors.discount) {
+                    additionalInputProps.messageType = "error";
+                    additionalInputProps.message = errors.discount.message;
+                  }
+                  return <Input type="text" label="Discount" className="basis-30" {...field} {...additionalInputProps} />;
+                }}
+              />
+
+              <Controller
+                name="quantity"
+                control={control}
+                defaultValue={0}
+                rules={{ required: "Please enter product quantity." }}
+                render={({ field }) => {
+                  const additionalInputProps = {} as MessageT;
+
+                  if (errors.quantity) {
+                    additionalInputProps.messageType = "error";
+                    additionalInputProps.message = errors.quantity.message;
+                  }
+                  return <Input type="text" label="Quantity" className="basis-30" {...field} {...additionalInputProps} />;
+                }}
+              />
+            </div>
+
+            <Controller
+              name="description"
+              control={control}
+              defaultValue=""
+              rules={{ required: "Please enter product description." }}
+              render={({ field }) => {
+                const additionalInputProps = {} as MessageT;
+
+                if (errors.description) {
+                  additionalInputProps.messageType = "error";
+                  additionalInputProps.message = errors.description.message;
+                }
+                return <Input type="textarea" label="Description" className="basis-30" {...field} {...additionalInputProps} />;
+              }}
+            />
+
+            <Controller
+              name="categories"
+              control={control}
+              rules={{ required: "Please select atleast one category." }}
+              render={({ field: { onChange, value } }) => (
+                <>
+                  <Select
+                    items={categories}
+                    label="Categories"
+                    placeholder={"Select Categories"}
+                    onChange={onChange}
+                    isSingle={false}
+                    className={"mb-1"}
+                  >
+                    {categories.map((category, index) => {
+                      const isSelected = value?.includes(category.value);
+                      console.log({ value, cat: category.value });
+                      return (
+                        <SelectOption
+                          key={category.value}
+                          isSelectedItem={isSelected}
+                          item={category}
+                          index={index}
+                          onClick={() => alert(index)}
+                        >
+                          {category.label}
+                        </SelectOption>
+                      );
+                    })}
+                  </Select>
+                  {errors.categories && errors.categories.type === "required" && (
+                    <Message messageType="error" message={errors.categories.message || ""} />
+                  )}
+                </>
+              )}
+            />
+
+            <Controller
+              name="image"
+              control={control}
+              rules={{ required: "Please add atleast one image." }}
+              render={({ field: { onChange, value } }) => (
+                <>
+                  <ImagePicker
+                    label="Upload Image"
+                    actionText="Upload Image"
+                    previousUploadUrls={[]}
+                    selectedFiles={value || []}
+                    maxUpload={3}
+                    className={"mb-2"}
+                    onChange={onChange}
+                  />
+                  {errors.image && errors.image.type === "required" && <Message messageType="error" message={errors.image.message || ""} />}
+                </>
+              )}
+            />
           </div>
-          <Input type="textarea" name="description" label="Description" onChange={() => {}} className="basis-30 " />
-
-          <Select items={books} label="Categories">
-            {books.map((book, index) => (
-              <SelectOption item={book} index={index} onClick={() => alert(index)}>
-                {book.label}
-              </SelectOption>
-            ))}
-          </Select>
-          <ImagePicker />
-        </div>
-        <Button variant="primary" type="button" className="my-10">
-          Add Product
-        </Button>
-      </form>
-    </div>
-  </SideModal>
-);
+          <Button variant="primary" type="submit" className="my-10">
+            Add Product
+          </Button>
+        </form>
+      </div>
+    </SideModal>
+  );
+};
 
 export default AddProductModal;

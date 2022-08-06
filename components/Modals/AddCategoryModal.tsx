@@ -115,15 +115,14 @@ const AddCategoryModal = ({ visible, onClose, selectedCategory }: AddCategoryMod
               name="image"
               control={control}
               render={({ field: { onChange, value } }) => (
-                  <ImagePicker
-                    label="Upload Image"
-                    actionText="Upload Image"
-                    showColorPicker={false}
-                    previousUploadUrls={previousUploadUrls}
-                    selectedFiles={value || []}
-                    maxUpload={1}
-                    onChange={onChange}
-                  />
+                <ImagePicker
+                  label="Upload Image"
+                  actionText="Upload Image"
+                  previousUploadUrls={previousUploadUrls}
+                  selectedFiles={value || []}
+                  maxUpload={1}
+                  onChange={onChange}
+                />
               )}
             />
           </div>

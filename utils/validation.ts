@@ -208,13 +208,12 @@ export const validateProduct = async (values: ProductBody, productinfo?: Product
         }),
       categories: yup.mixed().test("isValidCategories", "Please provide valid categories", async (value) => {
         const categories = (isValidJSONString(value) ? JSON.parse(value) : []) as string[];
-        console.log({ categories, productinfo });
 
         // ✅ Valid if no new category added but have old categories already during update
         if (productinfo?.categoryIds?.length && !categories.length) return true;
 
         // ⚠️ No category added
-        if (!categories.length && !productinfo?.categoryIds?.length) return false;
+        if (!categories.length && productinfo?.categoryIds && !productinfo?.categoryIds?.length) return false;
 
         for (const key in categories) {
           const category = categories[key];

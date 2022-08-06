@@ -22,7 +22,7 @@ interface UseCategory {
   loading: LoadingI<CategoryLoadingType>;
   deleteCategory: (categoryId: string) => Promise<any>;
   addCategory: (data: Category) => Promise<any>;
-  getCategories: (isParent: boolean) => Promise<any>;
+  getCategories: (isParent: boolean) => Promise<CategoryI[]>;
   updateCategory: (categoryId: string, data: any) => Promise<any>;
 }
 
