@@ -1,18 +1,21 @@
 import { useCallback, useState } from "react";
 import { Product as ProductT } from "@prisma/client";
+import { UploadResponse } from "imagekit/dist/libs/interfaces";
+
 import { appFetch } from "../utils/api";
 import { LoadingI } from "../utils/types";
 
 const endpoint = "product/";
 
+type Product = ProductT & { images: UploadResponse[] };
 type ProductLoadingType = "products" | "addProduct" | "updateProduct" | null;
 type ProductState = {
-  data: ProductT[];
+  data: Product[];
   nextPage: string | null;
   count: number;
 };
 
-export interface Product {
+export interface ProductFormInterface {
   title: string;
   description: string;
   image: File[];
@@ -25,7 +28,7 @@ export interface Product {
 interface UseProduct {
   loading: LoadingI<ProductLoadingType>;
   products: ProductState;
-  addProduct: (data: Product) => Promise<any>;
+  addProduct: (data: ProductFormInterface) => Promise<any>;
   getProducts: () => Promise<any>;
 }
 
@@ -36,7 +39,7 @@ function useProduct(): UseProduct {
   const startLoading = (type: ProductLoadingType) => setLoading({ type, isLoading: true });
   const stopLoading = () => setLoading({ type: null, isLoading: false });
 
-  const addProduct = useCallback(async (data: Product) => {
+  const addProduct = useCallback(async (data: ProductFormInterface) => {
     startLoading("addProduct");
 
     data.categories = JSON.stringify(data.categories);

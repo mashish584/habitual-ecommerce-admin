@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import useCategory from "../../hooks/useCategory";
-import useProduct, { Product } from "../../hooks/useProduct";
+import useProduct, { ProductFormInterface } from "../../hooks/useProduct";
 import Button from "../Button";
 import { Input, Select } from "../Form";
 import ImagePicker from "../Form/ImagePicker";
@@ -22,16 +22,16 @@ const AddProductModal: React.FC<AddproductModal> = ({ visible, onClose }) => {
     control,
     setError,
     formState: { errors },
-  } = useForm<Product>();
+  } = useForm<ProductFormInterface>();
 
-  const onSubmit = async (data: Product) => {
+  const onSubmit = async (data: ProductFormInterface) => {
     const response = await addProduct(data);
     if (response.status == 200) {
       reset();
       onClose();
       alert("✅ Product added succesfully.");
     } else {
-      response?.errors?.map((error: { key: keyof Product; message: string }) => setError(error.key, { message: error.message }));
+      response?.errors?.map((error: { key: keyof ProductFormInterface; message: string }) => setError(error.key, { message: error.message }));
     }
   };
 

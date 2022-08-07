@@ -23,6 +23,7 @@ type ListItemProps = {
   index?: number;
   linkPath?: string;
   actionIcon?: IconType;
+  isRounded?: boolean;
   onAction?: (index: number) => void;
 };
 
@@ -59,7 +60,7 @@ function getListChild(type: ListType | undefined, text: string, config?: ListIte
 function ListItem(props: NoImagePathProps): JSX.Element;
 function ListItem(props: ImagePathProps): JSX.Element;
 function ListItem(props: ListItemProps & { isImage?: boolean; imagePath?: string; text?: string; type?: ListType }) {
-  const { type, text, className, imagePath, isImage, index } = props;
+  const { type, text, className, imagePath, isImage, index, isRounded } = props;
   const classes = className || "flex-1";
 
   const onActionClick = useCallback(() => {
@@ -69,8 +70,8 @@ function ListItem(props: ListItemProps & { isImage?: boolean; imagePath?: string
   }, [index]);
 
   const Child = isImage ? (
-    <div className="w-12 h-12 rounded-full overflow-hidden">
-      {imagePath ? <Image src={imagePath} width={48} height={48} objectFit="cover" /> : null}
+    <div className={`w-full h-full ${isRounded ? "rounded-full" : ""} overflow-hidden`}>
+      {imagePath ? <Image src={imagePath} width={"100%"} height={"100%"} objectFit="contain" /> : null}
     </div>
   ) : (
     getListChild(type, text || "", {

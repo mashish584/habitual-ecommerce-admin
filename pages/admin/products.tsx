@@ -48,19 +48,18 @@ const Product = () => {
         />
         <div className="w-full h-full overflow-auto px-2 py-1">
           <ListContainer className="mw-1024 tableMaxHeight px-2 py-2">
-            {products.data.map((_, index) => {
+            {products.data.map((product, index) => {
               const isLastRow = products.data.length - 1 === index;
               if (isLastRow) {
                 console.log(`Index of last row is ${index}`);
               }
               return (
                 <ListRow key={index} ref={isLastRow ? loader : null} className="justify-between">
-                  <ListItem isImage={true} imagePath="https://unsplash.it/100/100" className="w-12" />
-                  <ListItem type="text" text={`${isLastRow ? "Last row" : ""} Macbook Pro 2020 14 inch Slate Gray`} className="w-fit" />
-                  <ListItem type="text" text="Electronics" className="w-fit" />
-                  <ListItem type="text" text="200 available" className="w-24" />
-                  <ListItem type="text" text="50 sold" className="w-16" />
-                  <ListItem type="text" text="$999" className="w-16" />
+                  <ListItem isImage={true} imagePath={product.images[0].thumbnailUrl} className="w-16 h-16" />
+                  <ListItem type="text" text={product.title} className="w-48" />
+                  <ListItem type="text" text={`${product.categoryIds.length} categories`} className="w-28" />
+                  <ListItem type="text" text={`${product.quantity} qty`} className="w-16" />
+                  <ListItem type="text" text={`$${product.price}`} className="w-16" />
                   <ListItem type="text" text="Active" className="w-20" childClasses="text-success" />
                   <ListItem
                     type="action"
