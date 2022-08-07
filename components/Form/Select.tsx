@@ -110,8 +110,6 @@ const Select: React.FC<SelectI> = ({ label, className, children, items, onChange
 
   if (isSingle && selectedItems.length) {
     value = selectedItems[0].label;
-  } else if (selectedItems.length) {
-    value = `${selectedItems.length} items selected.`;
   }
 
   useEffect(() => {

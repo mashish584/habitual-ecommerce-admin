@@ -94,6 +94,7 @@ export interface FetchConfig {
   query?: string;
   url?: string;
   isFormData?: boolean;
+  disableUrlAppend?: boolean;
 }
 
 export interface ErrorResponse<T> {

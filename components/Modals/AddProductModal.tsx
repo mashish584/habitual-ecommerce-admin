@@ -17,7 +17,7 @@ const AddProductModal: React.FC<AddproductModal> = ({ visible, onClose }) => {
   const { addProduct } = useProduct();
   const [categories, setCategories] = useState<Option[]>([]);
   const {
-    // reset,
+    reset,
     handleSubmit,
     control,
     // setValue,
@@ -27,6 +27,7 @@ const AddProductModal: React.FC<AddproductModal> = ({ visible, onClose }) => {
 
   const onSubmit = async (data: Product) => {
     await addProduct(data);
+    reset();
   };
 
   useEffect(() => {
@@ -135,7 +136,7 @@ const AddProductModal: React.FC<AddproductModal> = ({ visible, onClose }) => {
                   <Select
                     items={categories}
                     label="Categories"
-                    placeholder={"Select Categories"}
+                    placeholder={value?.length ? `${value.length} item${value.length > 1 ? "s" : ""} selected.` : "Select Categories"}
                     onChange={onChange}
                     isSingle={false}
                     className={"mb-1"}

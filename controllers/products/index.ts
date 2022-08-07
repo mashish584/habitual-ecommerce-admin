@@ -95,10 +95,11 @@ const getRequestHandler = async (req: NextApiRequest, res: NextApiResponse) => {
   const [count, products]: [number, ProductInfo[]] = await Promise.all([totalCountPromise, productsPromise]);
 
   const prefix = req.headers.host?.includes("localhost") ? "http://" : "https://";
+  const url = true ? `${prefix}${req.headers.host}/api/products/` : `${prefix}${req.headers.host}/api/user/products/`;
   const nextTake = skip + take;
-  const next = nextTake >= count ? null : `${prefix}${req.headers.host}/api/user/orders/?take=${take}&skip=${nextTake}`;
+  const next = nextTake >= count ? null : `${url}?take=${take}&skip=${nextTake}`;
 
-  return generateResponse("200", "Products fetched..", res, { data: products, next });
+  return generateResponse("200", "Products fetched..", res, { data: products, next, count });
 };
 
 const getIndividualProductHandler = async (req: NextApiRequest, res: NextApiResponse) => {
