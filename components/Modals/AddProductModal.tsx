@@ -14,20 +14,25 @@ interface AddproductModal extends SideModalI {}
 
 const AddProductModal: React.FC<AddproductModal> = ({ visible, onClose }) => {
   const { getCategories } = useCategory();
-  const { addProduct } = useProduct();
+  const { addProduct, loading } = useProduct();
   const [categories, setCategories] = useState<Option[]>([]);
   const {
     reset,
     handleSubmit,
     control,
-    // setValue,
-    // setError,
+    setError,
     formState: { errors },
   } = useForm<Product>();
 
   const onSubmit = async (data: Product) => {
-    await addProduct(data);
-    reset();
+    const response = await addProduct(data);
+    if (response.status == 200) {
+      reset();
+      onClose();
+      alert("✅ Product added succesfully.");
+    } else {
+      response?.errors?.map((error: { key: keyof Product; message: string }) => setError(error.key, { message: error.message }));
+    }
   };
 
   useEffect(() => {
@@ -65,8 +70,8 @@ const AddProductModal: React.FC<AddproductModal> = ({ visible, onClose }) => {
               <Controller
                 name="price"
                 control={control}
-                defaultValue={0}
-                rules={{ required: "Please enter product price." }}
+                defaultValue={""}
+                rules={{ required: "Please enter price." }}
                 render={({ field }) => {
                   const additionalInputProps = {} as MessageT;
 
@@ -81,8 +86,7 @@ const AddProductModal: React.FC<AddproductModal> = ({ visible, onClose }) => {
               <Controller
                 name="discount"
                 control={control}
-                defaultValue={0}
-                rules={{ required: "Please add product discount percentage." }}
+                defaultValue={""}
                 render={({ field }) => {
                   const additionalInputProps = {} as MessageT;
 
@@ -97,8 +101,8 @@ const AddProductModal: React.FC<AddproductModal> = ({ visible, onClose }) => {
               <Controller
                 name="quantity"
                 control={control}
-                defaultValue={0}
-                rules={{ required: "Please enter product quantity." }}
+                defaultValue={""}
+                rules={{ required: "Please enter quantity." }}
                 render={({ field }) => {
                   const additionalInputProps = {} as MessageT;
 
@@ -183,7 +187,7 @@ const AddProductModal: React.FC<AddproductModal> = ({ visible, onClose }) => {
               )}
             />
           </div>
-          <Button variant="primary" type="submit" className="my-10">
+          <Button variant="primary" type="submit" isLoading={loading.type === "addProduct" && loading.isLoading} className="my-10">
             Add Product
           </Button>
         </form>

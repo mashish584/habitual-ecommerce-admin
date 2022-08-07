@@ -16,9 +16,9 @@ export interface Product {
   title: string;
   description: string;
   image: File[];
-  price: number;
-  discount: number;
-  quantity: number;
+  price: string;
+  discount: string;
+  quantity: string;
   categories: String[] | String;
 }
 

@@ -4,8 +4,6 @@ export const DEV_URL = "http://localhost:3000/api/";
 
 async function handleAPIError(response: any, endpoint: string) {
   response = await response.json();
-  const message = response.message || `Unable to fetch ${endpoint}`;
-  console.log({ message });
   return response;
 }
 
