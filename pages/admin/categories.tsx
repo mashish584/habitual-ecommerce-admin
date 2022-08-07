@@ -43,7 +43,7 @@ const Category = () => {
           <ListContainer className="mw-1024 tableMaxHeight px-2 py-2">
             {categories.map((category, index) => (
               <ListRow key={category.id} className="justify-between">
-                <ListItem isImage={true} imagePath="https://unsplash.it/100/100" className="w-20" />
+                <ListItem isImage={true} imagePath={category.image || ""} className={`w-16 h-16 mr-2`} />
                 <ListItem type="text" text={category.name} className="w-36" />
                 <ListItem type="text" text={category?.parentCategory?.name} className="w-28" />
                 <ListItem type="text" text="25 products associated" className="w-56" />

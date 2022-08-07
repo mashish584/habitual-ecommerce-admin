@@ -64,6 +64,7 @@ const Product = () => {
                   <ListItem
                     type="action"
                     text="View"
+                    index={index}
                     className="w-40"
                     childClasses="radius-80"
                     onAction={() => setShowProductDetail(true)}
