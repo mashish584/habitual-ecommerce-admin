@@ -105,7 +105,17 @@ const getRequestHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 const getIndividualProductHandler = async (req: NextApiRequest, res: NextApiResponse) => {
   const productId = req.query?.id as string;
 
-  const product = await prisma.product.findFirst({ where: { id: productId } });
+  const product = await prisma.product.findFirst({
+    where: { id: productId },
+    include: {
+      category: {
+        select: {
+          name: true,
+          id: true,
+        },
+      },
+    },
+  });
 
   if (!product) {
     throw new Error("Product not found.");

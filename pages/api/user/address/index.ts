@@ -11,7 +11,6 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     checkRequestType("POST", req.method as RequestType, res);
     const user = (await getUser(req)) as Partial<User>;
     const { body } = req;
-    console.log(body);
 
     // ⚠️ User not authorised
     if (!user) {

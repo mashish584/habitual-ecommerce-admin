@@ -7,8 +7,8 @@ import { LoadingI } from "../utils/types";
 
 const endpoint = "product/";
 
-type Product = ProductT & { images: UploadResponse[] };
-type ProductLoadingType = "products" | "addProduct" | "updateProduct" | null;
+export type Product = Omit<ProductT, "images"> & { images: UploadResponse[]; category: Record<"name" | "id", string>[] };
+type ProductLoadingType = "products" | "addProduct" | "updateProduct" | "product" | null;
 type ProductState = {
   data: Product[];
   nextPage: string | null;
@@ -28,11 +28,14 @@ export interface ProductFormInterface {
 interface UseProduct {
   loading: LoadingI<ProductLoadingType>;
   products: ProductState;
+  productInfo: Product | null;
   addProduct: (data: ProductFormInterface) => Promise<any>;
-  getProducts: () => Promise<any>;
+  getProducts: (query?: string) => Promise<any>;
+  getProductDetail: (productId: string) => Promise<any>;
 }
 
 function useProduct(): UseProduct {
+  const [productInfo, setProductInfo] = useState<Product | null>(null);
   const [products, setProducts] = useState<ProductState>({ data: [], nextPage: null, count: 0 });
   const [loading, setLoading] = useState<LoadingI<ProductLoadingType>>({ type: "products", isLoading: false });
 
@@ -54,25 +57,39 @@ function useProduct(): UseProduct {
     return response;
   }, []);
 
-  const getProducts = useCallback(async () => {
-    startLoading("products");
-    const url = products.nextPage || "products/";
-    const response = await appFetch(url, {
+  const getProducts = useCallback(
+    async (query = "") => {
+      startLoading("products");
+      const url = products.nextPage || `products/${query}`;
+      const response = await appFetch(url, {
+        method: "GET",
+        disableUrlAppend: products.nextPage !== null,
+      });
+      stopLoading();
+
+      if (response.data) {
+        setProducts((prev) => ({
+          data: [...prev.data, ...response.data],
+          nextPage: response.next,
+          count: response.count,
+        }));
+      }
+    },
+    [products.nextPage],
+  );
+
+  const getProductDetail = useCallback(async (productId: string) => {
+    startLoading("product");
+    const response = await appFetch(`${endpoint}${productId}/`, {
       method: "GET",
-      disableUrlAppend: products.nextPage !== null,
     });
     stopLoading();
-
     if (response.data) {
-      setProducts((prev) => ({
-        data: [...prev.data, ...response.data],
-        nextPage: response.next,
-        count: response.count,
-      }));
+      setProductInfo(response.data);
     }
-  }, [products.nextPage]);
+  }, []);
 
-  return { addProduct, getProducts, products, loading };
+  return { addProduct, getProducts, getProductDetail, productInfo, products, loading };
 }
 
 export default useProduct;

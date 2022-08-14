@@ -39,8 +39,6 @@ const Index = () => {
     fetchHomeInfo();
   }, []);
 
-  console.log({ recentOrders });
-
   return (
     <DashboardLayout>
       <div className="flex flex-row lg:container mb-16 smMax:flex-col xlMax:justify-between">

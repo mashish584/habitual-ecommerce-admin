@@ -10,21 +10,25 @@ import useProduct from "../../hooks/useProduct";
 
 const Product = () => {
   const loader = useRef<LoaderRef>(null);
-  const { getProducts, products } = useProduct();
+  const { getProducts, products, getProductDetail, productInfo } = useProduct();
   const [showAddProductForm, setShowAddProductForm] = useState(false);
   const [showProductDetail, setShowProductDetail] = useState(false);
 
   const { createObserver } = useIntersection();
 
+  const viewProductDetail = async (index: number) => {
+    await getProductDetail(products.data[index].id);
+    setShowProductDetail(true);
+  };
+
   useEffect(() => {
-    getProducts();
+    getProducts(`?select=id&select=title&select=price&select=images&select=quantity&select=categoryIds`);
   }, []);
 
   useEffect(() => {
     let observer: IntersectionObserver;
     if (loader.current) {
       observer = createObserver(loader, () => {
-        console.log(`Next page is ${products.nextPage}`);
         if (products.nextPage) {
           getProducts();
         }
@@ -50,9 +54,7 @@ const Product = () => {
           <ListContainer className="mw-1024 tableMaxHeight px-2 py-2">
             {products.data.map((product, index) => {
               const isLastRow = products.data.length - 1 === index;
-              if (isLastRow) {
-                console.log(`Index of last row is ${index}`);
-              }
+
               return (
                 <ListRow key={index} ref={isLastRow ? loader : null} className="justify-between">
                   <ListItem isImage={true} imagePath={product.images[0].thumbnailUrl} className="w-16 h-16" />
@@ -67,7 +69,7 @@ const Product = () => {
                     index={index}
                     className="w-40"
                     childClasses="radius-80"
-                    onAction={() => setShowProductDetail(true)}
+                    onAction={viewProductDetail}
                   />
                 </ListRow>
               );
@@ -77,7 +79,7 @@ const Product = () => {
       </div>
 
       <AddProductModal visible={showAddProductForm} onClose={() => setShowAddProductForm(false)} />
-      <ProductDetailModal visible={showProductDetail} onClose={() => setShowProductDetail(false)} />
+      <ProductDetailModal visible={showProductDetail} selectedProduct={productInfo} onClose={() => setShowProductDetail(false)} />
     </DashboardLayout>
   );
 };
