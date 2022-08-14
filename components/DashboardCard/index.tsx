@@ -4,7 +4,7 @@ import { IconType } from "../types";
 interface DashboardCardI {
   Icon: IconType;
   title: string;
-  count: string;
+  count: number;
   className?: string;
 }
 

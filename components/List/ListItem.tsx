@@ -26,10 +26,10 @@ type ListItemProps = {
   onAction?: (index: number) => void;
 };
 
-type ImagePathProps = ListItemProps & { isImage: true; imagePath: string; text?: string; type?: ListType };
-type NoImagePathProps = ListItemProps & { isImage?: false; text: string; type: ListType };
+type ImagePathProps = ListItemProps & { isImage: true; imagePath: string | null; text?: string | null; type?: ListType };
+type NoImagePathProps = ListItemProps & { isImage?: false; text: string | null; type: ListType };
 
-function getListChild(type: ListType | undefined, text: string, config?: ListItemConfig) {
+function getListChild(type: ListType | undefined, text: string | null, config?: ListItemConfig) {
   switch (type) {
     case "text":
       return <p className={`text-darkGray ${config?.className}`}>{text || "-"}</p>;
@@ -58,7 +58,7 @@ function getListChild(type: ListType | undefined, text: string, config?: ListIte
 
 function ListItem(props: NoImagePathProps): JSX.Element;
 function ListItem(props: ImagePathProps): JSX.Element;
-function ListItem(props: ListItemProps & { isImage?: boolean; imagePath?: string; text?: string; type?: ListType }) {
+function ListItem(props: ListItemProps & { isImage?: boolean; imagePath?: string | null; text?: string | null; type?: ListType }) {
   const { type, text, className, imagePath, isImage, index } = props;
   const classes = className || "flex-1";
 
@@ -69,7 +69,7 @@ function ListItem(props: ListItemProps & { isImage?: boolean; imagePath?: string
   }, [index]);
 
   const Child = isImage ? (
-    <div className={`w-full h-full overflow-hidden ${!imagePath && "bg-lightGray rounded-xl "} ${className}`}>
+    <div className={`w-full h-full overflow-hidden ${!imagePath ? "bg-lightGray rounded-xl " : ""} ${className}`}>
       {imagePath ? <Image src={imagePath} width={"100%"} height={"100%"} objectFit="contain" /> : null}
     </div>
   ) : (
