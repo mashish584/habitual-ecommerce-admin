@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 
 import { DashboardLayout } from "../../components/Layout";
 import { ListContainer, ListRow, ListItem } from "../../components/List";
@@ -10,7 +10,7 @@ import useProduct from "../../hooks/useProduct";
 
 const Product = () => {
   const loader = useRef<LoaderRef>(null);
-  const { getProducts, products, getProductDetail, productInfo } = useProduct();
+  const { getProducts, products, getProductDetail, productInfo, deleteProductImage, resetProductInfo } = useProduct();
   const [showAddProductForm, setShowAddProductForm] = useState(false);
   const [showProductDetail, setShowProductDetail] = useState(false);
 
@@ -21,8 +21,27 @@ const Product = () => {
     setShowProductDetail(true);
   };
 
+  const hideProductDetail = useCallback(() => {
+    resetProductInfo();
+    setShowProductDetail(false);
+  }, []);
+
+  const showProductForm = useCallback(() => {
+    if (productInfo) {
+      setShowProductDetail(false);
+    }
+    setShowAddProductForm(true);
+  }, [productInfo]);
+
+  const hideProductForm = useCallback(() => {
+    if (productInfo) {
+      setShowProductDetail(true);
+    }
+    setShowAddProductForm(false);
+  }, [productInfo]);
+
   useEffect(() => {
-    getProducts(`?select=id&select=title&select=price&select=images&select=quantity&select=categoryIds`);
+    getProducts("?select=id&select=title&select=price&select=images&select=quantity&select=categoryIds");
   }, []);
 
   useEffect(() => {
@@ -44,12 +63,7 @@ const Product = () => {
   return (
     <DashboardLayout>
       <div className="lg:container">
-        <SectionHeading
-          title={`Products(${products.count})`}
-          isAction={true}
-          buttonText="Add Product"
-          onAction={() => setShowAddProductForm(true)}
-        />
+        <SectionHeading title={`Products(${products.count})`} isAction={true} buttonText="Add Product" onAction={showProductForm} />
         <div className="w-full h-full overflow-auto px-2 py-1">
           <ListContainer className="mw-1024 tableMaxHeight px-2 py-2">
             {products.data.map((product, index) => {
@@ -78,8 +92,18 @@ const Product = () => {
         </div>
       </div>
 
-      <AddProductModal visible={showAddProductForm} onClose={() => setShowAddProductForm(false)} />
-      <ProductDetailModal visible={showProductDetail} selectedProduct={productInfo} onClose={() => setShowProductDetail(false)} />
+      <AddProductModal
+        visible={showAddProductForm}
+        selectedProduct={productInfo}
+        onProductImageDelete={deleteProductImage}
+        onClose={hideProductForm}
+      />
+      <ProductDetailModal
+        visible={showProductDetail}
+        selectedProduct={productInfo}
+        onProductEdit={showProductForm}
+        onClose={hideProductDetail}
+      />
     </DashboardLayout>
   );
 };

@@ -221,6 +221,10 @@ const deleteProductImageHandler = async (req: NextApiRequest, res: NextApiRespon
   const imageId = req.query?.id;
   const productId = req.body?.productId;
 
+  if (!productId) {
+    throw new Error("Product id not provided.");
+  }
+
   // ⚠️ productId not exist
   const productInfo = await prisma.product.findFirst({ where: { id: productId } });
 
@@ -229,6 +233,10 @@ const deleteProductImageHandler = async (req: NextApiRequest, res: NextApiRespon
   }
 
   const images = productInfo.images || [];
+
+  if (productInfo.images.length === 1) {
+    throw new Error("You're not allowed to delete only present image of product.");
+  }
 
   // ⚠️ imageId not exist
   const imageIndex = images?.findIndex((product: any) => product?.fileId === imageId);
@@ -248,7 +256,7 @@ const deleteProductImageHandler = async (req: NextApiRequest, res: NextApiRespon
     },
   });
 
-  return generateResponse("200", "Product image removed.", res, { product });
+  return generateResponse("200", "Product image removed.", res, { data: product });
 };
 
 export default {

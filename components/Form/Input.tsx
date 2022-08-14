@@ -49,6 +49,7 @@ const Input = React.forwardRef<InputRef & TextAreaRef, InputI>((props, ref) => {
           <textarea
             name={inputProps.name}
             onChange={inputProps.onChange}
+            value={inputProps.value}
             ref={ref}
             className={`w-full h-full rounded-2xl p-4 ${className || ""}`}
           />

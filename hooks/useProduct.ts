@@ -8,7 +8,7 @@ import { LoadingI } from "../utils/types";
 const endpoint = "product/";
 
 export type Product = Omit<ProductT, "images"> & { images: UploadResponse[]; category: Record<"name" | "id", string>[] };
-type ProductLoadingType = "products" | "addProduct" | "updateProduct" | "product" | null;
+type ProductLoadingType = "products" | "addProduct" | "updateProduct" | "product" | "removeProductImage" | null;
 type ProductState = {
   data: Product[];
   nextPage: string | null;
@@ -32,6 +32,8 @@ interface UseProduct {
   addProduct: (data: ProductFormInterface) => Promise<any>;
   getProducts: (query?: string) => Promise<any>;
   getProductDetail: (productId: string) => Promise<any>;
+  deleteProductImage: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => Promise<any>;
+  resetProductInfo: () => void;
 }
 
 function useProduct(): UseProduct {
@@ -89,7 +91,35 @@ function useProduct(): UseProduct {
     }
   }, []);
 
-  return { addProduct, getProducts, getProductDetail, productInfo, products, loading };
+  const resetProductInfo = useCallback(() => {
+    setProductInfo(null);
+  }, []);
+
+  const deleteProductImage = useCallback(
+    async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+      const imageId = e.currentTarget.dataset.image;
+
+      if (imageId && productInfo?.id) {
+        startLoading("removeProductImage");
+        const response = await appFetch(`${endpoint}image/${imageId}/`, {
+          method: "DELETE",
+          body: JSON.stringify({ productId: productInfo?.id }),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        stopLoading();
+        if (response.data) {
+          setProductInfo(response.data);
+        } else if (response.message) {
+          alert(response.message);
+        }
+      }
+    },
+    [productInfo],
+  );
+
+  return { addProduct, getProducts, getProductDetail, resetProductInfo, deleteProductImage, productInfo, products, loading };
 }
 
 export default useProduct;

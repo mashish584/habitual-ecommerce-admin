@@ -1,26 +1,31 @@
 import React, { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import useCategory from "../../hooks/useCategory";
-import useProduct, { ProductFormInterface } from "../../hooks/useProduct";
+import useProduct, { Product, ProductFormInterface } from "../../hooks/useProduct";
 import Button from "../Button";
 import { Input, Select } from "../Form";
-import ImagePicker from "../Form/ImagePicker";
+import ImagePicker, { PreviewImage } from "../Form/ImagePicker";
 import { MessageT } from "../Form/Input";
 import Message from "../Form/Message";
 import { Option, SelectOption } from "../Form/Select";
 import SideModal, { SideModalI } from "./SideModal";
 
-interface AddproductModal extends SideModalI {}
+interface AddproductModal extends SideModalI {
+  selectedProduct?: Product | null;
+  onProductImageDelete: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
+}
 
-const AddProductModal: React.FC<AddproductModal> = ({ visible, onClose }) => {
+const AddProductModal: React.FC<AddproductModal> = ({ visible, onClose, selectedProduct, onProductImageDelete }) => {
   const { getCategories } = useCategory();
   const { addProduct, loading } = useProduct();
+  const [uploadedImages, setUploadedImages] = useState<PreviewImage[]>();
   const [categories, setCategories] = useState<Option[]>([]);
   const {
     reset,
     handleSubmit,
     control,
     setError,
+    setValue,
     formState: { errors },
   } = useForm<ProductFormInterface>();
 
@@ -31,7 +36,9 @@ const AddProductModal: React.FC<AddproductModal> = ({ visible, onClose }) => {
       onClose();
       alert("✅ Product added succesfully.");
     } else {
-      response?.errors?.map((error: { key: keyof ProductFormInterface; message: string }) => setError(error.key, { message: error.message }));
+      response?.errors?.map((error: { key: keyof ProductFormInterface; message: string }) =>
+        setError(error.key, { message: error.message }),
+      );
     }
   };
 
@@ -43,6 +50,25 @@ const AddProductModal: React.FC<AddproductModal> = ({ visible, onClose }) => {
       })();
     }
   }, [visible, categories]);
+
+  useEffect(() => {
+    if (selectedProduct) {
+      console.log({ selectedProduct });
+      setValue("title", selectedProduct.title);
+      setValue("price", `${selectedProduct.price}`);
+      setValue("discount", `${selectedProduct.discount}`);
+      setValue("quantity", `${selectedProduct.quantity}`);
+      setValue("description", selectedProduct.description || "");
+      setValue("categories", selectedProduct.categoryIds);
+
+      const images = selectedProduct.images.map((image) => ({
+        id: image.fileId,
+        url: image.url,
+      }));
+
+      setUploadedImages(images);
+    }
+  }, [selectedProduct]);
 
   return (
     <SideModal visible={visible} onClose={onClose}>
@@ -176,10 +202,11 @@ const AddProductModal: React.FC<AddproductModal> = ({ visible, onClose }) => {
                   <ImagePicker
                     label="Upload Image"
                     actionText="Upload Image"
-                    previousUploadUrls={[]}
+                    previousUploadUrls={uploadedImages}
                     selectedFiles={value || []}
                     maxUpload={3}
                     className={"mb-2"}
+                    onImageRemove={onProductImageDelete}
                     onChange={onChange}
                   />
                   {errors.image && errors.image.type === "required" && <Message messageType="error" message={errors.image.message || ""} />}

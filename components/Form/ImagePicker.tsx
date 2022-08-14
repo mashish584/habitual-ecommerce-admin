@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { ImageOutlined } from "@mui/icons-material";
+import { Delete, ImageOutlined } from "@mui/icons-material";
 
 export type PreviewImage = {
   id: string | null;
@@ -16,6 +16,7 @@ interface ImagePickerI {
   maxUpload: number;
   className?: string;
   onChange: (files: File[] | File) => void;
+  onImageRemove: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
 }
 
 function generateURLFromFiles(files: File[]) {
@@ -32,7 +33,16 @@ function isValidMediaSelected(files: File[]) {
   return !isInvalidFileExist;
 }
 
-const ImagePicker = ({ label, actionText, selectedFiles, previousUploadUrls, maxUpload, onChange, className }: ImagePickerI) => {
+const ImagePicker = ({
+  label,
+  actionText,
+  selectedFiles,
+  previousUploadUrls,
+  maxUpload,
+  onChange,
+  className,
+  onImageRemove,
+}: ImagePickerI) => {
   const fileRef = useRef<HTMLInputElement | null>(null);
   const [previewImages, setPreviewImages] = useState<PreviewImage[]>([]);
 
@@ -52,7 +62,7 @@ const ImagePicker = ({ label, actionText, selectedFiles, previousUploadUrls, max
           alert("Max file limit exceed.");
         } else {
           const urls = generateURLFromFiles(files);
-          setPreviewImages(urls);
+          setPreviewImages(previousUploadUrls ? [...previousUploadUrls, ...urls] : urls);
           onChange(isSingleUpload ? files[0] : files);
         }
       }
@@ -75,11 +85,21 @@ const ImagePicker = ({ label, actionText, selectedFiles, previousUploadUrls, max
       <div className={`w-full mb-3.5 ${className}`}>
         <label className="ff-lato text-xs font-extrabold inline-block mb-1">{label || "Add Image"}</label>
         <div className="flex flex-row flex-wrap">
-          {previewImages.map(({ id, url }, index) => (
-            <div key={id || index} className="relative w-24 h-fit bg-lightGray p-2 border-gray border-1 rounded-lg mr-2 mb-1 mt-1">
-              <Image src={url} width={"100%"} height="100%" objectFit="contain" />
-            </div>
-          ))}
+          {previewImages.map(({ id, url }, index) => {
+            return (
+              <div>
+                <div key={id || index} className="relative w-24 h-fit bg-lightGray p-2 border-gray border-1 rounded-lg mr-2 mb-1 mt-1">
+                  <Image src={url} width={"100%"} height="100%" objectFit="contain" />
+                </div>
+                {id !== null && (
+                  <button type="button" onClick={onImageRemove} data-image={id} className="text-danger flex flex-row items-center">
+                    <Delete fontSize="small" />
+                    <span> Remove</span>
+                  </button>
+                )}
+              </div>
+            );
+          })}
           <input type="file" id="file" name="file" className="w-0 h-0 opacity-0" ref={fileRef} accept="image/*" onChange={onFileSelect} />
           <label
             className="w-24 h-24 bg-lightGray border-gray border-1 flex flex-col items-center justify-center rounded-lg font-bold text-lightBlack text-xs mt-1"
