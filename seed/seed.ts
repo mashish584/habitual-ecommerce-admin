@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import ProductJSON from "./products";
+import ProductJSON from "./productsSeed";
 
 const prisma = new PrismaClient();
 

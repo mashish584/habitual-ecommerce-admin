@@ -43,11 +43,11 @@ const AddCategoryModal = ({ visible, onClose, selectedCategory }: AddCategoryMod
   const categories = parentCategories.map((category) => ({ label: category.name, value: category.id }));
   const previousUploadUrls: PreviewImage[] = selectedCategory?.image
     ? [
-      {
-        id: null,
-        url: selectedCategory.image,
-      },
-    ]
+        {
+          id: null,
+          url: selectedCategory.image,
+        },
+      ]
     : [];
 
   const onCategoryRemove = useCallback(async () => {

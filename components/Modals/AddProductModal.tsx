@@ -31,26 +31,27 @@ const AddProductModal: React.FC<AddproductModal> = ({ visible, onClose, selected
   } = useForm<ProductFormInterface>();
 
   const onSubmit = async (data: ProductFormInterface) => {
-    if (selectedProduct) {
-      const formValues = filterProductForm(data, selectedProduct);
-      if (Object.keys(formValues).length) {
-        const response = await updateProduct(formValues, selectedProduct.id);
-        if (response.status == 200) {
-          onClose();
-          updateProductState("update", response.data);
-        }
-      }
-    } else {
-      const response = await addProduct(data);
+    function handleResponse(response: any) {
       if (response.status == 200) {
-        reset();
         onClose();
-        alert("✅ Product added succesfully.");
+        if (!selectedProduct) reset();
+        updateProductState(selectedProduct ? "update" : "add", response.data);
       } else {
         response?.errors?.map((error: { key: keyof ProductFormInterface; message: string }) =>
           setError(error.key, { message: error.message }),
         );
       }
+    }
+
+    if (selectedProduct) {
+      const formValues = filterProductForm(data, selectedProduct);
+      if (Object.keys(formValues).length) {
+        const response = await updateProduct(formValues, selectedProduct.id);
+        handleResponse(response);
+      }
+    } else {
+      const response = await addProduct(data);
+      handleResponse(response);
     }
   };
 
@@ -65,7 +66,6 @@ const AddProductModal: React.FC<AddproductModal> = ({ visible, onClose, selected
 
   useEffect(() => {
     if (selectedProduct) {
-      console.log({ selectedProduct });
       setValue("title", selectedProduct.title);
       setValue("price", `${selectedProduct.price}`);
       setValue("discount", `${selectedProduct.discount}`);
@@ -165,7 +165,9 @@ const AddProductModal: React.FC<AddproductModal> = ({ visible, onClose, selected
                   additionalInputProps.messageType = "error";
                   additionalInputProps.message = errors.description.message;
                 }
-                return <Input type="textarea" label="Description" className="basis-30" {...field} {...additionalInputProps} />;
+                return (
+                  <Input type="textarea" label="Description" className="basis-30" maxLength={300} {...field} {...additionalInputProps} />
+                );
               }}
             />
 
