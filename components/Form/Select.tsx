@@ -5,6 +5,7 @@ import { useCombobox, UseComboboxGetItemPropsOptions, useMultipleSelection } fro
 export type Option = {
   label: string;
   value: string;
+  isSelected?: boolean;
 };
 
 interface SelectI {
@@ -83,6 +84,7 @@ const Select: React.FC<SelectI> = ({ label, className, children, items, onChange
 
       return changes;
     },
+
     onStateChange({ inputValue, type, selectedItem }) {
       switch (type) {
         case useCombobox.stateChangeTypes.InputKeyDownEnter:
@@ -117,6 +119,16 @@ const Select: React.FC<SelectI> = ({ label, className, children, items, onChange
       onChange(isSingle ? selectedItems[0]?.value || "" : selectedItems.map((item) => item.value));
     }
   }, [selectedItems]);
+
+  useEffect(() => {
+    if (items.length) {
+      const defaultSelected = items.filter((item) => item.isSelected === true);
+      console.log({ defaultSelected });
+      setSelectedItems(defaultSelected);
+    }
+  }, [items]);
+
+  console.log({ selectedItems });
 
   return (
     <SelectContext.Provider value={{ getItemProps, selectedItem, highlightedIndex }}>

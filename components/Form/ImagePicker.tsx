@@ -6,12 +6,13 @@ export type PreviewImage = {
   id: string | null;
   url: string;
   color?: string;
+  isLoading?: boolean;
 };
 
 interface ImagePickerI {
   label?: string;
   actionText?: string;
-  previousUploadUrls?: PreviewImage[];
+  previousUploadUrls?: Record<string, PreviewImage>;
   selectedFiles: File | File[];
   maxUpload: number;
   className?: string;
@@ -62,7 +63,7 @@ const ImagePicker = ({
           alert("Max file limit exceed.");
         } else {
           const urls = generateURLFromFiles(files);
-          setPreviewImages(previousUploadUrls ? [...previousUploadUrls, ...urls] : urls);
+          setPreviewImages(previousUploadUrls ? [...Object.values(previousUploadUrls), ...urls] : urls);
           onChange(isSingleUpload ? files[0] : files);
         }
       }
@@ -76,7 +77,7 @@ const ImagePicker = ({
   useEffect(() => {
     if (previousUploadUrls) {
       const urls = generateURLFromFiles(previouseSelectedFiles);
-      setPreviewImages([...urls, ...previousUploadUrls]);
+      setPreviewImages([...urls, ...Object.values(previousUploadUrls)]);
     }
   }, [previousUploadUrls]);
 
@@ -85,16 +86,16 @@ const ImagePicker = ({
       <div className={`w-full mb-3.5 ${className}`}>
         <label className="ff-lato text-xs font-extrabold inline-block mb-1">{label || "Add Image"}</label>
         <div className="flex flex-row flex-wrap">
-          {previewImages.map(({ id, url }, index) => {
+          {previewImages.map(({ id, url, isLoading }, index) => {
             return (
-              <div>
-                <div key={id || index} className="relative w-24 h-fit bg-lightGray p-2 border-gray border-1 rounded-lg mr-2 mb-1 mt-1">
+              <div className={isLoading ? "opacity-50" : "opacity-1"}>
+                <div key={id || index} className={`relative w-24 h-fit bg-lightGray p-2 border-gray border-1 rounded-lg mr-2 mb-1 mt-1 $`}>
                   <Image src={url} width={"100%"} height="100%" objectFit="contain" />
                 </div>
                 {id !== null && (
                   <button type="button" onClick={onImageRemove} data-image={id} className="text-danger flex flex-row items-center">
                     <Delete fontSize="small" />
-                    <span> Remove</span>
+                    <span> {isLoading ? "Removing...." : "Remove"}</span>
                   </button>
                 )}
               </div>

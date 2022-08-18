@@ -37,7 +37,7 @@ interface UseProduct {
   updateProductState: (type: StateUpdateType, data: Product) => void;
   getProducts: (query?: string) => Promise<any>;
   getProductDetail: (productId: string) => Promise<any>;
-  deleteProductImage: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => Promise<any>;
+  deleteProductImage: (imageId: string) => Promise<any>;
   filterProductForm: (data: ProductFormInterface, selectedProduct: Product) => Partial<ProductFormInterface>;
   resetProductInfo: () => void;
 }
@@ -161,9 +161,7 @@ function useProduct(): UseProduct {
   }, []);
 
   const deleteProductImage = useCallback(
-    async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-      const imageId = e.currentTarget.dataset.image;
-
+    async (imageId) => {
       if (imageId && productInfo?.id) {
         startLoading("removeProductImage");
         const response = await appFetch(`${endpoint}image/${imageId}/`, {

@@ -13,14 +13,15 @@ import SideModal, { SideModalI } from "./SideModal";
 interface AddproductModal extends SideModalI {
   selectedProduct?: Product | null;
   updateProductState: (type: StateUpdateType, data: Product) => void;
-  onProductImageDelete: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
+  onProductImageDelete: (imageId: string) => void;
 }
 
 const AddProductModal: React.FC<AddproductModal> = ({ visible, onClose, selectedProduct, updateProductState, onProductImageDelete }) => {
   const { getCategories } = useCategory();
   const { addProduct, loading, filterProductForm, updateProduct } = useProduct();
-  const [uploadedImages, setUploadedImages] = useState<PreviewImage[]>([]);
+  const [uploadedImages, setUploadedImages] = useState<Record<string, PreviewImage>>([]);
   const [categories, setCategories] = useState<Option[]>([]);
+
   const {
     reset,
     handleSubmit,
@@ -55,14 +56,35 @@ const AddProductModal: React.FC<AddproductModal> = ({ visible, onClose, selected
     }
   };
 
+  const removeProductImage = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    const imageId = e.currentTarget.dataset.image;
+    if (imageId) {
+      setUploadedImages((images) => ({
+        ...images,
+        [imageId]: { ...images[imageId], isLoading: true },
+      }));
+      await onProductImageDelete(imageId);
+      setUploadedImages((images) => ({
+        ...images,
+        [imageId]: { ...images[imageId], isLoading: false },
+      }));
+    }
+  };
+
   useEffect(() => {
-    if (categories.length === 0 && visible) {
+    if (categories.length === 0 && visible && selectedProduct?.categoryIds.length) {
       (async () => {
-        const categories = await getCategories(true);
-        setCategories(categories.map((category) => ({ label: category.name, value: category.id })));
+        const categories = await getCategories(false);
+        setCategories(
+          categories.map((category) => ({
+            label: category.name,
+            value: category.id,
+            isSelected: selectedProduct.categoryIds.includes(category.id),
+          })),
+        );
       })();
     }
-  }, [visible, categories]);
+  }, [visible, categories, selectedProduct?.categoryIds]);
 
   useEffect(() => {
     if (selectedProduct && visible) {
@@ -73,17 +95,22 @@ const AddProductModal: React.FC<AddproductModal> = ({ visible, onClose, selected
       setValue("description", selectedProduct.description || "");
       setValue("categories", selectedProduct.categoryIds);
 
-      const images = selectedProduct.images.map((image) => ({
-        id: image.fileId,
-        url: image.url,
-      }));
+      const images = selectedProduct.images.reduce((previous, image) => {
+        return {
+          ...previous,
+          [image.fileId]: {
+            id: image.fileId,
+            url: image.url,
+          },
+        };
+      }, {} as Record<string, PreviewImage>);
 
       setUploadedImages(images);
     }
 
     if (!visible) {
       reset();
-      setUploadedImages([]);
+      setUploadedImages({});
     }
   }, [selectedProduct, visible]);
 
@@ -192,6 +219,9 @@ const AddProductModal: React.FC<AddproductModal> = ({ visible, onClose, selected
                   >
                     {categories.map((category, index) => {
                       const isSelected = value?.includes(category.value);
+                      if (isSelected) {
+                        console.log({ value });
+                      }
                       return (
                         <SelectOption
                           key={category.value}
@@ -232,7 +262,7 @@ const AddProductModal: React.FC<AddproductModal> = ({ visible, onClose, selected
                     selectedFiles={value || []}
                     maxUpload={3}
                     className={"mb-2"}
-                    onImageRemove={onProductImageDelete}
+                    onImageRemove={removeProductImage}
                     onChange={onChange}
                   />
                   {errors.image && errors.image.type === "required" && <Message messageType="error" message={errors.image.message || ""} />}
@@ -240,7 +270,12 @@ const AddProductModal: React.FC<AddproductModal> = ({ visible, onClose, selected
               )}
             />
           </div>
-          <Button variant="primary" type="submit" isLoading={loading.type === "addProduct" && loading.isLoading} className="my-10">
+          <Button
+            variant="primary"
+            type="submit"
+            isLoading={(loading.type === "addProduct" || loading.type === "updateProduct") && loading.isLoading}
+            className="my-10"
+          >
             Add Product
           </Button>
         </form>

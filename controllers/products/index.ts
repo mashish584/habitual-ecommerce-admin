@@ -265,6 +265,14 @@ const deleteProductImageHandler = async (req: NextApiRequest, res: NextApiRespon
     data: {
       images,
     },
+    include: {
+      category: {
+        select: {
+          name: true,
+          id: true,
+        },
+      },
+    },
   });
 
   return generateResponse("200", "Product image removed.", res, { data: product });
