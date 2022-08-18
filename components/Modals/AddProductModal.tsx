@@ -19,7 +19,7 @@ interface AddproductModal extends SideModalI {
 const AddProductModal: React.FC<AddproductModal> = ({ visible, onClose, selectedProduct, updateProductState, onProductImageDelete }) => {
   const { getCategories } = useCategory();
   const { addProduct, loading, filterProductForm, updateProduct } = useProduct();
-  const [uploadedImages, setUploadedImages] = useState<PreviewImage[]>();
+  const [uploadedImages, setUploadedImages] = useState<PreviewImage[]>([]);
   const [categories, setCategories] = useState<Option[]>([]);
   const {
     reset,
@@ -65,7 +65,7 @@ const AddProductModal: React.FC<AddproductModal> = ({ visible, onClose, selected
   }, [visible, categories]);
 
   useEffect(() => {
-    if (selectedProduct) {
+    if (selectedProduct && visible) {
       setValue("title", selectedProduct.title);
       setValue("price", `${selectedProduct.price}`);
       setValue("discount", `${selectedProduct.discount}`);
@@ -80,7 +80,12 @@ const AddProductModal: React.FC<AddproductModal> = ({ visible, onClose, selected
 
       setUploadedImages(images);
     }
-  }, [selectedProduct]);
+
+    if (!visible) {
+      reset();
+      setUploadedImages([]);
+    }
+  }, [selectedProduct, visible]);
 
   return (
     <SideModal visible={visible} onClose={onClose}>

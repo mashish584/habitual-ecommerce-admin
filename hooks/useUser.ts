@@ -20,7 +20,7 @@ interface UseUser {
   getUsers: () => Promise<any>;
 }
 
-function useProduct(): UseUser {
+function useUser(): UseUser {
   const [users, setUsers] = useState<UserState>({ data: [], nextPage: null, count: 0 });
   const [loading, setLoading] = useState<LoadingI<UserLoadingType>>({ type: "users", isLoading: false });
 
@@ -48,4 +48,4 @@ function useProduct(): UseUser {
   return { getUsers, users, loading };
 }
 
-export default useProduct;
+export default useUser;

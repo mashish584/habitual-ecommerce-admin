@@ -16,29 +16,32 @@ const Product = () => {
 
   const { createObserver } = useIntersection();
 
-  const viewProductDetail = async (id: string) => {
-    await getProductDetail(id);
-    setShowProductDetail(true);
-  };
+  const viewProductDetail = useCallback(
+    async (id: string) => {
+      await getProductDetail(id);
+      setShowProductDetail(true);
+    },
+    [setShowProductDetail],
+  );
 
   const hideProductDetail = useCallback(() => {
     resetProductInfo();
     setShowProductDetail(false);
-  }, []);
+  }, [setShowProductDetail]);
 
   const showProductForm = useCallback(() => {
     if (productInfo) {
       setShowProductDetail(false);
     }
     setShowAddProductForm(true);
-  }, [productInfo]);
+  }, [productInfo, setShowProductDetail, setShowAddProductForm]);
 
   const hideProductForm = useCallback(() => {
     setShowAddProductForm(false);
     if (productInfo) {
       setShowProductDetail(true);
     }
-  }, [productInfo]);
+  }, [productInfo, setShowAddProductForm, setShowProductDetail]);
 
   useEffect(() => {
     getProducts("?select=id&select=title&select=price&select=images&select=quantity&select=categoryIds");
