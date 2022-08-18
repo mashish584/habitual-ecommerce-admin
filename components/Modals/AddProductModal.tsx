@@ -117,7 +117,7 @@ const AddProductModal: React.FC<AddproductModal> = ({ visible, onClose, selected
   return (
     <SideModal visible={visible} onClose={onClose}>
       <div>
-        <h2 className="ff-lato font-black text-2xl">Add Product</h2>
+        <h2 className="ff-lato font-black text-2xl">{selectedProduct !== null ? "Edit" : "Add"} Product</h2>
         <form onSubmit={handleSubmit(onSubmit)} className="mt-10">
           <div>
             <Controller
@@ -276,7 +276,7 @@ const AddProductModal: React.FC<AddproductModal> = ({ visible, onClose, selected
             isLoading={(loading.type === "addProduct" || loading.type === "updateProduct") && loading.isLoading}
             className="my-10"
           >
-            Add Product
+            {selectedProduct !== null ? "Update" : "Add"} Product
           </Button>
         </form>
       </div>
