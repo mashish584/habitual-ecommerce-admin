@@ -20,10 +20,10 @@ type ListType = "link" | "text" | "action";
 type ListItemProps = {
   className?: string;
   childClasses?: string;
-  index?: number;
+  index?: string;
   linkPath?: string;
   actionIcon?: IconType;
-  onAction?: (index: number) => void;
+  onAction?: (index: string) => void;
 };
 
 type ImagePathProps = ListItemProps & { isImage: true; imagePath: string | null; text?: string | null; type?: ListType };

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import useCategory from "../../hooks/useCategory";
-import useProduct, { Product, ProductFormInterface } from "../../hooks/useProduct";
+import useProduct, { Product, ProductFormInterface, StateUpdateType } from "../../hooks/useProduct";
 import Button from "../Button";
 import { Input, Select } from "../Form";
 import ImagePicker, { PreviewImage } from "../Form/ImagePicker";
@@ -12,12 +12,13 @@ import SideModal, { SideModalI } from "./SideModal";
 
 interface AddproductModal extends SideModalI {
   selectedProduct?: Product | null;
+  updateProductState: (type: StateUpdateType, data: Product) => void;
   onProductImageDelete: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
 }
 
-const AddProductModal: React.FC<AddproductModal> = ({ visible, onClose, selectedProduct, onProductImageDelete }) => {
+const AddProductModal: React.FC<AddproductModal> = ({ visible, onClose, selectedProduct, updateProductState, onProductImageDelete }) => {
   const { getCategories } = useCategory();
-  const { addProduct, loading } = useProduct();
+  const { addProduct, loading, filterProductForm, updateProduct } = useProduct();
   const [uploadedImages, setUploadedImages] = useState<PreviewImage[]>();
   const [categories, setCategories] = useState<Option[]>([]);
   const {
@@ -30,15 +31,26 @@ const AddProductModal: React.FC<AddproductModal> = ({ visible, onClose, selected
   } = useForm<ProductFormInterface>();
 
   const onSubmit = async (data: ProductFormInterface) => {
-    const response = await addProduct(data);
-    if (response.status == 200) {
-      reset();
-      onClose();
-      alert("✅ Product added succesfully.");
+    if (selectedProduct) {
+      const formValues = filterProductForm(data, selectedProduct);
+      if (Object.keys(formValues).length) {
+        const response = await updateProduct(formValues, selectedProduct.id);
+        if (response.status == 200) {
+          onClose();
+          updateProductState("update", response.data);
+        }
+      }
     } else {
-      response?.errors?.map((error: { key: keyof ProductFormInterface; message: string }) =>
-        setError(error.key, { message: error.message }),
-      );
+      const response = await addProduct(data);
+      if (response.status == 200) {
+        reset();
+        onClose();
+        alert("✅ Product added succesfully.");
+      } else {
+        response?.errors?.map((error: { key: keyof ProductFormInterface; message: string }) =>
+          setError(error.key, { message: error.message }),
+        );
+      }
     }
   };
 
@@ -196,7 +208,14 @@ const AddProductModal: React.FC<AddproductModal> = ({ visible, onClose, selected
             <Controller
               name="image"
               control={control}
-              rules={{ required: "Please add atleast one image." }}
+              rules={{
+                validate: {
+                  required: (value) => {
+                    if (!value && !selectedProduct) return "Please upload atleast one image.";
+                    return true;
+                  },
+                },
+              }}
               render={({ field: { onChange, value } }) => (
                 <>
                   <ImagePicker

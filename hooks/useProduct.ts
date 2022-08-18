@@ -4,13 +4,16 @@ import { UploadResponse } from "imagekit/dist/libs/interfaces";
 
 import { appFetch } from "../utils/api";
 import { LoadingI } from "../utils/types";
+import { generateKeyValuePair } from "../utils/feUtils";
 
 const endpoint = "product/";
 
 export type Product = Omit<ProductT, "images"> & { images: UploadResponse[]; category: Record<"name" | "id", string>[] };
+export type StateUpdateType = "add" | "update" | "delete";
+
 type ProductLoadingType = "products" | "addProduct" | "updateProduct" | "product" | "removeProductImage" | null;
 type ProductState = {
-  data: Product[];
+  data: Record<string, Product>;
   nextPage: string | null;
   count: number;
 };
@@ -22,7 +25,7 @@ export interface ProductFormInterface {
   price: string;
   discount: string;
   quantity: string;
-  categories: String[] | String;
+  categories: string[] | string;
 }
 
 interface UseProduct {
@@ -30,9 +33,12 @@ interface UseProduct {
   products: ProductState;
   productInfo: Product | null;
   addProduct: (data: ProductFormInterface) => Promise<any>;
+  updateProduct: (data: Partial<ProductFormInterface>, productId: string) => Promise<any>;
+  updateProductState: (type: StateUpdateType, data: Product) => void;
   getProducts: (query?: string) => Promise<any>;
   getProductDetail: (productId: string) => Promise<any>;
   deleteProductImage: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => Promise<any>;
+  filterProductForm: (data: ProductFormInterface, selectedProduct: Product) => Partial<ProductFormInterface>;
   resetProductInfo: () => void;
 }
 
@@ -59,6 +65,64 @@ function useProduct(): UseProduct {
     return response;
   }, []);
 
+  const filterProductForm = useCallback((data: ProductFormInterface, selectedProduct: Product) => {
+    const formValues = { ...data } as Partial<ProductFormInterface>;
+
+    for (const key in formValues) {
+      const currentValue = formValues[key as keyof ProductFormInterface];
+      const oldValue = selectedProduct[key as keyof Product];
+      if (!["categories", "image"].includes(key) && currentValue == oldValue) {
+        delete formValues[key as keyof ProductFormInterface];
+      }
+
+      if (key === "image" && !formValues.image) delete formValues.image;
+      if (key === "categories" && formValues.categories?.length) {
+        if (Array.isArray(formValues.categories) && selectedProduct.categoryIds.length === formValues.categories?.length) {
+          const isChanged = formValues.categories.some((categoryId) => !selectedProduct.categoryIds.includes(categoryId));
+          if (!isChanged) {
+            delete formValues.categories;
+          }
+        }
+      }
+    }
+
+    return formValues;
+  }, []);
+
+  const updateProduct = useCallback(async (data: Partial<ProductFormInterface>, productId: string) => {
+    startLoading("updateProduct");
+
+    if (data.categories) {
+      data.categories = JSON.stringify(data.categories);
+    }
+
+    const response = await appFetch(`${endpoint}${productId}/`, {
+      method: "PATCH",
+      body: data,
+      isFormData: true,
+    });
+
+    stopLoading();
+
+    return response;
+  }, []);
+
+  const updateProductState = useCallback(
+    (type: StateUpdateType, data: Product) => {
+      setProducts((prev) => {
+        return {
+          ...prev,
+          data: { ...prev.data, [data.id]: data },
+        };
+      });
+
+      if (type === "update") {
+        setProductInfo(data);
+      }
+    },
+    [setProducts],
+  );
+
   const getProducts = useCallback(
     async (query = "") => {
       startLoading("products");
@@ -70,8 +134,9 @@ function useProduct(): UseProduct {
       stopLoading();
 
       if (response.data) {
+        const products = generateKeyValuePair<Product>(response.data);
         setProducts((prev) => ({
-          data: [...prev.data, ...response.data],
+          data: { ...prev.data, ...products },
           nextPage: response.next,
           count: response.count,
         }));
@@ -119,7 +184,19 @@ function useProduct(): UseProduct {
     [productInfo],
   );
 
-  return { addProduct, getProducts, getProductDetail, resetProductInfo, deleteProductImage, productInfo, products, loading };
+  return {
+    addProduct,
+    updateProduct,
+    updateProductState,
+    getProducts,
+    getProductDetail,
+    filterProductForm,
+    resetProductInfo,
+    deleteProductImage,
+    productInfo,
+    products,
+    loading,
+  };
 }
 
 export default useProduct;

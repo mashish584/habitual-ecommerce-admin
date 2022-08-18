@@ -166,7 +166,7 @@ const postRequestHandler = async (req: NextApiRequest, res: NextApiResponse) => 
   const product = await prisma.product.create({ data: { ...data, images } });
 
   return generateResponse("200", "Product created endpoint hit.", res, {
-    product,
+    data: product,
   });
 };
 
@@ -212,9 +212,20 @@ const patchRequestHandler = async (req: NextApiRequest, res: NextApiResponse) =>
     delete data.images;
   }
 
-  const product = await prisma.product.update({ where: { id: productId }, data });
+  const product = await prisma.product.update({
+    where: { id: productId },
+    data,
+    include: {
+      category: {
+        select: {
+          name: true,
+          id: true,
+        },
+      },
+    },
+  });
 
-  return generateResponse("200", "Product created endpoint hit.", res, { product });
+  return generateResponse("200", "Product created endpoint hit.", res, { data: product });
 };
 
 const deleteProductImageHandler = async (req: NextApiRequest, res: NextApiResponse) => {

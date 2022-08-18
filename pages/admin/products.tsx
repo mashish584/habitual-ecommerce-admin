@@ -10,14 +10,14 @@ import useProduct from "../../hooks/useProduct";
 
 const Product = () => {
   const loader = useRef<LoaderRef>(null);
-  const { getProducts, products, getProductDetail, productInfo, deleteProductImage, resetProductInfo } = useProduct();
+  const { getProducts, products, getProductDetail, productInfo, deleteProductImage, resetProductInfo, updateProductState } = useProduct();
   const [showAddProductForm, setShowAddProductForm] = useState(false);
   const [showProductDetail, setShowProductDetail] = useState(false);
 
   const { createObserver } = useIntersection();
 
-  const viewProductDetail = async (index: number) => {
-    await getProductDetail(products.data[index].id);
+  const viewProductDetail = async (id: string) => {
+    await getProductDetail(id);
     setShowProductDetail(true);
   };
 
@@ -34,10 +34,10 @@ const Product = () => {
   }, [productInfo]);
 
   const hideProductForm = useCallback(() => {
+    setShowAddProductForm(false);
     if (productInfo) {
       setShowProductDetail(true);
     }
-    setShowAddProductForm(false);
   }, [productInfo]);
 
   useEffect(() => {
@@ -60,14 +60,17 @@ const Product = () => {
     };
   }, [products]);
 
+  const productIds = Object.keys(products.data);
+
   return (
     <DashboardLayout>
       <div className="lg:container">
         <SectionHeading title={`Products(${products.count})`} isAction={true} buttonText="Add Product" onAction={showProductForm} />
         <div className="w-full h-full overflow-auto px-2 py-1">
           <ListContainer className="mw-1024 tableMaxHeight px-2 py-2">
-            {products.data.map((product, index) => {
-              const isLastRow = products.data.length - 1 === index;
+            {productIds.map((productId, index) => {
+              const isLastRow = productIds.length - 1 === index;
+              const product = products.data[productId];
 
               return (
                 <ListRow key={index} ref={isLastRow ? loader : null} className="justify-between">
@@ -80,7 +83,7 @@ const Product = () => {
                   <ListItem
                     type="action"
                     text="View"
-                    index={index}
+                    index={productId}
                     className="w-40"
                     childClasses="radius-80"
                     onAction={viewProductDetail}
@@ -95,6 +98,7 @@ const Product = () => {
       <AddProductModal
         visible={showAddProductForm}
         selectedProduct={productInfo}
+        updateProductState={updateProductState}
         onProductImageDelete={deleteProductImage}
         onClose={hideProductForm}
       />
