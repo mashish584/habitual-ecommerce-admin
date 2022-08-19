@@ -63,7 +63,17 @@ const Category = () => {
           onAction={() => setShowAddCategoryModal(true)}
         />
         <div className="w-full h-full overflow-auto px-2 py-1">
-          <ListContainer className="mw-1024 tableMaxHeight px-2 py-2">
+          <ListContainer className="relative mw-1024 tableMaxHeight">
+            {/* Table Heading */}
+            <ListRow className="bg-white sticky top-0 z-10 left-0 right-0 justify-between">
+              <ListItem type="heading" text={"#"} className="w-16 text-center" />
+              <ListItem type="heading" text={"Title"} className="w-36" />
+              <ListItem type="heading" text={"Parent"} className="w-28" />
+              <ListItem type="heading" text={"No. of products associated"} className="w-56" />
+              <ListItem type="heading" text={"No. of child categories"} className="w-40" />
+              <ListItem type="heading" text={"Action"} className="w-40" />
+            </ListRow>
+            {/* Table Content */}
             {Object.values(categories).map((category) => (
               <ListRow key={category.id} className="justify-between">
                 <ListItem isImage={true} imagePath={category.image || ""} className={"w-16 h-16 mr-2"} />

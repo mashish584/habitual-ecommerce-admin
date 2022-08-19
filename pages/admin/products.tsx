@@ -71,8 +71,8 @@ const Product = () => {
       <div className="lg:container">
         <SectionHeading title={`Products(${products.count})`} isAction={true} buttonText="Add Product" onAction={showProductForm} />
         <div className="w-full h-full overflow-auto px-2 py-1">
-          {/* Table heading */}
           <ListContainer className="relative mw-1024 tableMaxHeight pb-24">
+            {/* Table heading */}
             <ListRow className="bg-white sticky top-0 z-10 left-0 right-0 justify-between">
               <ListItem type="heading" text={"#"} className="w-16 text-center" />
               <ListItem type="heading" text={"Title"} className="w-48" />
