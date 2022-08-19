@@ -3,13 +3,12 @@ import { Product as ProductT } from "@prisma/client";
 import { UploadResponse } from "imagekit/dist/libs/interfaces";
 
 import { appFetch } from "../utils/api";
-import { LoadingI } from "../utils/types";
+import { LoadingI, StateUpdateType } from "../utils/types";
 import { generateKeyValuePair } from "../utils/feUtils";
 
 const endpoint = "product/";
 
 export type Product = Omit<ProductT, "images"> & { images: UploadResponse[]; category: Record<"name" | "id", string>[] };
-export type StateUpdateType = "add" | "update" | "delete";
 
 type ProductLoadingType = "products" | "addProduct" | "updateProduct" | "product" | "removeProductImage" | null;
 type ProductState = {
@@ -109,12 +108,10 @@ function useProduct(): UseProduct {
 
   const updateProductState = useCallback(
     (type: StateUpdateType, data: Product) => {
-      setProducts((prev) => {
-        return {
-          ...prev,
-          data: { ...prev.data, [data.id]: data },
-        };
-      });
+      setProducts((prev) => ({
+        ...prev,
+        data: { ...prev.data, [data.id]: data },
+      }));
 
       if (type === "update") {
         setProductInfo(data);

@@ -118,9 +118,19 @@ const postRequestHandler = async (req: NextApiRequest, res: NextApiResponse) => 
     };
   }
 
-  const category = await prisma.category.create({ data });
+  const category = await prisma.category.create({
+    data,
+    include: {
+      parentCategory: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
+    },
+  });
 
-  return generateResponse("200", "Category saved.", res, { category });
+  return generateResponse("200", "Category saved.", res, { data: category });
 };
 
 const patchRequestHandler = async (req: NextApiRequest, res: NextApiResponse) => {
@@ -138,16 +148,39 @@ const patchRequestHandler = async (req: NextApiRequest, res: NextApiResponse) =>
     throw new Error("Category not found.");
   }
 
-  const data = { name: req.body.name } as Prisma.CategoryUpdateInput;
+  const data = {} as Prisma.CategoryUpdateInput;
+
+  if (req.body.name) {
+    data.name = req.body.name;
+  }
+
+  if (req.body.parent) {
+    data.parentCategory = {
+      connect: {
+        id: req.body.parent,
+      },
+    };
+  }
 
   if (req.file && validateImageUpload(req.file, res)) {
     const response = await upload_on_imagekit(req.file.buffer, req.file.originalname);
     data.image = response.url;
   }
 
-  await prisma.category.update({ where: { id: categoryId }, data });
+  const updatedCategory = await prisma.category.update({
+    where: { id: categoryId },
+    data,
+    include: {
+      parentCategory: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
+    },
+  });
 
-  return generateResponse("200", "Category updated.", res);
+  return generateResponse("200", "Category updated.", res, { data: updatedCategory });
 };
 
 const deleteRequestHandler = async (req: NextApiRequest, res: NextApiResponse) => {

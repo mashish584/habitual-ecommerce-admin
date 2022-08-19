@@ -24,6 +24,7 @@ interface UseCategory {
   addCategory: (data: Category) => Promise<any>;
   getCategories: (isParent: boolean) => Promise<CategoryI[]>;
   updateCategory: (categoryId: string, data: any) => Promise<any>;
+  // updateCategoryState: (type: StateUpdateType, data: Category) => void;
 }
 
 function useCategory(): UseCategory {
@@ -64,11 +65,16 @@ function useCategory(): UseCategory {
 
     if (response.data) {
       stopLoading();
-      alert("Category updated");
     }
 
     return response;
   }, []);
+
+  // const updateCategoryState = useCallback((type:StateUpdateType,data:Category) => {
+
+  //   if(type === 'add' || type === )
+
+  // }, []);
 
   const getCategories = useCallback(async (isParent: boolean) => {
     const query = isParent ? "?parent=true" : "";

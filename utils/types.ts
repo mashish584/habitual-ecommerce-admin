@@ -84,7 +84,9 @@ export type ErrorMessage<T> = {
   message: string;
 };
 
-// Frontend Fetch Interface
+/**
+ *  *** Frontend ***
+ */
 
 export interface FetchConfig {
   method: RequestMethods;
@@ -114,3 +116,5 @@ export interface LoadingI<T> {
   type: T;
   isLoading: boolean;
 }
+
+export type StateUpdateType = "add" | "update" | "delete";

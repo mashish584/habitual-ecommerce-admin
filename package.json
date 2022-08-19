@@ -20,6 +20,7 @@
     "bcryptjs": "^2.4.3",
     "dayjs": "^1.11.5",
     "downshift": "^6.1.7",
+    "eslint-plugin-react-hooks": "^4.7.0-next-19e9a4c68-20220818",
     "imagekit": "^3.2.4",
     "jsonwebtoken": "^8.5.1",
     "multer": "^1.4.4",

@@ -4,18 +4,21 @@ import { useForm, Controller } from "react-hook-form";
 import Button from "../Button";
 import { Input, Select } from "../Form";
 import ImagePicker, { PreviewImage } from "../Form/ImagePicker";
-import { SelectOption } from "../Form/Select";
+import { Option, SelectOption } from "../Form/Select";
 import SideModal, { SideModalI } from "./SideModal";
 import useCategory, { Category, CategoryI } from "../../hooks/useCategory";
 import { MessageT } from "../Form/Input";
+import { StateUpdateType } from "../../utils/types";
 
 interface AddCategoryModalI extends SideModalI {
   selectedCategory: CategoryI | null;
+  updateCategoryState: (type: StateUpdateType, data: CategoryI) => void;
 }
 
-const AddCategoryModal = ({ visible, onClose, selectedCategory }: AddCategoryModalI) => {
+const AddCategoryModal = ({ visible, onClose, selectedCategory, updateCategoryState }: AddCategoryModalI) => {
   const { getCategories, addCategory, updateCategory, deleteCategory, loading } = useCategory();
-  const [parentCategories, setParentCategories] = useState<CategoryI[]>([]);
+  const [parentCategories, setParentCategories] = useState<Option[]>([]);
+  const [previouseUploadUrls, setPreviousUploadUrls] = useState<Record<string, PreviewImage>>({});
   const {
     reset,
     handleSubmit,
@@ -28,33 +31,43 @@ const AddCategoryModal = ({ visible, onClose, selectedCategory }: AddCategoryMod
     if (parentCategories?.length === 0 && visible) {
       (async () => {
         const categories = await getCategories(true);
-        setParentCategories(categories);
+        setParentCategories(categories.map((category) => ({ label: category.name, value: category.id })));
       })();
     }
-  }, [visible, parentCategories]);
+  }, [visible, parentCategories, getCategories]);
 
   useEffect(() => {
-    if (selectedCategory) {
+    if (selectedCategory && visible) {
       setValue("name", selectedCategory.name);
       setValue("parent", selectedCategory?.parentId || "");
-    }
-  }, [selectedCategory]);
 
-  const categories = parentCategories.map((category) => ({ label: category.name, value: category.id }));
-  const previousUploadUrls: PreviewImage[] = selectedCategory?.image
-    ? [
-        {
-          id: null,
-          url: selectedCategory.image,
-        },
-      ]
-    : [];
+      if (selectedCategory?.image) {
+        setPreviousUploadUrls({
+          [selectedCategory.image]: {
+            id: null,
+            url: selectedCategory.image,
+          },
+        });
+      }
+    }
+
+    if (!visible) {
+      reset();
+      setPreviousUploadUrls({});
+    }
+  }, [selectedCategory, visible, setValue, reset]);
 
   const onCategoryRemove = useCallback(async () => {
     if (selectedCategory?.id) {
-      deleteCategory(selectedCategory?.id);
+      const response = await deleteCategory(selectedCategory?.id);
+      if (response.status == 200) {
+        onClose();
+        reset();
+        setPreviousUploadUrls({});
+        updateCategoryState("delete", selectedCategory);
+      }
     }
-  }, [selectedCategory]);
+  }, [deleteCategory, onClose, reset, selectedCategory, updateCategoryState]);
 
   const onSubmit = async (data: Category) => {
     const info = { ...data };
@@ -62,18 +75,27 @@ const AddCategoryModal = ({ visible, onClose, selectedCategory }: AddCategoryMod
     if (info.parent?.trim() === "" || info.parent === selectedCategory?.parentId) delete info.parent;
 
     if (selectedCategory) {
-      await updateCategory(selectedCategory.id, info);
+      const response = await updateCategory(selectedCategory.id, info);
+      if (response.status == 200) {
+        onClose();
+        reset();
+        setPreviousUploadUrls({});
+        updateCategoryState("update", response.data);
+      }
     } else {
-      await addCategory(info);
+      const response = await addCategory(info);
+      if (response.status == 200) {
+        onClose();
+        reset();
+        updateCategoryState("add", response.data);
+      }
     }
-
-    reset();
   };
 
   return (
     <SideModal visible={visible} onClose={onClose}>
       <div className="h-full">
-        <h2 className="ff-lato font-black text-2xl">Add Category</h2>
+        <h2 className="ff-lato font-black text-2xl">{selectedCategory !== null ? "Edit" : "Add"} Category</h2>
         <form onSubmit={handleSubmit(onSubmit)} className="mt-10 h-full flex flex-col justify-between">
           <div>
             <Controller
@@ -97,17 +119,20 @@ const AddCategoryModal = ({ visible, onClose, selectedCategory }: AddCategoryMod
               control={control}
               render={({ field: { onChange, value } }) => (
                 <Select
-                  items={categories}
+                  items={parentCategories}
                   label="Parent Category"
                   placeholder={selectedCategory?.parentCategory?.name || "Select parent category"}
                   onChange={onChange}
                   isSingle={true}
                 >
-                  {categories.map((option, index) => (
-                    <SelectOption key={option.value} isSelectedItem={option.value === value} item={option} index={index}>
-                      {option.label}
-                    </SelectOption>
-                  ))}
+                  {parentCategories.map((option, index) => {
+                    const isSelected = option.value === value;
+                    return (
+                      <SelectOption key={option.value} isSelectedItem={isSelected} item={option} index={index}>
+                        {option.label}
+                      </SelectOption>
+                    );
+                  })}
                 </Select>
               )}
             />
@@ -118,7 +143,7 @@ const AddCategoryModal = ({ visible, onClose, selectedCategory }: AddCategoryMod
                 <ImagePicker
                   label="Upload Image"
                   actionText="Upload Image"
-                  previousUploadUrls={previousUploadUrls}
+                  previousUploadUrls={previouseUploadUrls}
                   selectedFiles={value || []}
                   maxUpload={1}
                   onChange={onChange}
@@ -133,7 +158,7 @@ const AddCategoryModal = ({ visible, onClose, selectedCategory }: AddCategoryMod
               isLoading={(loading.type === "addCateogry" || loading.type === "updateCategory") && loading.isLoading}
               className="my-1"
             >
-              Add Category
+              {selectedCategory !== null ? "Update" : "Add"} Category
             </Button>
             {selectedCategory !== null ? (
               <Button

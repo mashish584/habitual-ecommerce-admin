@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import useCategory from "../../hooks/useCategory";
-import useProduct, { Product, ProductFormInterface, StateUpdateType } from "../../hooks/useProduct";
+import useProduct, { Product, ProductFormInterface } from "../../hooks/useProduct";
+import { StateUpdateType } from "../../utils/types";
 import Button from "../Button";
 import { Input, Select } from "../Form";
 import ImagePicker, { PreviewImage } from "../Form/ImagePicker";
@@ -19,7 +20,7 @@ interface AddproductModal extends SideModalI {
 const AddProductModal: React.FC<AddproductModal> = ({ visible, onClose, selectedProduct, updateProductState, onProductImageDelete }) => {
   const { getCategories } = useCategory();
   const { addProduct, loading, filterProductForm, updateProduct } = useProduct();
-  const [uploadedImages, setUploadedImages] = useState<Record<string, PreviewImage>>([]);
+  const [uploadedImages, setUploadedImages] = useState<Record<string, PreviewImage>>({});
   const [categories, setCategories] = useState<Option[]>([]);
 
   const {
@@ -38,9 +39,7 @@ const AddProductModal: React.FC<AddproductModal> = ({ visible, onClose, selected
         if (!selectedProduct) reset();
         updateProductState(selectedProduct ? "update" : "add", response.data);
       } else {
-        response?.errors?.map((error: { key: keyof ProductFormInterface; message: string }) =>
-          setError(error.key, { message: error.message }),
-        );
+        response?.errors?.map((error: { key: keyof ProductFormInterface; message: string }) => setError(error.key, { message: error.message }));
       }
     }
 
@@ -95,15 +94,13 @@ const AddProductModal: React.FC<AddproductModal> = ({ visible, onClose, selected
       setValue("description", selectedProduct.description || "");
       setValue("categories", selectedProduct.categoryIds);
 
-      const images = selectedProduct.images.reduce((previous, image) => {
-        return {
-          ...previous,
-          [image.fileId]: {
-            id: image.fileId,
-            url: image.url,
-          },
-        };
-      }, {} as Record<string, PreviewImage>);
+      const images = selectedProduct.images.reduce((previous, image) => ({
+        ...previous,
+        [image.fileId]: {
+          id: image.fileId,
+          url: image.url,
+        },
+      }), {} as Record<string, PreviewImage>);
 
       setUploadedImages(images);
     }
@@ -219,9 +216,6 @@ const AddProductModal: React.FC<AddproductModal> = ({ visible, onClose, selected
                   >
                     {categories.map((category, index) => {
                       const isSelected = value?.includes(category.value);
-                      if (isSelected) {
-                        console.log({ value });
-                      }
                       return (
                         <SelectOption
                           key={category.value}

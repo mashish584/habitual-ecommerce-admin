@@ -17,7 +17,7 @@ interface ImagePickerI {
   maxUpload: number;
   className?: string;
   onChange: (files: File[] | File) => void;
-  onImageRemove: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
+  onImageRemove?: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
 }
 
 function generateURLFromFiles(files: File[]) {
@@ -86,10 +86,9 @@ const ImagePicker = ({
       <div className={`w-full mb-3.5 ${className}`}>
         <label className="ff-lato text-xs font-extrabold inline-block mb-1">{label || "Add Image"}</label>
         <div className="flex flex-row flex-wrap">
-          {previewImages.map(({ id, url, isLoading }, index) => {
-            return (
+          {previewImages.map(({ id, url, isLoading }, index) => (
               <div className={isLoading ? "opacity-50" : "opacity-1"}>
-                <div key={id || index} className={`relative w-24 h-fit bg-lightGray p-2 border-gray border-1 rounded-lg mr-2 mb-1 mt-1 $`}>
+                <div key={id || index} className={"relative w-24 h-24 bg-lightGray p-2 border-gray border-1 rounded-lg mr-2 mb-1 mt-1 $"}>
                   <Image src={url} width={"100%"} height="100%" objectFit="contain" />
                 </div>
                 {id !== null && (
@@ -99,8 +98,7 @@ const ImagePicker = ({
                   </button>
                 )}
               </div>
-            );
-          })}
+          ))}
           <input type="file" id="file" name="file" className="w-0 h-0 opacity-0" ref={fileRef} accept="image/*" onChange={onFileSelect} />
           <label
             className="w-24 h-24 bg-lightGray border-gray border-1 flex flex-col items-center justify-center rounded-lg font-bold text-lightBlack text-xs mt-1"

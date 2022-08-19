@@ -33,7 +33,7 @@ const Button = ({ variant, children, className, rightIcon, isLoading, ...buttonP
   const Icon = rightIcon || null;
 
   return (
-    <button {...buttonProps} className={`relative ${isLoading ? "bg-lightTheme" : ""} ${classNames}`}>
+    <button {...buttonProps} className={`relative  ${classNames}`} disabled={isLoading}>
       {children}
       {Icon && <Icon fontSize={"small"} style={{ width: 15 }} />}
       {isLoading && <Loader className="ml-2 right-7 top-4 absolute" />}

@@ -1,7 +1,7 @@
 module.exports = {
   root: true,
   parser: "@typescript-eslint/parser",
-  plugins: ["@typescript-eslint", "eslint-plugin-import"],
+  plugins: ["@typescript-eslint", "eslint-plugin-import", "react-hooks"],
   extends: ["airbnb-base"],
   rules: {
     quotes: [2, "double", { avoidEscape: true }],
@@ -13,7 +13,7 @@ module.exports = {
     "no-param-reassign": 0,
     "array-callback-return": 0,
     "no-plusplus": 0,
-    "no-unused-vars": ["warn", { vars: "all", args: "none", ignoreRestSiblings: false }],
+    "no-unused-vars": 0,
     "@typescript-eslint/no-unused-vars": ["error", { vars: "all", args: "none", ignoreRestSiblings: false }],
     "max-len": 0,
     camelcase: 0,
@@ -29,6 +29,8 @@ module.exports = {
     "object-curly-newline": 0,
     "import/no-unresolved": 0,
     "class-methods-use-this": 0,
+    "react-hooks/rules-of-hooks": "error",
+    "react-hooks/exhaustive-deps": "warn",
     eqeqeq: 0,
   },
   overrides: [
