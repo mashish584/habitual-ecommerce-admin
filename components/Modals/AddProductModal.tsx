@@ -39,7 +39,9 @@ const AddProductModal: React.FC<AddproductModal> = ({ visible, onClose, selected
         if (!selectedProduct) reset();
         updateProductState(selectedProduct ? "update" : "add", response.data);
       } else {
-        response?.errors?.map((error: { key: keyof ProductFormInterface; message: string }) => setError(error.key, { message: error.message }));
+        response?.errors?.map((error: { key: keyof ProductFormInterface; message: string }) =>
+          setError(error.key, { message: error.message }),
+        );
       }
     }
 
@@ -71,19 +73,19 @@ const AddProductModal: React.FC<AddproductModal> = ({ visible, onClose, selected
   };
 
   useEffect(() => {
-    if (categories.length === 0 && visible && selectedProduct?.categoryIds.length) {
+    if (categories.length === 0 && visible) {
       (async () => {
         const categories = await getCategories(false);
         setCategories(
           categories.map((category) => ({
             label: category.name,
             value: category.id,
-            isSelected: selectedProduct.categoryIds.includes(category.id),
+            isSelected: selectedProduct?.categoryIds ? selectedProduct.categoryIds.includes(category.id) : false,
           })),
         );
       })();
     }
-  }, [visible, categories, selectedProduct?.categoryIds]);
+  }, [visible, categories, getCategories, selectedProduct?.categoryIds]);
 
   useEffect(() => {
     if (selectedProduct && visible) {
@@ -94,13 +96,16 @@ const AddProductModal: React.FC<AddproductModal> = ({ visible, onClose, selected
       setValue("description", selectedProduct.description || "");
       setValue("categories", selectedProduct.categoryIds);
 
-      const images = selectedProduct.images.reduce((previous, image) => ({
-        ...previous,
-        [image.fileId]: {
-          id: image.fileId,
-          url: image.url,
-        },
-      }), {} as Record<string, PreviewImage>);
+      const images = selectedProduct.images.reduce(
+        (previous, image) => ({
+          ...previous,
+          [image.fileId]: {
+            id: image.fileId,
+            url: image.url,
+          },
+        }),
+        {} as Record<string, PreviewImage>,
+      );
 
       setUploadedImages(images);
     }

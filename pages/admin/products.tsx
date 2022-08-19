@@ -21,13 +21,13 @@ const Product = () => {
       await getProductDetail(id);
       setShowProductDetail(true);
     },
-    [setShowProductDetail],
+    [getProductDetail],
   );
 
   const hideProductDetail = useCallback(() => {
     resetProductInfo();
     setShowProductDetail(false);
-  }, [setShowProductDetail]);
+  }, [resetProductInfo]);
 
   const showProductForm = useCallback(() => {
     if (productInfo) {
@@ -44,7 +44,8 @@ const Product = () => {
   }, [productInfo, setShowAddProductForm, setShowProductDetail]);
 
   useEffect(() => {
-    getProducts("?select=id&select=title&select=price&select=images&select=quantity&select=categoryIds");
+    getProducts("?select=id&select=title&select=price&select=images&select=quantity&select=categoryIds", null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -52,16 +53,16 @@ const Product = () => {
     if (loader.current) {
       observer = createObserver(loader, () => {
         if (products.nextPage) {
-          getProducts();
+          getProducts("", products.nextPage);
         }
       });
     }
     return () => {
-      if (observer && loader.current) {
+      if (observer) {
         observer.disconnect();
       }
     };
-  }, [products]);
+  }, [createObserver, getProducts, products]);
 
   const productIds = Object.keys(products.data);
 

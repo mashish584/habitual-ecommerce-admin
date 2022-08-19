@@ -34,7 +34,7 @@ interface UseProduct {
   addProduct: (data: ProductFormInterface) => Promise<any>;
   updateProduct: (data: Partial<ProductFormInterface>, productId: string) => Promise<any>;
   updateProductState: (type: StateUpdateType, data: Product) => void;
-  getProducts: (query?: string) => Promise<any>;
+  getProducts: (query?: string, nextPage?: string) => Promise<any>;
   getProductDetail: (productId: string) => Promise<any>;
   deleteProductImage: (imageId: string) => Promise<any>;
   filterProductForm: (data: ProductFormInterface, selectedProduct: Product) => Partial<ProductFormInterface>;
@@ -43,7 +43,7 @@ interface UseProduct {
 
 function useProduct(): UseProduct {
   const [productInfo, setProductInfo] = useState<Product | null>(null);
-  const [products, setProducts] = useState<ProductState>({ data: [], nextPage: null, count: 0 });
+  const [products, setProducts] = useState<ProductState>({ data: {}, nextPage: null, count: 0 });
   const [loading, setLoading] = useState<LoadingI<ProductLoadingType>>({ type: "products", isLoading: false });
 
   const startLoading = (type: ProductLoadingType) => setLoading({ type, isLoading: true });
@@ -106,41 +106,35 @@ function useProduct(): UseProduct {
     return response;
   }, []);
 
-  const updateProductState = useCallback(
-    (type: StateUpdateType, data: Product) => {
+  const updateProductState = useCallback((type: StateUpdateType, data: Product) => {
+    setProducts((prev) => ({
+      ...prev,
+      data: { ...prev.data, [data.id]: data },
+    }));
+
+    if (type === "update") {
+      setProductInfo(data);
+    }
+  }, []);
+
+  const getProducts = useCallback(async (query = "", nextPage?: string) => {
+    startLoading("products");
+    const url = nextPage || `products/${query}`;
+    const response = await appFetch(url, {
+      method: "GET",
+      disableUrlAppend: nextPage !== null,
+    });
+    stopLoading();
+
+    if (response.data) {
+      const products = generateKeyValuePair<Product>(response.data);
       setProducts((prev) => ({
-        ...prev,
-        data: { ...prev.data, [data.id]: data },
+        data: { ...prev.data, ...products },
+        nextPage: response.next,
+        count: response.count,
       }));
-
-      if (type === "update") {
-        setProductInfo(data);
-      }
-    },
-    [setProducts],
-  );
-
-  const getProducts = useCallback(
-    async (query = "") => {
-      startLoading("products");
-      const url = products.nextPage || `products/${query}`;
-      const response = await appFetch(url, {
-        method: "GET",
-        disableUrlAppend: products.nextPage !== null,
-      });
-      stopLoading();
-
-      if (response.data) {
-        const products = generateKeyValuePair<Product>(response.data);
-        setProducts((prev) => ({
-          data: { ...prev.data, ...products },
-          nextPage: response.next,
-          count: response.count,
-        }));
-      }
-    },
-    [products.nextPage],
-  );
+    }
+  }, []);
 
   const getProductDetail = useCallback(async (productId: string) => {
     startLoading("product");
