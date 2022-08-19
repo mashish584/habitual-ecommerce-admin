@@ -1,22 +1,15 @@
 import React from "react";
+import { Address as AddressT } from "../../utils/types";
 
-type UserAddress = {
-  username: string;
-  streetName: string;
-  city: string;
-  state: string;
-  pin: string;
-  mobileNumber: string;
-};
 interface AddressI {
   index?: number;
-  address: UserAddress;
+  address: AddressT;
 }
 
 const Address = ({ index, address }: AddressI) => (
   <div className="basis-5/12 mb-4">
-    {index ? <span className="text-xs text-darkGray mb-2.5">Address #{index + 1}</span> : null}
-    <h6 className="font-bold text-base text-black mb-2">{address.username}</h6>
+    {index ? <span className="text-xs text-darkGray mb-2.5">Address #{index}</span> : null}
+    <h6 className="font-bold text-base text-black mb-2">{`${address.firstName} ${address.lastName}`}</h6>
     <address className="text-base font-normal not-italic text-lightBlack">
       {address.streetName} <br />
       {address.city}, ({address.state}) <br />

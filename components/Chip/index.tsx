@@ -32,7 +32,7 @@ function getChipClasses(variant: chipVariant | undefined, className: string) {
 const Chip = ({ variant, className, text }: ChipI) => {
   const chipClasses = getChipClasses(variant, className || "");
   return (
-    <span className={`min-w-fit h-3 bg-theme rounded-xl overflow-hidden px-2 font-bold text-xs py-1 mr-1 ${chipClasses || ""}`}>
+    <span className={`min-w-fit min-h-fit bg-theme rounded-xl overflow-hidden px-2 font-bold text-xs py-1 mr-1 ${chipClasses || ""}`}>
       {text}
     </span>
   );

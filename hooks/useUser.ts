@@ -2,14 +2,15 @@ import { useCallback, useState } from "react";
 import { User as UserT } from "@prisma/client";
 
 import { appFetch } from "../utils/api";
-import { LoadingI } from "../utils/types";
+import { Address, LoadingI } from "../utils/types";
+import { generateKeyValuePair } from "../utils/feUtils";
 
 const endpoint = "users/";
 
-type User = Partial<UserT> & { ordersCount?: Number };
+export type User = Omit<UserT, "addresses"> & { ordersCount: Number; addresses: Address[]; interests: [{ name: string; id: string }] };
 type UserLoadingType = "users" | null;
 type UserState = {
-  data: User[];
+  data: Record<string, User>;
   nextPage: string | null;
   count: number;
 };
@@ -17,33 +18,34 @@ type UserState = {
 interface UseUser {
   loading: LoadingI<UserLoadingType>;
   users: UserState;
-  getUsers: () => Promise<any>;
+  getUsers: (nextPage?: string | null) => Promise<any>;
 }
 
 function useUser(): UseUser {
-  const [users, setUsers] = useState<UserState>({ data: [], nextPage: null, count: 0 });
+  const [users, setUsers] = useState<UserState>({ data: {}, nextPage: null, count: 0 });
   const [loading, setLoading] = useState<LoadingI<UserLoadingType>>({ type: "users", isLoading: false });
 
   const startLoading = (type: UserLoadingType) => setLoading({ type, isLoading: true });
   const stopLoading = () => setLoading({ type: null, isLoading: false });
 
-  const getUsers = useCallback(async () => {
+  const getUsers = useCallback(async (nextPage?: string | null) => {
     startLoading("users");
-    const url = users.nextPage || endpoint;
+    const url = nextPage || endpoint;
     const response = await appFetch(url, {
       method: "GET",
-      disableUrlAppend: users.nextPage !== null,
+      disableUrlAppend: nextPage !== null,
     });
     stopLoading();
 
     if (response.data) {
+      const users = generateKeyValuePair<User>(response.data);
       setUsers((prev) => ({
-        data: [...prev.data, ...response.data],
+        data: { ...prev.data, ...users },
         nextPage: response.next,
         count: response.count,
       }));
     }
-  }, [users.nextPage]);
+  }, []);
 
   return { getUsers, users, loading };
 }

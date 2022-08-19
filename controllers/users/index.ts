@@ -16,6 +16,14 @@ const getRequestHandler = async (req: NextApiRequest, res: NextApiResponse) => {
   const usersPromise = prisma.user.findMany({
     skip,
     take,
+    include: {
+      interests: {
+        select: {
+          name: true,
+          id: true,
+        },
+      },
+    },
   });
 
   const [count, users]: [number, UserInfo[]] = await Promise.all([totalCountPromise, usersPromise]);
