@@ -71,13 +71,24 @@ const Product = () => {
       <div className="lg:container">
         <SectionHeading title={`Products(${products.count})`} isAction={true} buttonText="Add Product" onAction={showProductForm} />
         <div className="w-full h-full overflow-auto px-2 py-1">
-          <ListContainer className="mw-1024 tableMaxHeight px-2 py-2">
+          {/* Table heading */}
+          <ListContainer className="relative mw-1024 tableMaxHeight pb-24">
+            <ListRow className="bg-white sticky top-0 z-10 left-0 right-0 justify-between">
+              <ListItem type="heading" text={"#"} className="w-16 text-center" />
+              <ListItem type="heading" text={"Title"} className="w-48" />
+              <ListItem type="heading" text={"No. of Categories"} className="w-28" />
+              <ListItem type="heading" text={"Quantity"} className="w-16" />
+              <ListItem type="heading" text={"Price"} className="w-16" />
+              <ListItem type="heading" text={"Status"} className="w-20" />
+              <ListItem type="heading" text={"Action"} className="w-40" />
+            </ListRow>
+            {/* Table Items */}
             {productIds.map((productId, index) => {
               const isLastRow = productIds.length - 1 === index;
               const product = products.data[productId];
 
               return (
-                <ListRow key={index} ref={isLastRow ? loader : null} className="justify-between">
+                <ListRow key={index} ref={isLastRow ? loader : null} className={`justify-between ${isLastRow ? "border-b-0" : ""}`}>
                   <ListItem isImage={true} imagePath={product.images[0].thumbnailUrl} className="w-16 h-16" />
                   <ListItem type="text" text={product.title} className="w-48" />
                   <ListItem type="text" text={`${product.categoryIds.length} categories`} className="w-28" />

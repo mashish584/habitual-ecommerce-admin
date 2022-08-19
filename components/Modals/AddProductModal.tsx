@@ -39,9 +39,7 @@ const AddProductModal: React.FC<AddproductModal> = ({ visible, onClose, selected
         if (!selectedProduct) reset();
         updateProductState(selectedProduct ? "update" : "add", response.data);
       } else {
-        response?.errors?.map((error: { key: keyof ProductFormInterface; message: string }) =>
-          setError(error.key, { message: error.message }),
-        );
+        response?.errors?.map((error: { key: keyof ProductFormInterface; message: string }) => setError(error.key, { message: error.message }));
       }
     }
 

@@ -145,7 +145,7 @@ input[type="color"]::-webkit-color-swatch {
 }
 
 .tableMaxHeight {
-  max-height: calc(100vh - 280px);
+  max-height: calc(100vh - 250px);
   overflow: auto;
 }
 

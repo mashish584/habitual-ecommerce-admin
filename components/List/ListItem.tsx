@@ -15,7 +15,7 @@ interface ListItemConfig {
   actionIcon?: IconType;
 }
 
-type ListType = "link" | "text" | "action";
+type ListType = "link" | "text" | "action" | "heading";
 
 type ListItemProps = {
   className?: string;
@@ -31,8 +31,9 @@ type NoImagePathProps = ListItemProps & { isImage?: false; text: string | null; 
 
 function getListChild(type: ListType | undefined, text: string | null, config?: ListItemConfig) {
   switch (type) {
+    case "heading":
     case "text":
-      return <p className={`text-darkGray ${config?.className}`}>{text || "-"}</p>;
+      return <p className={`${type === "heading" ? "text-darkGray font-bold" : "text-darkGray"}  ${config?.className}`}>{text || "-"}</p>;
     case "link":
       return (
         <Link href={config?.link || ""}>
