@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import dayjs from "dayjs";
 
 import SectionHeading from "../../components/SectionHeading";
@@ -12,13 +12,27 @@ import { LoaderRef } from "../../components/List/ListRow";
 const Orders = () => {
   const loader = useRef<LoaderRef>(null);
   const { getOrders, orders } = useOrder();
-  const [showOrderDetailModal, setShowOrderDetailModal] = useState(false);
+  const [showOrderDetailModal, setShowOrderDetailModal] = useState<{ visible: boolean; data: any }>({
+    visible: false,
+    data: null,
+  });
 
   const { createObserver } = useIntersection();
 
+  const showOrderDetails = useCallback(
+    (productId: string) => {
+      setShowOrderDetailModal({ visible: true, data: orders.data[productId] });
+    },
+    [orders.data],
+  );
+
+  const hideOrderDetails = useCallback(() => {
+    setShowOrderDetailModal({ visible: false, data: null });
+  }, []);
+
   useEffect(() => {
     getOrders();
-  }, []);
+  }, [getOrders]);
 
   useEffect(() => {
     let observer: IntersectionObserver;
@@ -30,11 +44,11 @@ const Orders = () => {
       });
     }
     return () => {
-      if (observer && loader.current) {
+      if (observer) {
         observer.disconnect();
       }
     };
-  }, [orders]);
+  }, [createObserver, getOrders, orders]);
 
   const orderIds = Object.keys(orders.data);
 
@@ -60,9 +74,10 @@ const Orders = () => {
                   <ListItem
                     type="action"
                     text="View"
+                    index={order.id}
                     className="w-40"
                     childClasses="radius-80"
-                    onAction={() => setShowOrderDetailModal(true)}
+                    onAction={showOrderDetails}
                   />
                 </ListRow>
               );
@@ -70,7 +85,7 @@ const Orders = () => {
           </ListContainer>
         </div>
       </div>
-      <OrderDetailModal visible={showOrderDetailModal} onClose={() => setShowOrderDetailModal(false)} />
+      <OrderDetailModal visible={showOrderDetailModal.visible} selectedOrder={showOrderDetailModal.data} onClose={hideOrderDetails} />
     </DashboardLayout>
   );
 };
