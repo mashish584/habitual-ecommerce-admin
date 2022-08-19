@@ -57,7 +57,7 @@ const Category = () => {
     <DashboardLayout>
       <div className="lg:container">
         <SectionHeading
-          title={`Category (${categories.length})`}
+          title={`Category (${Object.keys(categories).length})`}
           isAction={true}
           buttonText="Add Category"
           onAction={() => setShowAddCategoryModal(true)}

@@ -19,8 +19,8 @@ const Index = () => {
     product: 0,
     order: 0,
   });
-  const [recentOrders, setRecentOrders] = useState<Orders[]>([]);
 
+  const [recentOrders, setRecentOrders] = useState<Orders[]>([]);
   const [showOrderDetailModal, setShowOrderDetailModal] = useState(false);
 
   const fetchHomeInfo = async () => {
