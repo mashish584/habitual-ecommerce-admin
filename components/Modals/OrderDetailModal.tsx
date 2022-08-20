@@ -1,9 +1,9 @@
 import { RequestPageOutlined } from "@mui/icons-material";
-import { Transactions, User } from "@prisma/client";
 import dayjs from "dayjs";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
+import { Order } from "../../utils/types";
 
 import Chip from "../Chip";
 import { Address } from "../Layout";
@@ -11,7 +11,7 @@ import Line from "../Layout/Line";
 import SideModal, { SideModalI } from "./SideModal";
 
 interface OrderDetailsModalI extends SideModalI {
-  selectedOrder: Transactions & { user: User };
+  selectedOrder: Order;
 }
 
 const OrderDetailModal = ({ visible, selectedOrder, onClose }: OrderDetailsModalI) => {
@@ -75,17 +75,7 @@ const OrderDetailModal = ({ visible, selectedOrder, onClose }: OrderDetailsModal
             </div>
             <div>
               <h6 className="font-bold text-lg text-black mb-2">Delivery</h6>
-              <Address
-                index={0}
-                address={{
-                  username: `${selectedOrder.address.firstName || ""} ${selectedOrder.address.lastName || ""} `,
-                  streetName: selectedOrder.address.streetName,
-                  city: selectedOrder.address.city,
-                  pin: selectedOrder.address.pin,
-                  mobileNumber: selectedOrder.address.mobileNumber,
-                  state: selectedOrder.address.state,
-                }}
-              />
+              <Address index={0} address={selectedOrder.address} />
             </div>
           </div>
           <Line />

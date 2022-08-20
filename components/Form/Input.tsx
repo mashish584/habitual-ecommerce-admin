@@ -57,7 +57,7 @@ const Input = React.forwardRef<InputRef & TextAreaRef, InputI>((props, ref) => {
           <input {...inputProps} ref={ref} type={inputType} className={`w-full h-full rounded-2xl p-4 ${className || ""}`} />
         )}
         {type === "password" && (
-          <button onClick={togglePasswordInput} className="absolute top-3 right-4 w-6 h-6">
+          <button type="button" onClick={togglePasswordInput} className="absolute top-3 right-4 w-6 h-6">
             {showPassword ? <Visibility /> : <VisibilityOff />}
           </button>
         )}

@@ -1,3 +1,4 @@
+import { Product, Transactions } from "@prisma/client";
 import { NextApiRequest, NextApiResponse } from "next";
 
 export type RequestType = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
@@ -89,6 +90,21 @@ export type ErrorMessage<T> = {
  *  *** Frontend ***
  */
 
+// Schema
+
+type OrderDetails = Record<
+  string,
+  {
+    product: Pick<Product, "title" | "price" | "quantity"> & { image: string };
+    quantity: number;
+  }
+>;
+export interface Order extends Omit<Transactions, "details" | "address"> {
+  details: OrderDetails[];
+  address: Address;
+}
+
+// Api Call
 export interface FetchConfig {
   method: RequestMethods;
   headers?: FetchHeader;
