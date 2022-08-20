@@ -10,6 +10,9 @@
   --ff-lato: "Lato", serif;
   --color-black: #3a3a3a;
   --color-success: #34a853;
+  --color-theme: #ffe202;
+  --color-gray: #cbcbd4;
+  --color-focus: rgb(77, 144, 254);
 }
 
 /* ------------------- */
@@ -59,13 +62,13 @@ div::-webkit-scrollbar {
 }
 
 div::-webkit-scrollbar-track {
-  box-shadow: inset 0 0 6px #cbcbd4;
+  box-shadow: inset 0 0 6px var(--color-gray);
   border-radius: 50px;
   overflow: hidden;
 }
 
 div::-webkit-scrollbar-thumb {
-  background-color: #000000;
+  background-color: var(--color-black);
 }
 
 /* make images easier to work with */
@@ -85,7 +88,7 @@ select {
 
 /* COlor Picker */
 input:focus + label {
-  border: 2px solid rgb(77, 144, 254);
+  border: 2px solid var(--color-focus);
 }
 
 input[type="color"] {
@@ -161,5 +164,88 @@ input[type="color"]::-webkit-color-swatch {
 @media (max-width: 1023px) {
   .content-container {
     width: 100%;
+  }
+}
+
+/* Nprogress */
+/* Make clicks pass-through */
+#nprogress {
+  pointer-events: none;
+}
+
+#nprogress .bar {
+  background: var(--color-theme);
+
+  position: fixed;
+  z-index: 1031;
+  top: 0;
+  left: 0;
+
+  width: 100%;
+  height: 5px;
+}
+
+/* Fancy blur effect */
+#nprogress .peg {
+  display: block;
+  position: absolute;
+  right: 0px;
+  width: 100px;
+  height: 100%;
+  box-shadow: 0 0 10px var(--color-theme), 0 0 5px var(--color-theme);
+  opacity: 1;
+
+  -webkit-transform: rotate(3deg) translate(0px, -4px);
+  -ms-transform: rotate(3deg) translate(0px, -4px);
+  transform: rotate(3deg) translate(0px, -4px);
+}
+
+/* Remove these to get rid of the spinner */
+#nprogress .spinner {
+  display: block;
+  position: fixed;
+  z-index: 1031;
+  top: 15px;
+  right: 15px;
+}
+
+#nprogress .spinner-icon {
+  width: 18px;
+  height: 18px;
+  box-sizing: border-box;
+
+  border: solid 2px transparent;
+  border-top-color: var(--color-theme);
+  border-left-color: var(--color-theme);
+  border-radius: 50%;
+
+  -webkit-animation: nprogress-spinner 400ms linear infinite;
+  animation: nprogress-spinner 400ms linear infinite;
+}
+
+.nprogress-custom-parent {
+  overflow: hidden;
+  position: relative;
+}
+
+.nprogress-custom-parent #nprogress .spinner,
+.nprogress-custom-parent #nprogress .bar {
+  position: absolute;
+}
+
+@-webkit-keyframes nprogress-spinner {
+  0% {
+    -webkit-transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+  }
+}
+@keyframes nprogress-spinner {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
   }
 }
