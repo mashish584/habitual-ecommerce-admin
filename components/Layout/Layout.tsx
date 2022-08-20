@@ -6,6 +6,8 @@ import Nprogress from "nprogress";
 import Navigation from "../Navigation";
 import { MenuContextProvider } from "../../context/MenuContext";
 
+const adminAccessRoutes = ["/admin", "/admin/products", "/admin/categories", "/admin/users", "/admin/orders"];
+
 const Layout: React.FC = ({ children }) => {
   const router = useRouter();
 
@@ -23,6 +25,7 @@ const Layout: React.FC = ({ children }) => {
       router.events.off("routeChangeError", stopLoader);
     };
   }, []);
+
   return (
     <MenuContextProvider>
       <Head>
@@ -30,7 +33,7 @@ const Layout: React.FC = ({ children }) => {
         <meta name="viewport" content="width=device-width, initial-scale=1.0"></meta>
       </Head>
       <div className="flex flex-row w-full h-full">
-        <Navigation />
+        {adminAccessRoutes.includes(router.pathname) && <Navigation />}
         {children}
       </div>
     </MenuContextProvider>

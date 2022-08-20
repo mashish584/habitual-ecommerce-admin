@@ -75,6 +75,7 @@ export type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 export type FetchHeader = {
   "Content-Type": "application/json" | "multipart/form-data";
   Authorization?: string;
+  token?: string;
 };
 
 export type RequestMethods = "POST" | "GET" | "PATCH" | "DELETE" | "PUT";

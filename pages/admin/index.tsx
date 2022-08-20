@@ -9,6 +9,7 @@ import { DashboardLayout } from "../../components/Layout";
 import { ListContainer, ListItem, ListRow } from "../../components/List";
 import { OrderDetailModal } from "../../components/Modals";
 import { appFetch } from "../../utils/api";
+import withAuth from "../../hoc/withAuth";
 
 type Orders = Transactions & { user: User };
 
@@ -105,4 +106,4 @@ const Index = () => {
   );
 };
 
-export default Index;
+export default withAuth(Index);

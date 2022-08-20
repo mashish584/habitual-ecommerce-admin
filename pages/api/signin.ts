@@ -1,4 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from "next";
+import cookie from "cookie";
 
 import { User } from "@prisma/client";
 import prisma from "../../utils/prisma";
@@ -26,6 +27,11 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
     if (!user) throw new Error("User credential not matched.");
 
+    console.log(user);
+    if (req.body.isAdmin && !user?.isAdmin) {
+      throw new Error("You're not allowed to access the portal.");
+    }
+
     // throw ⚠️ if password not matched else generate jwt
     const isPasswordMatched = comparePassword(body.password, user.password);
 
@@ -39,6 +45,19 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
       delete data.password;
 
+      if (user.isAdmin && req.body.isAdmin) {
+        res.setHeader(
+          "Set-Cookie",
+          cookie.serialize("token", token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV !== "development",
+            maxAge: 60 * 60 * 24, // 1 day
+            sameSite: "strict",
+            path: "/",
+          }),
+        );
+      }
+
       return generateResponse("200", "You have been successfully logged in.", res, {
         token,
         data: {
@@ -48,6 +67,6 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     }
   } catch (error: any) {
     const message = error?.message || "Something went wrong.";
-    return generateResponse("400", message, res);
+    return generateResponse("401", message, res);
   }
 };
