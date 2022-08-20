@@ -1,12 +1,18 @@
 import { Prisma, User } from "@prisma/client";
 import { NextApiResponse, NextApiRequest } from "next";
 
-import { generateResponse } from "../../utils";
+import { generateResponse, getUser } from "../../utils";
 import prisma from "../../utils/prisma";
 
 type UserInfo = Partial<User> & { ordersCount?: Number };
 
 const getRequestHandler = async (req: NextApiRequest, res: NextApiResponse) => {
+  const user = await getUser(req);
+
+  if (!user?.isAdmin) {
+    return generateResponse("403", "Unauthorized access.", res, { errorMessage: "You're not authorized." });
+  }
+
   const take = req.query.take !== undefined ? parseInt(req.query?.take as string) : 10;
   const skip = req.query.skip !== undefined ? parseInt(req.query?.skip as string) : 0;
 

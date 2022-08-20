@@ -2,7 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { Prisma } from "@prisma/client";
 
 import prisma from "../../utils/prisma";
-import { generateResponse } from "../../utils";
+import { generateResponse, getUser } from "../../utils";
 import { validateCategory, validateImageUpload } from "../../utils/validation";
 import { upload_on_imagekit } from "../../utils/upload";
 
@@ -97,6 +97,12 @@ const getRequestHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 };
 
 const postRequestHandler = async (req: NextApiRequest, res: NextApiResponse) => {
+  const user = await getUser(req);
+
+  if (!user?.isAdmin) {
+    return generateResponse("403", "Unauthorized access.", res, { errorMessage: "You're not authorized." });
+  }
+
   const validationResponse = await validateCategory(req.body);
 
   if (validationResponse) {
@@ -134,6 +140,12 @@ const postRequestHandler = async (req: NextApiRequest, res: NextApiResponse) => 
 };
 
 const patchRequestHandler = async (req: NextApiRequest, res: NextApiResponse) => {
+  const user = await getUser(req);
+
+  if (!user?.isAdmin) {
+    return generateResponse("403", "Unauthorized access.", res, { errorMessage: "You're not authorized." });
+  }
+
   const categoryId = req.query?.id as string;
 
   const validateResponse = await validateCategory(req.body);
@@ -184,6 +196,12 @@ const patchRequestHandler = async (req: NextApiRequest, res: NextApiResponse) =>
 };
 
 const deleteRequestHandler = async (req: NextApiRequest, res: NextApiResponse) => {
+  const user = await getUser(req);
+
+  if (!user?.isAdmin) {
+    return generateResponse("403", "Unauthorized access.", res, { errorMessage: "You're not authorized." });
+  }
+
   const categoryId = req.query?.id as string;
 
   const category = await prisma.category.delete({ where: { id: categoryId } });

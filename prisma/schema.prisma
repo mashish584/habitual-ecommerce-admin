@@ -22,6 +22,7 @@ model User {
   joining_reasons     String[]
   stripe_customer_id  String
   addresses           Json[]
+  isAdmin             Boolean?       @default(false)
   interestIds         String[]       @db.ObjectId
   interests           Category[]     @relation(fields: [interestIds], references: [id])
   favouriteProductIds String[]       @db.ObjectId

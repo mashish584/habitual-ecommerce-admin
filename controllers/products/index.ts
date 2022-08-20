@@ -5,7 +5,7 @@ import prisma from "../../utils/prisma";
 import { FileType } from "../../utils/types";
 import { delete_image_from_imagekit, upload_on_imagekit } from "../../utils/upload";
 import { validateProduct } from "../../utils/validation";
-import { generateResponse } from "../../utils";
+import { generateResponse, getUser } from "../../utils";
 
 type CategoryInfo = Pick<Category, "id" | "name">[];
 type ProductInfo = Partial<Product> & { categories?: CategoryInfo };
@@ -125,6 +125,12 @@ const getIndividualProductHandler = async (req: NextApiRequest, res: NextApiResp
 };
 
 const postRequestHandler = async (req: NextApiRequest, res: NextApiResponse) => {
+  const user = await getUser(req);
+
+  if (!user?.isAdmin) {
+    return generateResponse("403", "Unauthorized access.", res, { errorMessage: "You're not authorized." });
+  }
+
   const files = req.files || [];
 
   const data = { ...req.body, images: files };
@@ -171,6 +177,12 @@ const postRequestHandler = async (req: NextApiRequest, res: NextApiResponse) => 
 };
 
 const patchRequestHandler = async (req: NextApiRequest, res: NextApiResponse) => {
+  const user = await getUser(req);
+
+  if (!user?.isAdmin) {
+    return generateResponse("403", "Unauthorized access.", res, { errorMessage: "You're not authorized." });
+  }
+
   const productId = req.query?.id as string;
 
   // → Fetch product details
@@ -229,6 +241,12 @@ const patchRequestHandler = async (req: NextApiRequest, res: NextApiResponse) =>
 };
 
 const deleteProductImageHandler = async (req: NextApiRequest, res: NextApiResponse) => {
+  const user = await getUser(req);
+
+  if (!user?.isAdmin) {
+    return generateResponse("403", "Unauthorized access.", res, { errorMessage: "You're not authorized." });
+  }
+
   const imageId = req.query?.id;
   const productId = req.body?.productId;
 

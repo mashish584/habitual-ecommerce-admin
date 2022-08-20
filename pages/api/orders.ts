@@ -1,11 +1,17 @@
 import { Prisma, Transactions } from "@prisma/client";
 import type { NextApiRequest, NextApiResponse } from "next";
 
-import { checkRequestType, generateResponse } from "../../utils";
+import { checkRequestType, generateResponse, getUser } from "../../utils";
 import prisma from "../../utils/prisma";
 import { RequestType } from "../../utils/types";
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
+  const user = await getUser(req);
+
+  if (!user?.isAdmin) {
+    return generateResponse("403", "Unauthorized access.", res, { errorMessage: "You're not authorized." });
+  }
+
   checkRequestType("GET", req.method as RequestType, res);
 
   try {
