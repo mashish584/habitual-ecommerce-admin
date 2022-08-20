@@ -41,7 +41,8 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       const userAddress = address as Address;
       return userAddress.default;
     })[0];
-    const paymentIntent = await createPaymentIntent(cartTotal * 100, user.stripe_customer_id, defaultAddress as Address);
+
+    const paymentIntent = await createPaymentIntent(Math.round(cartTotal * 100), user.stripe_customer_id, defaultAddress as Address);
 
     return generateResponse("200", "Purchased successfull.", res, {
       data: {
@@ -54,7 +55,6 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       },
     });
   } catch (error) {
-    console.log({ error });
     return generateResponse("400", "Something went wrong.", res);
   }
 };

@@ -63,15 +63,15 @@ const Category = () => {
           onAction={() => setShowAddCategoryModal(true)}
         />
         <div className="w-full h-full overflow-auto px-2 py-1">
-          <ListContainer className="relative mw-1024 tableMaxHeight">
+          <ListContainer className="mw-1024 tableMaxHeight">
             {/* Table Heading */}
             <ListRow className="bg-white sticky top-0 z-10 left-0 right-0 justify-between">
               <ListItem type="heading" text={"#"} className="w-16 text-center" />
               <ListItem type="heading" text={"Title"} className="w-36" />
               <ListItem type="heading" text={"Parent"} className="w-28" />
               <ListItem type="heading" text={"No. of products associated"} className="w-56" />
-              <ListItem type="heading" text={"No. of child categories"} className="w-40" />
-              <ListItem type="heading" text={"Action"} className="w-40" />
+              <ListItem type="heading" text={"No. of child categories"} className="w-44" />
+              <ListItem type="heading" text={"Action"} className="w-40 text-center" />
             </ListRow>
             {/* Table Content */}
             {Object.values(categories).map((category) => (
@@ -80,7 +80,7 @@ const Category = () => {
                 <ListItem type="text" text={category.name} className="w-36" />
                 <ListItem type="text" text={category?.parentCategory?.name} className="w-28" />
                 <ListItem type="text" text="25 products associated" className="w-56" />
-                <ListItem type="text" text="10 sub-categories" className="w-40" />
+                <ListItem type="text" text="10 sub-categories" className="w-44" />
                 <ListItem
                   type="action"
                   text="Edit"

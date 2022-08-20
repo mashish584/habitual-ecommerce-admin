@@ -58,18 +58,27 @@ const Users = () => {
       <div className="lg:container">
         <SectionHeading title={`Users(${users.count})`} />
         <div className="w-full h-full overflow-auto px-2 py-1">
-          <ListContainer className="mw-1024 tableMaxHeight px-2 py-2">
+          <ListContainer className="relative mw-1024 tableMaxHeight">
+            {/* Table Heading */}
+            <ListRow className="bg-white sticky top-0 z-10 left-0 right-0 justify-between">
+              <ListItem type="heading" text={"#"} className="w-12 text-center" />
+              <ListItem type="heading" text={"Name"} className="w-44" />
+              <ListItem type="heading" text={"Email"} className="w-44" />
+              <ListItem type="heading" text={"Orders Placed"} className="w-28" />
+              <ListItem type="heading" text={"Action"} className="w-40 text-center" />
+            </ListRow>
+            {/* Table Content */}
             {Object.values(users.data).map((user, index) => {
               const isLastRow = Object.keys(users.data).length - 1 === index;
               return (
                 <ListRow key={user.id} ref={isLastRow ? loader : null} className="justify-between">
                   <ListItem isImage={true} imagePath={user.profile} className="w-12 h-12 rounded-full" />
-                  <ListItem type="text" text={user.fullname} className="w-fit" />
-                  <ListItem type="text" text={user.email} className="w-fit" />
+                  <ListItem type="text" text={user.fullname} className="w-44" />
+                  <ListItem type="text" text={user.email} className="w-44" />
                   <ListItem
                     type="text"
                     text={user.ordersCount > 2 ? `${user.ordersCount} orders` : `${user.ordersCount} order`}
-                    className="w-fit"
+                    className="w-28"
                   />
                   <ListItem
                     type="action"

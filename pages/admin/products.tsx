@@ -71,7 +71,7 @@ const Product = () => {
       <div className="lg:container">
         <SectionHeading title={`Products(${products.count})`} isAction={true} buttonText="Add Product" onAction={showProductForm} />
         <div className="w-full h-full overflow-auto px-2 py-1">
-          <ListContainer className="relative mw-1024 tableMaxHeight pb-24">
+          <ListContainer className="relative mw-1024 tableMaxHeight">
             {/* Table heading */}
             <ListRow className="bg-white sticky top-0 z-10 left-0 right-0 justify-between">
               <ListItem type="heading" text={"#"} className="w-16 text-center" />
@@ -80,7 +80,7 @@ const Product = () => {
               <ListItem type="heading" text={"Quantity"} className="w-16" />
               <ListItem type="heading" text={"Price"} className="w-16" />
               <ListItem type="heading" text={"Status"} className="w-20" />
-              <ListItem type="heading" text={"Action"} className="w-40" />
+              <ListItem type="heading" text={"Action"} className="w-40 text-center" />
             </ListRow>
             {/* Table Items */}
             {productIds.map((productId, index) => {

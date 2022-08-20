@@ -2,15 +2,15 @@ import { NextApiResponse, NextApiRequest } from "next";
 
 import { Product } from "@prisma/client";
 import { RequestType } from "../../utils/types";
-import { checkRequestType, generateResponse, getUser } from "../../utils";
+import { catchAsyncError, checkRequestType, generateResponse, getUser } from "../../utils";
 import prisma from "../../utils/prisma";
 
-export default async (req: NextApiRequest, res: NextApiResponse) => {
+const HomeAPI = async (req: NextApiRequest, res: NextApiResponse) => {
   checkRequestType("GET", req.method as RequestType, res);
 
-  const isAdmin = false;
+  const isAdmin = req.query.isAdmin || false;
 
-  if (isAdmin) {
+  if (!isAdmin) {
     /**
      * Information required for mobile home screen
      * - Feature product listing (max:10)
@@ -141,3 +141,5 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     },
   });
 };
+
+export default catchAsyncError(HomeAPI);

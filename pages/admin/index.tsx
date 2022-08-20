@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { ShoppingBasketOutlined, ShoppingCartOutlined, SupervisorAccountOutlined } from "@mui/icons-material";
 import dayjs from "dayjs";
 
@@ -21,11 +21,14 @@ const Index = () => {
   });
 
   const [recentOrders, setRecentOrders] = useState<Orders[]>([]);
-  const [showOrderDetailModal, setShowOrderDetailModal] = useState(false);
+  const [showOrderDetailModal, setShowOrderDetailModal] = useState<{ visible: boolean; data: any }>({
+    visible: false,
+    data: null,
+  });
 
   const fetchHomeInfo = async () => {
     setIsLoading(true);
-    const response = await appFetch("/home", {
+    const response = await appFetch("/home?isAdmin=true", {
       method: "GET",
     });
     setIsLoading(false);
@@ -34,6 +37,17 @@ const Index = () => {
       setRecentOrders(response.data.recentOrders);
     }
   };
+
+  const showOrderDetails = useCallback(
+    (orderIndex: string) => {
+      setShowOrderDetailModal({ visible: true, data: recentOrders[parseInt(orderIndex)] });
+    },
+    [recentOrders],
+  );
+
+  const hideOrderDetails = useCallback(() => {
+    setShowOrderDetailModal({ visible: false, data: null });
+  }, []);
 
   useEffect(() => {
     fetchHomeInfo();
@@ -50,23 +64,35 @@ const Index = () => {
         <SectionHeading title="Recent Orders" isPath={true} path="/orders" />
         <div className="w-full h-full overflow-auto px-2 py-1">
           <ListContainer className="mw-1024">
-            {recentOrders.map((order) => {
+            {/* Table Heading */}
+            {/* Table Heading */}
+            <ListRow className="bg-white sticky top-0 z-10 left-0 right-0 justify-between">
+              <ListItem type="heading" text={"#"} className="w-12 text-center" />
+              <ListItem type="heading" text={"Name"} className="w-32" />
+              <ListItem type="heading" text={"Order Date"} className="w-44" />
+              <ListItem type="heading" text={"No. of Items"} className="w-16" />
+              <ListItem type="heading" text={"Amount"} className="w-16" />
+              <ListItem type="heading" text={"Status"} className="w-20" />
+              <ListItem type="heading" text={"Action"} className="w-24" />
+            </ListRow>
+            {/* Table Content */}
+            {recentOrders.map((order, index) => {
               const { user } = order;
               return (
                 <ListRow key={order.id} className="justify-between">
                   <ListItem isImage={true} imagePath={user.profile} className="w-12 h-12 rounded-full" />
                   <ListItem type="text" text={user.fullname} className="w-32" />
-                  <ListItem type="text" text={user.email} className="w-32" />
-                  <ListItem type="text" text={dayjs(order.createdAt).format("MMMM DD, YYYY hh:mm A")} className="w-42" />
+                  <ListItem type="text" text={dayjs(order.createdAt).format("MMMM DD, YYYY hh:mm A")} className="w-44" />
                   <ListItem type="text" text={`${order.productIds.length} items`} className="w-16" />
                   <ListItem type="text" text={`$${order.amount}`} className="w-16" />
                   <ListItem type="text" text={order.orderStatus} className="w-20" childClasses="text-success" />
                   <ListItem
                     type="action"
                     text="View"
-                    className="w-40"
+                    index={index.toString()}
+                    className="w-24"
                     childClasses="radius-80"
-                    onAction={() => setShowOrderDetailModal(true)}
+                    onAction={showOrderDetails}
                   />
                 </ListRow>
               );
@@ -74,7 +100,7 @@ const Index = () => {
           </ListContainer>
         </div>
       </div>
-      <OrderDetailModal visible={showOrderDetailModal} onClose={() => setShowOrderDetailModal(false)} />
+      <OrderDetailModal visible={showOrderDetailModal.visible} selectedOrder={showOrderDetailModal.data} onClose={hideOrderDetails} />
     </DashboardLayout>
   );
 };

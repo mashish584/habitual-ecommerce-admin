@@ -83,6 +83,7 @@ model Transactions {
   details       Json[]
   user          User        @relation(fields: [userId], references: [id])
   userId        String      @db.ObjectId
+  orderId       String
   transactionId String
   address       Json
   amount        Float

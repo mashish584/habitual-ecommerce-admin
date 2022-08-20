@@ -31,6 +31,7 @@ module.exports = {
     "class-methods-use-this": 0,
     "react-hooks/rules-of-hooks": "error",
     "react-hooks/exhaustive-deps": "warn",
+    "prefer-destructuring": 0,
     eqeqeq: 0,
   },
   overrides: [
