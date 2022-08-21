@@ -238,7 +238,7 @@ const AddProductModal: React.FC<AddproductModal> = ({ visible, onClose, selected
                     })}
                   </Select>
                   {errors.categories && errors.categories.type === "required" && (
-                    <Message messageType="error" message={errors.categories.message || ""} className="mb-3.5" />
+                    <Message messageType="error" message={errors.categories.message || ""} />
                   )}
                 </>
               )}
@@ -263,7 +263,7 @@ const AddProductModal: React.FC<AddproductModal> = ({ visible, onClose, selected
                     previousUploadUrls={uploadedImages}
                     resetComponentState={!visible}
                     maxUpload={3}
-                    className={"mb-2"}
+                    className={"mb-2 mt-3.5"}
                     onImageRemove={removeProductImage}
                     onChange={onChange}
                   />

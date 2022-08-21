@@ -88,17 +88,18 @@ export const validateProduct = async (values: ProductBody, productinfo?: Product
   try {
     // → totalImages is sumof user selected images and images already in db if both exist
     // → else it will be upload images length which will be by default 0 if not passed
-    const totalImages = values?.images?.length && productinfo?.id && productinfo?.images?.length
-      ? productinfo.images.length + values.images.length
-      : values?.images?.length;
+    const totalImages =
+      values?.images?.length && productinfo?.id && productinfo?.images?.length
+        ? productinfo.images.length + values.images.length
+        : values?.images?.length;
 
     const schema = yup.object().shape({
       title: yup.string().trim().required("Please provide product title.").notRequired(),
       description: yup
         .string()
         .trim()
-        .min(50, "Product description shoulbe between 50-300 characters.")
-        .max(300, "Product description shoulbe between 50-300 characters.")
+        .min(50, "Product description should be between 50-300 characters.")
+        .max(300, "Product description should be between 50-300 characters.")
         .notRequired(),
       images: yup
         .array()
