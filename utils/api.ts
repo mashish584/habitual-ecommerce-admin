@@ -1,9 +1,15 @@
+import { showToast } from "./feUtils";
 import { FetchConfig } from "./types";
 
 export const DEV_URL = "http://localhost:3000/api/";
 
 async function handleAPIError(response: any, endpoint: string) {
   response = await response.json();
+
+  if (response.message && !response.errors?.length) {
+    showToast(response.message, "error");
+  }
+
   return response;
 }
 

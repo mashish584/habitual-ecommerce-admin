@@ -2,6 +2,8 @@ import React, { useEffect } from "react";
 import { useRouter } from "next/router";
 import Head from "next/head";
 import Nprogress from "nprogress";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 import Navigation from "../Navigation";
 import { MenuContextProvider } from "../../context/MenuContext";
@@ -24,7 +26,7 @@ const Layout: React.FC = ({ children }) => {
       router.events.off("routeChangeComplete", stopLoader);
       router.events.off("routeChangeError", stopLoader);
     };
-  }, []);
+  }, [router.events]);
 
   return (
     <MenuContextProvider>
@@ -35,6 +37,7 @@ const Layout: React.FC = ({ children }) => {
       <div className="flex flex-row w-full h-full">
         {adminAccessRoutes.includes(router.pathname) && <Navigation />}
         {children}
+        <ToastContainer />
       </div>
     </MenuContextProvider>
   );

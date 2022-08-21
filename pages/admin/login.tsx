@@ -1,13 +1,15 @@
 import React, { useState } from "react";
+import { NextApiRequest, NextApiResponse } from "next";
 import Image from "next/image";
 import { useForm, Controller } from "react-hook-form";
+import { useRouter } from "next/router";
 
-import { NextApiRequest, NextApiResponse } from "next";
 import { Input, MessageI } from "../../components/Form";
 import Button from "../../components/Button";
 
 import loginStyles from "../../styles/Login.module.css";
 import { appFetch } from "../../utils/api";
+import { showToast } from "../../utils/feUtils";
 
 interface Credential {
   email: string;
@@ -15,6 +17,7 @@ interface Credential {
 }
 
 const Login = () => {
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const {
     handleSubmit,
@@ -36,8 +39,8 @@ const Login = () => {
     setIsLoading(false);
 
     if (response.status == 200) {
-      window.location.href = "/admin";
-      return;
+      showToast(response.message, "success");
+      router.push("/admin");
     }
 
     if (response?.errors?.length) {
