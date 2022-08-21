@@ -8,11 +8,11 @@ interface ImagePickerI {
   label?: string;
   actionText?: string;
   previousUploadUrls?: Record<string, PreviewImage>;
-  selectedFiles: File | File[];
   maxUpload: number;
+  resetComponentState: boolean;
   className?: string;
-  onChange: (files: File[] | File) => void;
   onImageRemove?: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
+  onChange: (files: File[] | File) => void;
 }
 
 function generateURLFromFiles(files: File[]) {
@@ -32,7 +32,7 @@ function isValidMediaSelected(files: File[]) {
 const ImagePicker = ({
   label,
   actionText,
-  selectedFiles,
+  resetComponentState,
   previousUploadUrls,
   maxUpload,
   onChange,
@@ -40,10 +40,8 @@ const ImagePicker = ({
   onImageRemove,
 }: ImagePickerI) => {
   const fileRef = useRef<HTMLInputElement | null>(null);
+  const selectedFiles = useRef<File[] | null>(null);
   const [previewImages, setPreviewImages] = useState<PreviewImage[]>([]);
-
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const previouseSelectedFiles = Array.isArray(selectedFiles) ? selectedFiles : [selectedFiles];
 
   const onFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const fileList = e.target.files;
@@ -53,13 +51,14 @@ const ImagePicker = ({
         alert("Please select valid image media.");
       } else {
         const isSingleUpload = maxUpload === 1;
-        const files = !isSingleUpload ? Array.from(fileList).concat(Array.from(previouseSelectedFiles)) : Array.from(fileList);
-
+        const selectedUploadFiles = Array.from(fileList);
+        const files = !isSingleUpload && selectedFiles.current ? [...selectedFiles.current, ...selectedUploadFiles] : selectedUploadFiles;
         if (files.length > maxUpload) {
           alert("Max file limit exceed.");
         } else {
           const urls = generateURLFromFiles(files);
-          setPreviewImages(previousUploadUrls ? [...Object.values(previousUploadUrls), ...urls] : urls);
+          setPreviewImages(!isSingleUpload && previousUploadUrls ? [...Object.values(previousUploadUrls), ...urls] : urls);
+          selectedFiles.current = files;
           onChange(isSingleUpload ? files[0] : files);
         }
       }
@@ -72,10 +71,16 @@ const ImagePicker = ({
 
   useEffect(() => {
     if (previousUploadUrls) {
-      const urls = generateURLFromFiles(previouseSelectedFiles);
-      setPreviewImages([...urls, ...Object.values(previousUploadUrls)]);
+      setPreviewImages((prev) => [...prev, ...Object.values(previousUploadUrls)]);
     }
-  }, [previousUploadUrls, previouseSelectedFiles]);
+  }, [previousUploadUrls]);
+
+  useEffect(() => {
+    if (resetComponentState) {
+      setPreviewImages([]);
+      selectedFiles.current = null;
+    }
+  }, [resetComponentState]);
 
   return (
     <>

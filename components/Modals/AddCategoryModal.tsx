@@ -142,7 +142,7 @@ const AddCategoryModal = ({ visible, onClose, selectedCategory, updateCategorySt
                   label="Upload Image"
                   actionText="Upload Image"
                   previousUploadUrls={previouseUploadUrls}
-                  selectedFiles={value || []}
+                  resetComponentState={!visible}
                   maxUpload={1}
                   onChange={onChange}
                 />
