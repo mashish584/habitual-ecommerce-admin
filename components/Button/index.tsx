@@ -37,7 +37,7 @@ const Button = ({ variant, children, className, rightIcon, isLoading, ...buttonP
     <button {...buttonProps} className={`relative  ${classNames}`} disabled={isLoading}>
       {children}
       {Icon && <Icon fontSize={"small"} style={{ width: 15 }} />}
-      {isLoading && <Loader className="ml-2 right-7 top-4 absolute" />}
+      {isLoading && <Loader className="ml-2 right-7 top-4 absolute border-white" />}
     </button>
   );
 };

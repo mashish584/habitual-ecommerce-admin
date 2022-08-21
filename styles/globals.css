@@ -118,6 +118,10 @@ input[type="color"]::-webkit-color-swatch {
 /* Utility classes     */
 /* ------------------- */
 
+.table-header {
+  margin-bottom: 0;
+}
+
 .ff-lato {
   font-family: var(--ff-lato);
   color: var(--color-black);

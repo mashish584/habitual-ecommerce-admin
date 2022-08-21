@@ -11,7 +11,7 @@ import { CategoryI, StateUpdateType } from "../../utils/types";
 import { useCategory } from "../../hooks";
 
 const Category = () => {
-  const { getCategories } = useCategory();
+  const { getCategories, loading } = useCategory();
   const [categories, setCategories] = useState<Record<string, CategoryI>>({});
   const [showAddCategoryModal, setShowAddCategoryModal] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<CategoryI | null>(null);
@@ -64,9 +64,13 @@ const Category = () => {
           onAction={() => setShowAddCategoryModal(true)}
         />
         <div className="w-full h-full overflow-auto px-2 py-1">
-          <ListContainer className="mw-1024 tableMaxHeight">
+          <ListContainer
+            className="mw-1024 tableMaxHeight"
+            isLoading={loading.type === "categories" && loading.isLoading}
+            message={Object.values(categories).length === 0 ? "No categories available." : null}
+          >
             {/* Table Heading */}
-            <ListRow className="bg-white sticky top-0 z-10 left-0 right-0 justify-between">
+            <ListRow className="bg-white sticky justify-between table-header">
               <ListItem type="heading" text={"#"} className="w-16 text-center" />
               <ListItem type="heading" text={"Title"} className="w-36" />
               <ListItem type="heading" text={"Parent"} className="w-28" />
@@ -74,6 +78,7 @@ const Category = () => {
               <ListItem type="heading" text={"No. of child categories"} className="w-44" />
               <ListItem type="heading" text={"Action"} className="w-40 text-center" />
             </ListRow>
+
             {/* Table Content */}
             {Object.values(categories).map((category) => (
               <ListRow key={category.id} className="justify-between">

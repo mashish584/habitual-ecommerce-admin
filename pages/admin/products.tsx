@@ -9,7 +9,7 @@ import { useProduct, useIntersection } from "../../hooks";
 
 const Product = () => {
   const loader = useRef<LoaderRef>(null);
-  const { getProducts, products, getProductDetail, productInfo, deleteProductImage, resetProductInfo, updateProductState } = useProduct();
+  const { getProducts, products, getProductDetail, productInfo, deleteProductImage, resetProductInfo, updateProductState, loading } = useProduct();
   const [showAddProductForm, setShowAddProductForm] = useState(false);
   const [showProductDetail, setShowProductDetail] = useState(false);
 
@@ -63,16 +63,20 @@ const Product = () => {
     };
   }, [createObserver, getProducts, products]);
 
-  const productIds = Object.keys(products.data);
+  const productsData = Object.values(products.data);
 
   return (
     <DashboardLayout>
       <div className="lg:container">
         <SectionHeading title={`Products(${products.count})`} isAction={true} buttonText="Add Product" onAction={showProductForm} />
         <div className="w-full h-full overflow-auto px-2 py-1">
-          <ListContainer className="relative mw-1024 tableMaxHeight">
+          <ListContainer
+            className="relative mw-1024 tableMaxHeight"
+            isLoading={loading.type === "products" && loading.isLoading}
+            message={Object.values(products.data).length === 0 ? "No products available." : null}
+          >
             {/* Table heading */}
-            <ListRow className="bg-white sticky top-0 z-10 left-0 right-0 justify-between">
+            <ListRow className="bg-white sticky justify-between table-header">
               <ListItem type="heading" text={"#"} className="w-16 text-center" />
               <ListItem type="heading" text={"Title"} className="w-48" />
               <ListItem type="heading" text={"No. of Categories"} className="w-28" />
@@ -81,11 +85,10 @@ const Product = () => {
               <ListItem type="heading" text={"Status"} className="w-20" />
               <ListItem type="heading" text={"Action"} className="w-40 text-center" />
             </ListRow>
-            {/* Table Items */}
-            {productIds.map((productId, index) => {
-              const isLastRow = productIds.length - 1 === index;
-              const product = products.data[productId];
 
+            {/* Table Items */}
+            {productsData.map((product, index) => {
+              const isLastRow = productsData.length - 1 === index;
               return (
                 <ListRow key={index} ref={isLastRow ? loader : null} className={`justify-between ${isLastRow ? "border-b-0" : ""}`}>
                   <ListItem isImage={true} imagePath={product.images[0].thumbnailUrl} className="w-16 h-16" />
@@ -97,7 +100,7 @@ const Product = () => {
                   <ListItem
                     type="action"
                     text="View"
-                    index={productId}
+                    index={product.id}
                     className="w-40"
                     childClasses="radius-80"
                     onAction={viewProductDetail}

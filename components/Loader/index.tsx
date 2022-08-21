@@ -5,6 +5,6 @@ interface LoaderI {
   className?: string;
 }
 
-const Loader = ({ className }: LoaderI) => <span className={`${styles.loader} border-white ${className}`}></span>;
+const Loader = ({ className }: LoaderI) => <span className={`${styles.loader} ${className}`}></span>;
 
 export default Loader;

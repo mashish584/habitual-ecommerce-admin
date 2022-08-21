@@ -34,6 +34,7 @@ module.exports = {
     "prefer-destructuring": 0,
     "implicit-arrow-linebreak": 0,
     "function-paren-newline": 0,
+    "arrow-body-style": 0,
     eqeqeq: 0,
   },
   overrides: [

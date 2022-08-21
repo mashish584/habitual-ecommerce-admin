@@ -10,7 +10,7 @@ import { useOrder, useIntersection } from "../../hooks";
 
 const Orders = () => {
   const loader = useRef<LoaderRef>(null);
-  const { getOrders, orders } = useOrder();
+  const { getOrders, orders, loading } = useOrder();
   const [showOrderDetailModal, setShowOrderDetailModal] = useState<{ visible: boolean; data: any }>({
     visible: false,
     data: null,
@@ -49,16 +49,20 @@ const Orders = () => {
     };
   }, [createObserver, getOrders, orders]);
 
-  const orderIds = Object.keys(orders.data);
+  const ordersData = Object.values(orders.data);
 
   return (
     <DashboardLayout>
       <div className="lg:container">
         <SectionHeading title={`Orders(${orders.count})`} />
         <div className="w-full h-full overflow-auto px-2 py-1">
-          <ListContainer className="mw-1024 tableMaxHeight">
+          <ListContainer
+            className="mw-1024 tableMaxHeight"
+            isLoading={loading.type === "orders" && loading.isLoading}
+            message={Object.values(orders.data).length === 0 ? "No orders available." : null}
+          >
             {/* Table Heading */}
-            <ListRow className="bg-white sticky top-0 z-10 left-0 right-0 justify-between">
+            <ListRow className="bg-white sticky justify-between table-header">
               <ListItem type="heading" text={"#"} className="w-12 text-center" />
               <ListItem type="heading" text={"Name"} className="w-32" />
               <ListItem type="heading" text={"Order Date"} className="w-44" />
@@ -67,11 +71,10 @@ const Orders = () => {
               <ListItem type="heading" text={"Status"} className="w-20" />
               <ListItem type="heading" text={"Action"} className="w-24" />
             </ListRow>
-            {/* Table Content */}
-            {orderIds.map((orderId, index) => {
-              const isLastRow = orderIds.length - 1 === index;
-              const order = orders.data[orderId];
 
+            {/* Table Content */}
+            {ordersData.map((order, index) => {
+              const isLastRow = ordersData.length - 1 === index;
               return (
                 <ListRow key={order.id} ref={isLastRow ? loader : null} className="justify-between">
                   <ListItem isImage={true} imagePath={order.user.profile} className="w-12 h-12 rounded-full" />

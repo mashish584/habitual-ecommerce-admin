@@ -8,7 +8,7 @@ export interface MessageI {
 }
 
 const Message = ({ messageType, message, className }: MessageI) => (
-  <div className={`mt-1 flex items-center ${className}`}>
+  <div className={`mt-1 flex items-center ${className || ""}`}>
     {messageType === "error" ? <ErrorOutline className="text-danger" /> : <CheckCircleOutline className="text-green" />}{" "}
     <span className={`text-sm font-semibold ml-1 ${messageType === "error" ? "text-danger" : "text-green"}`}>{message}</span>
   </div>

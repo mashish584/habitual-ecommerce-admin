@@ -238,7 +238,7 @@ const AddProductModal: React.FC<AddproductModal> = ({ visible, onClose, selected
                     })}
                   </Select>
                   {errors.categories && errors.categories.type === "required" && (
-                    <Message messageType="error" message={errors.categories.message || ""} />
+                    <Message messageType="error" message={errors.categories.message || ""} className="mb-3.5" />
                   )}
                 </>
               )}

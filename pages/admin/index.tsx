@@ -13,7 +13,7 @@ import { Order } from "../../utils/types";
 import withAuth from "../../hoc/withAuth";
 
 const Index = () => {
-  const [, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [counts, setCounts] = useState({
     user: 0,
     product: 0,
@@ -63,7 +63,7 @@ const Index = () => {
       <div className="lg:container">
         <SectionHeading title="Recent Orders" isPath={true} path="/orders" />
         <div className="w-full h-full overflow-auto px-2 py-1">
-          <ListContainer className="mw-1024">
+          <ListContainer className="mw-1024" isLoading={isLoading} message={recentOrders.length === 0 ? "No orders available." : null}>
             {/* Table Heading */}
             <ListRow className="bg-white sticky top-0 z-10 left-0 right-0 justify-between">
               <ListItem type="heading" text={"#"} className="w-12 text-center" />
@@ -74,6 +74,7 @@ const Index = () => {
               <ListItem type="heading" text={"Status"} className="w-20" />
               <ListItem type="heading" text={"Action"} className="w-24" />
             </ListRow>
+
             {/* Table Content */}
             {recentOrders.map((order, index) => {
               const { user } = order;
