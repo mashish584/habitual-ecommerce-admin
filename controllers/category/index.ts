@@ -4,7 +4,7 @@ import { Prisma } from "@prisma/client";
 import prisma from "../../utils/prisma";
 import { generateResponse, getUser } from "../../utils";
 import { validateCategory, validateImageUpload } from "../../utils/validation";
-import { upload_on_imagekit } from "../../utils/upload";
+import { delete_image_from_imagekit, upload_on_imagekit } from "../../utils/upload";
 
 const getRequestHandler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { parent, child, parentId, childLimit, exclude } = req.query;
@@ -114,6 +114,7 @@ const postRequestHandler = async (req: NextApiRequest, res: NextApiResponse) => 
   if (req.file && validateImageUpload(req.file, res)) {
     const response = await upload_on_imagekit(req.file.buffer, req.file.originalname);
     data.image = response.url;
+    data.categoryImageId = response.fileId;
   }
 
   if (req.body.parent) {
@@ -175,8 +176,14 @@ const patchRequestHandler = async (req: NextApiRequest, res: NextApiResponse) =>
   }
 
   if (req.file && validateImageUpload(req.file, res)) {
+    // → remove old image if exist in records from imagekit server
+    if (category.categoryImageId) {
+      await delete_image_from_imagekit(category.categoryImageId);
+    }
+
     const response = await upload_on_imagekit(req.file.buffer, req.file.originalname);
     data.image = response.url;
+    data.categoryImageId = response.fileId;
   }
 
   const updatedCategory = await prisma.category.update({
@@ -204,7 +211,18 @@ const deleteRequestHandler = async (req: NextApiRequest, res: NextApiResponse) =
 
   const categoryId = req.query?.id as string;
 
-  const category = await prisma.category.delete({ where: { id: categoryId } });
+  const category = await prisma.category.findFirst({ where: { id: categoryId } });
+
+  if (!category?.id) {
+    throw new Error("Category not found");
+  }
+
+  // → Delete category image from imagekit server if exist
+  if (category.categoryImageId) {
+    await delete_image_from_imagekit(category.categoryImageId);
+  }
+
+  await prisma.category.delete({ where: { id: categoryId } });
 
   return generateResponse("200", `${category.name} is removed successfylly.`, res);
 };

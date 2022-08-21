@@ -9,8 +9,7 @@ import { useProduct, useIntersection } from "../../hooks";
 
 const Product = () => {
   const loader = useRef<LoaderRef>(null);
-  const { getProducts, products, getProductDetail, productInfo, deleteProductImage, resetProductInfo, updateProductState, loading } =
-    useProduct();
+  const { getProducts, products, getProductDetail, productInfo, deleteProductImage, resetProductInfo, updateProductState, loading } = useProduct();
   const [showAddProductForm, setShowAddProductForm] = useState(false);
   const [showProductDetail, setShowProductDetail] = useState(false);
 

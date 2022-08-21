@@ -43,6 +43,7 @@ model Category {
   productIds        String[]   @db.ObjectId
   products          Product[]  @relation(fields: [productIds], references: [id])
   image             String?
+  categoryImageId   String?
   createdAt         DateTime   @default(now())
   updatedAt         DateTime   @default(now())
 }
