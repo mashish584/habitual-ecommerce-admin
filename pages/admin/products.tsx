@@ -9,7 +9,8 @@ import { useProduct, useIntersection } from "../../hooks";
 
 const Product = () => {
   const loader = useRef<LoaderRef>(null);
-  const { getProducts, products, getProductDetail, productInfo, deleteProductImage, resetProductInfo, updateProductState, loading } = useProduct();
+  const { getProducts, products, getProductDetail, productInfo, deleteProductImage, resetProductInfo, updateProductState, loading } =
+    useProduct();
   const [showAddProductForm, setShowAddProductForm] = useState(false);
   const [showProductDetail, setShowProductDetail] = useState(false);
 
@@ -68,7 +69,7 @@ const Product = () => {
   return (
     <DashboardLayout>
       <div className="lg:container">
-        <SectionHeading title={`Products(${products.count})`} isAction={true} buttonText="Add Product" onAction={showProductForm} />
+        <SectionHeading title={`Products (${products.count})`} isAction={true} buttonText="Add Product" onAction={showProductForm} />
         <div className="w-full h-full overflow-auto px-2 py-1">
           <ListContainer
             className="relative mw-1024 tableMaxHeight"

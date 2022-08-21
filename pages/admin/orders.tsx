@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import dayjs from "dayjs";
 
 import SectionHeading from "../../components/SectionHeading";
 import { DashboardLayout } from "../../components/Layout";
@@ -7,6 +6,7 @@ import { ListContainer, ListItem, ListRow, LoaderRef } from "../../components/Li
 import { OrderDetailModal } from "../../components/Modals";
 
 import { useOrder, useIntersection } from "../../hooks";
+import { formatDate } from "../../utils/feUtils";
 
 const Orders = () => {
   const loader = useRef<LoaderRef>(null);
@@ -79,7 +79,7 @@ const Orders = () => {
                 <ListRow key={order.id} ref={isLastRow ? loader : null} className="justify-between">
                   <ListItem isImage={true} imagePath={order.user.profile} className="w-12 h-12 rounded-full" />
                   <ListItem type="text" text={order.user.fullname} className="w-32" />
-                  <ListItem type="text" text={dayjs(order.createdAt).format("MMMM DD, YYYY hh:mm A")} className="w-44" />
+                  <ListItem type="text" text={formatDate(order.createdAt, "MMMM DD, YYYY hh:mm a")} className="w-44" />
                   <ListItem type="text" text={`${order.productIds.length} items`} className="w-16" />
                   <ListItem type="text" text={`$${order.amount}`} className="w-16" />
                   <ListItem type="text" text={order.orderStatus} className="w-20" childClasses="text-success" />

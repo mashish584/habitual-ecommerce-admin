@@ -175,3 +175,4 @@ export interface LoadingI<T> {
 }
 
 export type StateUpdateType = "add" | "update" | "delete";
+export type DateFormats = "MMMM DD, YYYY" | "MMMM DD, YYYY hh:mm a";

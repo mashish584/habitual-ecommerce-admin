@@ -57,7 +57,7 @@ const Users = () => {
   return (
     <DashboardLayout>
       <div className="lg:container">
-        <SectionHeading title={`Users(${users.count})`} />
+        <SectionHeading title={`Users (${users.count})`} />
         <div className="w-full h-full overflow-auto px-2 py-1">
           <ListContainer
             className="relative mw-1024 tableMaxHeight"

@@ -1,5 +1,4 @@
 import React from "react";
-import dayjs from "dayjs";
 import Image from "next/image";
 import Link from "next/link";
 import { RequestPageOutlined } from "@mui/icons-material";
@@ -10,6 +9,7 @@ import { Address } from "../Layout";
 import SideModal, { SideModalI } from "./SideModal";
 
 import { Order } from "../../utils/types";
+import { formatDate } from "../../utils/feUtils";
 
 interface OrderDetailsModalI extends SideModalI {
   selectedOrder: Order;
@@ -28,7 +28,7 @@ const OrderDetailModal = ({ visible, selectedOrder, onClose }: OrderDetailsModal
                 <h4 className="font-black text-2xl text-lightBlack">Order ID: &nbsp;{selectedOrder.orderId}</h4>
                 <div className="flex items-center justify-center mt-1">
                   <span className="text-base text-darkGray">
-                    Order date: &nbsp;{dayjs(selectedOrder.createdAt).format("MMMM DD, YYYY hh:mm A")}
+                    Order date: &nbsp;{formatDate(selectedOrder.createdAt, "MMMM DD, YYYY hh:mm a")}
                   </span>
                   <Chip variant="success" text={selectedOrder.orderStatus} className="ml-5" />
                 </div>
