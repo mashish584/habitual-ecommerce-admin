@@ -60,14 +60,14 @@ function getListChild(type: ListType | undefined, text: string | null, config?: 
 function ListItem(props: NoImagePathProps): JSX.Element;
 function ListItem(props: ImagePathProps): JSX.Element;
 function ListItem(props: ListItemProps & { isImage?: boolean; imagePath?: string | null; text?: string | null; type?: ListType }) {
-  const { type, text, className, imagePath, isImage, index } = props;
+  const { type, text, className, imagePath, isImage, index, onAction } = props;
   const classes = className || "flex-1";
 
   const onActionClick = useCallback(() => {
-    if (index !== undefined) {
-      props.onAction?.(index);
+    if (index !== undefined && onAction) {
+      onAction?.(index);
     }
-  }, [index]);
+  }, [index, onAction]);
 
   const Child = isImage ? (
     <div className={`w-full h-full overflow-hidden ${!imagePath ? "bg-lightGray rounded-xl " : ""} ${className}`}>

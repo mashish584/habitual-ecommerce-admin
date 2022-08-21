@@ -1,5 +1,7 @@
-import { Product, Transactions } from "@prisma/client";
-import { NextApiRequest, NextApiResponse } from "next";
+import { Category, Product, Transactions, User } from "@prisma/client";
+import { IncomingMessage } from "http";
+import { UploadResponse } from "imagekit/dist/libs/interfaces";
+import { NextApiRequest, NextApiResponse, NextPageContext } from "next";
 
 export type RequestType = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 export type Status = "200" | "400" | "401" | "403" | "404" | "405";
@@ -90,6 +92,25 @@ export type ErrorMessage<T> = {
  *  *** Frontend ***
  */
 
+// Next Overwrites
+export interface NContext extends NextPageContext {
+  req: IncomingMessage & { cookies: { token: string } };
+}
+
+// Component Interface and Types
+export type PreviewImage = {
+  id: string | null;
+  url: string;
+  color?: string;
+  isLoading?: boolean;
+};
+
+export type Option = {
+  label: string;
+  value: string;
+  isSelected?: boolean;
+};
+
 // Schema
 
 type OrderDetails = Record<
@@ -102,6 +123,25 @@ type OrderDetails = Record<
 export interface Order extends Omit<Transactions, "details" | "address"> {
   details: OrderDetails[];
   address: Address;
+  user: User;
+}
+
+export interface ProductI extends Omit<Product, "images"> {
+  images: UploadResponse[];
+  category: Record<"name" | "id", string>[];
+}
+
+export interface CategoryI extends Category {
+  parentCategory: {
+    id: string;
+    name: string;
+  };
+}
+
+export interface UserI extends Omit<User, "addresses"> {
+  ordersCount: Number;
+  addresses: Address[];
+  interests: [{ name: string; id: string }];
 }
 
 // Api Call

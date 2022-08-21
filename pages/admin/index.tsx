@@ -2,16 +2,15 @@ import React, { useCallback, useEffect, useState } from "react";
 import { ShoppingBasketOutlined, ShoppingCartOutlined, SupervisorAccountOutlined } from "@mui/icons-material";
 import dayjs from "dayjs";
 
-import { Transactions, User } from "@prisma/client";
 import SectionHeading from "../../components/SectionHeading";
 import DashboardCard from "../../components/DashboardCard";
 import { DashboardLayout } from "../../components/Layout";
 import { ListContainer, ListItem, ListRow } from "../../components/List";
 import { OrderDetailModal } from "../../components/Modals";
-import { appFetch } from "../../utils/api";
-import withAuth from "../../hoc/withAuth";
 
-type Orders = Transactions & { user: User };
+import { appFetch } from "../../utils/api";
+import { Order } from "../../utils/types";
+import withAuth from "../../hoc/withAuth";
 
 const Index = () => {
   const [, setIsLoading] = useState(false);
@@ -21,7 +20,7 @@ const Index = () => {
     order: 0,
   });
 
-  const [recentOrders, setRecentOrders] = useState<Orders[]>([]);
+  const [recentOrders, setRecentOrders] = useState<Order[]>([]);
   const [showOrderDetailModal, setShowOrderDetailModal] = useState<{ visible: boolean; data: any }>({
     visible: false,
     data: null,
@@ -65,7 +64,6 @@ const Index = () => {
         <SectionHeading title="Recent Orders" isPath={true} path="/orders" />
         <div className="w-full h-full overflow-auto px-2 py-1">
           <ListContainer className="mw-1024">
-            {/* Table Heading */}
             {/* Table Heading */}
             <ListRow className="bg-white sticky top-0 z-10 left-0 right-0 justify-between">
               <ListItem type="heading" text={"#"} className="w-12 text-center" />

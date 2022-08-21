@@ -29,9 +29,11 @@ module.exports = {
     "object-curly-newline": 0,
     "import/no-unresolved": 0,
     "class-methods-use-this": 0,
-    "react-hooks/rules-of-hooks": "error",
-    "react-hooks/exhaustive-deps": "warn",
+    "react-hooks/rules-of-hooks": 2,
+    "react-hooks/exhaustive-deps": 1,
     "prefer-destructuring": 0,
+    "implicit-arrow-linebreak": 0,
+    "function-paren-newline": 0,
     eqeqeq: 0,
   },
   overrides: [

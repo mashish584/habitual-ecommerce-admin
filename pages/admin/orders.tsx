@@ -3,11 +3,10 @@ import dayjs from "dayjs";
 
 import SectionHeading from "../../components/SectionHeading";
 import { DashboardLayout } from "../../components/Layout";
-import { ListContainer, ListItem, ListRow } from "../../components/List";
+import { ListContainer, ListItem, ListRow, LoaderRef } from "../../components/List";
 import { OrderDetailModal } from "../../components/Modals";
-import useOrder from "../../hooks/useOrder";
-import useIntersection from "../../hooks/useIntersection";
-import { LoaderRef } from "../../components/List/ListRow";
+
+import { useOrder, useIntersection } from "../../hooks";
 
 const Orders = () => {
   const loader = useRef<LoaderRef>(null);

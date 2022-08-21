@@ -2,13 +2,11 @@ import React, { useCallback, useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 
 import Button from "../Button";
-import { Input, Select } from "../Form";
-import ImagePicker, { PreviewImage } from "../Form/ImagePicker";
-import { Option, SelectOption } from "../Form/Select";
+import { Input, Select, ImagePicker, SelectOption, MessageI } from "../Form";
 import SideModal, { SideModalI } from "./SideModal";
-import useCategory, { Category, CategoryI } from "../../hooks/useCategory";
-import { MessageT } from "../Form/Input";
-import { StateUpdateType } from "../../utils/types";
+
+import { useCategory, CategoryFormInterface } from "../../hooks";
+import { CategoryI, Option, PreviewImage, StateUpdateType } from "../../utils/types";
 
 interface AddCategoryModalI extends SideModalI {
   selectedCategory: CategoryI | null;
@@ -25,7 +23,7 @@ const AddCategoryModal = ({ visible, onClose, selectedCategory, updateCategorySt
     control,
     setValue,
     formState: { errors },
-  } = useForm<Category>();
+  } = useForm<CategoryFormInterface>();
 
   useEffect(() => {
     if (parentCategories?.length === 0 && visible) {
@@ -69,7 +67,7 @@ const AddCategoryModal = ({ visible, onClose, selectedCategory, updateCategorySt
     }
   }, [deleteCategory, onClose, reset, selectedCategory, updateCategoryState]);
 
-  const onSubmit = async (data: Category) => {
+  const onSubmit = async (data: CategoryFormInterface) => {
     const info = { ...data };
     if (!info.image) delete info.image;
     if (info.parent?.trim() === "" || info.parent === selectedCategory?.parentId) delete info.parent;
@@ -104,9 +102,9 @@ const AddCategoryModal = ({ visible, onClose, selectedCategory, updateCategorySt
               defaultValue=""
               rules={{ required: "Please enter category name." }}
               render={({ field }) => {
-                const additionalInputProps = {} as MessageT;
+                const additionalInputProps = {} as MessageI;
 
-                if (errors.name) {
+                if (errors.name?.message) {
                   additionalInputProps.messageType = "error";
                   additionalInputProps.message = errors.name.message;
                 }

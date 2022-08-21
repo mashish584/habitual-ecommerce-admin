@@ -1,18 +1,14 @@
 import { useCallback, useState } from "react";
-import { Product as ProductT } from "@prisma/client";
-import { UploadResponse } from "imagekit/dist/libs/interfaces";
 
 import { appFetch } from "../utils/api";
-import { LoadingI, StateUpdateType } from "../utils/types";
+import { LoadingI, ProductI, StateUpdateType } from "../utils/types";
 import { generateKeyValuePair } from "../utils/feUtils";
 
 const endpoint = "product/";
 
-export type Product = Omit<ProductT, "images"> & { images: UploadResponse[]; category: Record<"name" | "id", string>[] };
-
 type ProductLoadingType = "products" | "addProduct" | "updateProduct" | "product" | "removeProductImage" | null;
 type ProductState = {
-  data: Record<string, Product>;
+  data: Record<string, ProductI>;
   nextPage: string | null;
   count: number;
 };
@@ -30,19 +26,19 @@ export interface ProductFormInterface {
 interface UseProduct {
   loading: LoadingI<ProductLoadingType>;
   products: ProductState;
-  productInfo: Product | null;
+  productInfo: ProductI | null;
   addProduct: (data: ProductFormInterface) => Promise<any>;
   updateProduct: (data: Partial<ProductFormInterface>, productId: string) => Promise<any>;
-  updateProductState: (type: StateUpdateType, data: Product) => void;
+  updateProductState: (type: StateUpdateType, data: ProductI) => void;
   getProducts: (query?: string, nextPage?: string) => Promise<any>;
   getProductDetail: (productId: string) => Promise<any>;
   deleteProductImage: (imageId: string) => Promise<any>;
-  filterProductForm: (data: ProductFormInterface, selectedProduct: Product) => Partial<ProductFormInterface>;
+  filterProductForm: (data: ProductFormInterface, selectedProduct: ProductI) => Partial<ProductFormInterface>;
   resetProductInfo: () => void;
 }
 
 function useProduct(): UseProduct {
-  const [productInfo, setProductInfo] = useState<Product | null>(null);
+  const [productInfo, setProductInfo] = useState<ProductI | null>(null);
   const [products, setProducts] = useState<ProductState>({ data: {}, nextPage: null, count: 0 });
   const [loading, setLoading] = useState<LoadingI<ProductLoadingType>>({ type: "products", isLoading: false });
 

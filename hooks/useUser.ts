@@ -1,16 +1,14 @@
 import { useCallback, useState } from "react";
-import { User as UserT } from "@prisma/client";
 
 import { appFetch } from "../utils/api";
-import { Address, LoadingI } from "../utils/types";
+import { LoadingI, UserI } from "../utils/types";
 import { generateKeyValuePair } from "../utils/feUtils";
 
 const endpoint = "users/";
 
-export type User = Omit<UserT, "addresses"> & { ordersCount: Number; addresses: Address[]; interests: [{ name: string; id: string }] };
 type UserLoadingType = "users" | null;
 type UserState = {
-  data: Record<string, User>;
+  data: Record<string, UserI>;
   nextPage: string | null;
   count: number;
 };
@@ -38,7 +36,7 @@ function useUser(): UseUser {
     stopLoading();
 
     if (response.data) {
-      const users = generateKeyValuePair<User>(response.data);
+      const users = generateKeyValuePair<UserI>(response.data);
       setUsers((prev) => ({
         data: { ...prev.data, ...users },
         nextPage: response.next,

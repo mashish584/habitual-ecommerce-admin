@@ -5,9 +5,10 @@ import SectionHeading from "../../components/SectionHeading";
 import { DashboardLayout } from "../../components/Layout";
 import { ListContainer, ListRow, ListItem } from "../../components/List";
 import { AddCategoryModal } from "../../components/Modals";
-import useCategory, { CategoryI } from "../../hooks/useCategory";
+
 import { generateKeyValuePair } from "../../utils/feUtils";
-import { StateUpdateType } from "../../utils/types";
+import { CategoryI, StateUpdateType } from "../../utils/types";
+import { useCategory } from "../../hooks";
 
 const Category = () => {
   const { getCategories } = useCategory();

@@ -1,12 +1,7 @@
-import { KeyboardArrowDown } from "@mui/icons-material";
 import React, { useContext, useEffect } from "react";
 import { useCombobox, UseComboboxGetItemPropsOptions, useMultipleSelection } from "downshift";
-
-export type Option = {
-  label: string;
-  value: string;
-  isSelected?: boolean;
-};
+import { KeyboardArrowDown } from "@mui/icons-material";
+import { Option } from "../../utils/types";
 
 interface SelectI {
   items: Option[];

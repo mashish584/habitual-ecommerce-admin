@@ -1,5 +1,6 @@
 import React, { useCallback, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import {
   HomeOutlined,
   ShoppingBasketOutlined,
@@ -8,9 +9,9 @@ import {
   CategoryOutlined,
   LogoutOutlined,
 } from "@mui/icons-material";
-import Image from "next/image";
-import { useMenuContext } from "../../context/MenuContext";
+
 import LogoutModal from "../Modals/LogoutModal";
+import { useMenuContext } from "../../context/MenuContext";
 
 interface NavigationValue {
   component: typeof HomeOutlined;

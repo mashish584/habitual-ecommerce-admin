@@ -1,13 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { Delete, ImageOutlined } from "@mui/icons-material";
 
-export type PreviewImage = {
-  id: string | null;
-  url: string;
-  color?: string;
-  isLoading?: boolean;
-};
+import { Delete, ImageOutlined } from "@mui/icons-material";
+import { PreviewImage } from "../../utils/types";
 
 interface ImagePickerI {
   label?: string;
@@ -47,6 +42,7 @@ const ImagePicker = ({
   const fileRef = useRef<HTMLInputElement | null>(null);
   const [previewImages, setPreviewImages] = useState<PreviewImage[]>([]);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const previouseSelectedFiles = Array.isArray(selectedFiles) ? selectedFiles : [selectedFiles];
 
   const onFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -79,7 +75,7 @@ const ImagePicker = ({
       const urls = generateURLFromFiles(previouseSelectedFiles);
       setPreviewImages([...urls, ...Object.values(previousUploadUrls)]);
     }
-  }, [previousUploadUrls]);
+  }, [previousUploadUrls, previouseSelectedFiles]);
 
   return (
     <>
@@ -87,17 +83,17 @@ const ImagePicker = ({
         <label className="ff-lato text-xs font-extrabold inline-block mb-1">{label || "Add Image"}</label>
         <div className="flex flex-row flex-wrap">
           {previewImages.map(({ id, url, isLoading }, index) => (
-              <div className={isLoading ? "opacity-50" : "opacity-1"}>
-                <div key={id || index} className={"relative w-24 h-24 bg-lightGray p-2 border-gray border-1 rounded-lg mr-2 mb-1 mt-1 $"}>
-                  <Image src={url} width={"100%"} height="100%" objectFit="contain" />
-                </div>
-                {id !== null && (
-                  <button type="button" onClick={onImageRemove} data-image={id} className="text-danger flex flex-row items-center">
-                    <Delete fontSize="small" />
-                    <span> {isLoading ? "Removing...." : "Remove"}</span>
-                  </button>
-                )}
+            <div className={isLoading ? "opacity-50" : "opacity-1"}>
+              <div key={id || index} className={"relative w-24 h-24 bg-lightGray p-2 border-gray border-1 rounded-lg mr-2 mb-1 mt-1 $"}>
+                <Image src={url} width={"100%"} height="100%" objectFit="contain" />
               </div>
+              {id !== null && (
+                <button type="button" onClick={onImageRemove} data-image={id} className="text-danger flex flex-row items-center">
+                  <Delete fontSize="small" />
+                  <span> {isLoading ? "Removing...." : "Remove"}</span>
+                </button>
+              )}
+            </div>
           ))}
           <input type="file" id="file" name="file" className="w-0 h-0 opacity-0" ref={fileRef} accept="image/*" onChange={onFileSelect} />
           <label

@@ -1,11 +1,13 @@
 import React, { useState } from "react";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { ControllerRenderProps } from "react-hook-form";
-import { PartialBy } from "../../utils/types";
+
 import Message, { MessageI } from "./Message";
 
-export type MessageT = PartialBy<MessageI, "message" | "messageType">;
-interface InputI extends Omit<React.HTMLProps<HTMLInputElement>, "onChange">, Pick<ControllerRenderProps, "onChange">, MessageT {
+interface InputI
+  extends Omit<React.HTMLProps<HTMLInputElement>, "onChange">,
+    Pick<ControllerRenderProps, "onChange">,
+    Omit<MessageI, "className"> {
   type: "email" | "password" | "text" | "textarea";
   label?: string;
   id?: string;

@@ -1,32 +1,30 @@
-import { NextPageContext } from "next";
-import React, { Component } from "react";
+import React from "react";
+import { NContext } from "../utils/types";
 
 /**
- * This HOC can be used to redirect user
- * to desire route based on authentication or any
- * special case
+ * This sort of HOC comonent (returning the passed component as it is) can be used to redirect user
+ * to desire route based on authentication
  */
 
-const withAuth = (WrappedComponent: Component) => class extends Component {
-  static getInitialProps = (ctx: NextPageContext) => {
-    /**
-       * If cookie not available redirect back to login
-       */
-    if (!ctx.req?.cookies?.token && ctx.res) {
-      // avoid HTML caching
-      ctx.res.setHeader("Cache-Control", "no-store");
-      ctx.res.writeHead(301, {
-        Location: "/admin/login/",
-      });
-      ctx.res.end();
-    }
+function withAuth(WrappedComponent: React.ComponentType) {
+  return WrappedComponent;
+}
 
-    return {};
-  };
-
-  render() {
-    return <WrappedComponent {...this.props} />;
+withAuth.getInitialProps = (ctx: NContext) => {
+  /**
+   * If cookie not available redirect back to login
+   */
+  const cookies = ctx.req.cookies;
+  if (!cookies?.token && ctx.res) {
+    // avoid HTML caching
+    ctx.res.setHeader("Cache-Control", "no-store");
+    ctx.res.writeHead(301, {
+      Location: "/admin/login/",
+    });
+    ctx.res.end();
   }
+
+  return {};
 };
 
 export default withAuth;

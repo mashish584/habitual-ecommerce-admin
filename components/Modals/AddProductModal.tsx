@@ -1,19 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import useCategory from "../../hooks/useCategory";
-import useProduct, { Product, ProductFormInterface } from "../../hooks/useProduct";
-import { StateUpdateType } from "../../utils/types";
+
 import Button from "../Button";
-import { Input, Select } from "../Form";
-import ImagePicker, { PreviewImage } from "../Form/ImagePicker";
-import { MessageT } from "../Form/Input";
-import Message from "../Form/Message";
-import { Option, SelectOption } from "../Form/Select";
+import { Input, Select, ImagePicker, Message, MessageI, SelectOption } from "../Form";
+import { useProduct, useCategory, ProductFormInterface } from "../../hooks";
+
+import { Option, PreviewImage, ProductI, StateUpdateType } from "../../utils/types";
+
 import SideModal, { SideModalI } from "./SideModal";
 
 interface AddproductModal extends SideModalI {
-  selectedProduct?: Product | null;
-  updateProductState: (type: StateUpdateType, data: Product) => void;
+  selectedProduct?: ProductI | null;
+  updateProductState: (type: StateUpdateType, data: ProductI) => void;
   onProductImageDelete: (imageId: string) => void;
 }
 
@@ -39,7 +37,9 @@ const AddProductModal: React.FC<AddproductModal> = ({ visible, onClose, selected
         if (!selectedProduct) reset();
         updateProductState(selectedProduct ? "update" : "add", response.data);
       } else {
-        response?.errors?.map((error: { key: keyof ProductFormInterface; message: string }) => setError(error.key, { message: error.message }));
+        response?.errors?.map((error: { key: keyof ProductFormInterface; message: string }) =>
+          setError(error.key, { message: error.message }),
+        );
       }
     }
 
@@ -70,6 +70,9 @@ const AddProductModal: React.FC<AddproductModal> = ({ visible, onClose, selected
     }
   };
 
+  // ⚠️  categories.length is a check to call api only once during the component lifecycle it will stop
+  // running the code block if categories already fetched if we remove the check it will
+  // be infinite call and may need to pick different approach
   useEffect(() => {
     if (categories.length === 0 && visible) {
       (async () => {
@@ -107,12 +110,14 @@ const AddProductModal: React.FC<AddproductModal> = ({ visible, onClose, selected
 
       setUploadedImages(images);
     }
+  }, [selectedProduct, setValue, visible]);
 
+  useEffect(() => {
     if (!visible) {
       reset();
       setUploadedImages({});
     }
-  }, [selectedProduct, visible]);
+  }, [reset, visible]);
 
   return (
     <SideModal visible={visible} onClose={onClose}>
@@ -126,9 +131,9 @@ const AddProductModal: React.FC<AddproductModal> = ({ visible, onClose, selected
               defaultValue=""
               rules={{ required: "Please enter product title." }}
               render={({ field }) => {
-                const additionalInputProps = {} as MessageT;
+                const additionalInputProps = {} as MessageI;
 
-                if (errors.title) {
+                if (errors.title?.message) {
                   additionalInputProps.messageType = "error";
                   additionalInputProps.message = errors.title.message;
                 }
@@ -143,9 +148,9 @@ const AddProductModal: React.FC<AddproductModal> = ({ visible, onClose, selected
                 defaultValue={""}
                 rules={{ required: "Please enter price." }}
                 render={({ field }) => {
-                  const additionalInputProps = {} as MessageT;
+                  const additionalInputProps = {} as MessageI;
 
-                  if (errors.price) {
+                  if (errors.price?.message) {
                     additionalInputProps.messageType = "error";
                     additionalInputProps.message = errors.price.message;
                   }
@@ -158,9 +163,9 @@ const AddProductModal: React.FC<AddproductModal> = ({ visible, onClose, selected
                 control={control}
                 defaultValue={""}
                 render={({ field }) => {
-                  const additionalInputProps = {} as MessageT;
+                  const additionalInputProps = {} as MessageI;
 
-                  if (errors.discount) {
+                  if (errors.discount?.message) {
                     additionalInputProps.messageType = "error";
                     additionalInputProps.message = errors.discount.message;
                   }
@@ -174,9 +179,9 @@ const AddProductModal: React.FC<AddproductModal> = ({ visible, onClose, selected
                 defaultValue={""}
                 rules={{ required: "Please enter quantity." }}
                 render={({ field }) => {
-                  const additionalInputProps = {} as MessageT;
+                  const additionalInputProps = {} as MessageI;
 
-                  if (errors.quantity) {
+                  if (errors.quantity?.message) {
                     additionalInputProps.messageType = "error";
                     additionalInputProps.message = errors.quantity.message;
                   }
@@ -191,9 +196,9 @@ const AddProductModal: React.FC<AddproductModal> = ({ visible, onClose, selected
               defaultValue=""
               rules={{ required: "Please enter product description." }}
               render={({ field }) => {
-                const additionalInputProps = {} as MessageT;
+                const additionalInputProps = {} as MessageI;
 
-                if (errors.description) {
+                if (errors.description?.message) {
                   additionalInputProps.messageType = "error";
                   additionalInputProps.message = errors.description.message;
                 }

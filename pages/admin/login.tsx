@@ -3,11 +3,10 @@ import Image from "next/image";
 import { useForm, Controller } from "react-hook-form";
 
 import { NextApiRequest, NextApiResponse } from "next";
-import { Input } from "../../components/Form";
+import { Input, MessageI } from "../../components/Form";
 import Button from "../../components/Button";
 
 import loginStyles from "../../styles/Login.module.css";
-import { MessageT } from "../../components/Form/Input";
 import { appFetch } from "../../utils/api";
 
 interface Credential {
@@ -62,9 +61,9 @@ const Login = () => {
             defaultValue=""
             rules={{ required: "Please enter email address." }}
             render={({ field }) => {
-              const additionalInputProps = {} as MessageT;
+              const additionalInputProps = {} as MessageI;
 
-              if (errors.email) {
+              if (errors.email?.message) {
                 additionalInputProps.messageType = "error";
                 additionalInputProps.message = errors.email.message;
               }
@@ -78,9 +77,9 @@ const Login = () => {
             defaultValue=""
             rules={{ required: "Please enter password." }}
             render={({ field }) => {
-              const additionalInputProps = {} as MessageT;
+              const additionalInputProps = {} as MessageI;
 
-              if (errors.password) {
+              if (errors.password?.message) {
                 additionalInputProps.messageType = "error";
                 additionalInputProps.message = errors.password.message;
               }

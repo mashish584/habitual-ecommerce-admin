@@ -1,14 +1,12 @@
-import { Transactions, User } from "@prisma/client";
 import { useCallback, useState } from "react";
 import { appFetch } from "../utils/api";
 import { generateKeyValuePair } from "../utils/feUtils";
-import { LoadingI } from "../utils/types";
+import { LoadingI, Order } from "../utils/types";
 
 type OrderLoadingType = "orders" | "order" | null;
-type Orders = Transactions & { user: User };
 
 type OrderState = {
-  data: Record<string, Orders>;
+  data: Record<string, Order>;
   nextPage: string | null;
   count: number;
 };

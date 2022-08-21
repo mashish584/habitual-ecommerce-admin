@@ -1,15 +1,15 @@
-import dayjs from "dayjs";
-import Image from "next/image";
 import React from "react";
-import { User } from "../../hooks/useUser";
+import Image from "next/image";
+import dayjs from "dayjs";
 
 import Chip from "../Chip";
-import { Address } from "../Layout";
-import Line from "../Layout/Line";
+import { Address, Line } from "../Layout";
 import SideModal, { SideModalI } from "./SideModal";
 
+import { UserI } from "../../utils/types";
+
 interface UserDetailModalI extends SideModalI {
-  selectedUser: User;
+  selectedUser: UserI;
 }
 
 const UserDetailModal = ({ visible, selectedUser, onClose }: UserDetailModalI) => (

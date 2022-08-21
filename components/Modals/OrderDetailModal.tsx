@@ -1,14 +1,15 @@
-import { RequestPageOutlined } from "@mui/icons-material";
+import React from "react";
 import dayjs from "dayjs";
 import Image from "next/image";
 import Link from "next/link";
-import React from "react";
-import { Order } from "../../utils/types";
+import { RequestPageOutlined } from "@mui/icons-material";
 
 import Chip from "../Chip";
-import { Address } from "../Layout";
 import Line from "../Layout/Line";
+import { Address } from "../Layout";
 import SideModal, { SideModalI } from "./SideModal";
+
+import { Order } from "../../utils/types";
 
 interface OrderDetailsModalI extends SideModalI {
   selectedOrder: Order;

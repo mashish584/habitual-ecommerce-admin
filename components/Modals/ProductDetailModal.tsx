@@ -5,10 +5,11 @@ import { EditOutlined } from "@mui/icons-material";
 import Button from "../Button";
 import Chip from "../Chip";
 import SideModal, { SideModalI } from "./SideModal";
-import { Product } from "../../hooks/useProduct";
+
+import { ProductI } from "../../utils/types";
 
 interface ProductDetailModalI extends SideModalI {
-  selectedProduct: Product | null;
+  selectedProduct: ProductI | null;
   onProductEdit: () => void;
 }
 

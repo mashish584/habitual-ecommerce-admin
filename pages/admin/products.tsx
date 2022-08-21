@@ -1,12 +1,11 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 
 import { DashboardLayout } from "../../components/Layout";
-import { ListContainer, ListRow, ListItem } from "../../components/List";
-import { LoaderRef } from "../../components/List/ListRow";
+import { ListContainer, ListRow, ListItem, LoaderRef } from "../../components/List";
 import { AddProductModal, ProductDetailModal } from "../../components/Modals";
 import SectionHeading from "../../components/SectionHeading";
-import useIntersection from "../../hooks/useIntersection";
-import useProduct from "../../hooks/useProduct";
+
+import { useProduct, useIntersection } from "../../hooks";
 
 const Product = () => {
   const loader = useRef<LoaderRef>(null);

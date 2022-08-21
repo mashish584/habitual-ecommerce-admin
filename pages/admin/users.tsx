@@ -3,10 +3,9 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import SectionHeading from "../../components/SectionHeading";
 import { DashboardLayout } from "../../components/Layout";
 import { UserDetailModal } from "../../components/Modals";
-import { ListContainer, ListRow, ListItem } from "../../components/List";
-import useUser from "../../hooks/useUser";
-import { LoaderRef } from "../../components/List/ListRow";
-import useIntersection from "../../hooks/useIntersection";
+import { ListContainer, ListRow, ListItem, LoaderRef } from "../../components/List";
+
+import { useUser, useIntersection } from "../../hooks";
 
 const Users = () => {
   const loader = useRef<LoaderRef>(null);

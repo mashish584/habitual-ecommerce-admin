@@ -1,18 +1,13 @@
 import { useCallback, useState } from "react";
-import { Category as CategoryType } from "@prisma/client";
+
 import { appFetch } from "../utils/api";
-import { LoadingI } from "../utils/types";
+import { CategoryI, LoadingI } from "../utils/types";
 
 const endpoint = "category/";
 
 type CategoryLoadingType = "categories" | "addCateogry" | "updateCategory" | "parentCategories" | "delete" | null;
-export interface CategoryI extends CategoryType {
-  parentCategory: {
-    id: string;
-    name: string;
-  };
-}
-export interface Category {
+
+export interface CategoryFormInterface {
   name?: string;
   parent?: string;
   image?: File;
@@ -21,7 +16,7 @@ export interface Category {
 interface UseCategory {
   loading: LoadingI<CategoryLoadingType>;
   deleteCategory: (categoryId: string) => Promise<any>;
-  addCategory: (data: Category) => Promise<any>;
+  addCategory: (data: CategoryFormInterface) => Promise<any>;
   getCategories: (isParent: boolean) => Promise<CategoryI[]>;
   updateCategory: (categoryId: string, data: any) => Promise<any>;
   // updateCategoryState: (type: StateUpdateType, data: Category) => void;
@@ -42,7 +37,7 @@ function useCategory(): UseCategory {
     return response;
   }, []);
 
-  const addCategory = useCallback(async (data: Category) => {
+  const addCategory = useCallback(async (data: CategoryFormInterface) => {
     startLoading("addCateogry");
     const response = await appFetch(endpoint, {
       method: "POST",
@@ -55,7 +50,7 @@ function useCategory(): UseCategory {
     return response;
   }, []);
 
-  const updateCategory = useCallback(async (path: string, data: Category) => {
+  const updateCategory = useCallback(async (path: string, data: CategoryFormInterface) => {
     startLoading("updateCategory");
     const response = await appFetch(`${endpoint}${path}/`, {
       method: "PATCH",
