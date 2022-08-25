@@ -57,8 +57,8 @@ export const catchAsyncError = (fn: AsyncFnType) => (req: NextApiRequest, res: N
     let message = error?.message || "";
 
     if (
-      error instanceof PrismaClientKnownRequestError
-      && [PRISMA_ERRORS.INCONSITENT, PRISMA_ERRORS.NOT_FOUND].includes(error.code as PRISMA_ERRORS)
+      error instanceof PrismaClientKnownRequestError &&
+      [PRISMA_ERRORS.INCONSITENT, PRISMA_ERRORS.NOT_FOUND].includes(error.code as PRISMA_ERRORS)
     ) {
       message = "Record not found.";
       status = "404";
@@ -67,6 +67,11 @@ export const catchAsyncError = (fn: AsyncFnType) => (req: NextApiRequest, res: N
     if (error instanceof PrismaClientValidationError) {
       message = "Please check field types.";
       status = "400";
+    }
+
+    if (error instanceof TypeError || error instanceof ReferenceError || error instanceof SyntaxError) {
+      message = null;
+      status = "500";
     }
 
     return generateResponse(status, message || "Something went wrong.", res);

@@ -32,8 +32,7 @@ const Users = () => {
 
   useEffect(() => {
     getUsers(null);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [getUsers]);
 
   useEffect(() => {
     let observer: IntersectionObserver;
@@ -49,8 +48,7 @@ const Users = () => {
         observer.disconnect();
       }
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [createObserver, users]);
+  }, [createObserver, getUsers, users]);
 
   const usersData = Object.values(users.data);
 

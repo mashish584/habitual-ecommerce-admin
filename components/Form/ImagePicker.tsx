@@ -3,6 +3,7 @@ import Image from "next/image";
 
 import { Delete, ImageOutlined } from "@mui/icons-material";
 import { PreviewImage } from "../../utils/types";
+import Label from "./Label";
 
 interface ImagePickerI {
   label?: string;
@@ -11,6 +12,7 @@ interface ImagePickerI {
   maxUpload: number;
   resetComponentState: boolean;
   className?: string;
+  onColorChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onImageRemove?: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
   onChange: (files: File[] | File) => void;
 }
@@ -36,6 +38,7 @@ const ImagePicker = ({
   previousUploadUrls,
   maxUpload,
   onChange,
+  onColorChange,
   className,
   onImageRemove,
 }: ImagePickerI) => {
@@ -88,10 +91,24 @@ const ImagePicker = ({
         <label className="ff-lato text-xs font-extrabold inline-block mb-1">{label || "Add Image"}</label>
         <div className="flex flex-row flex-wrap">
           {previewImages.map(({ id, url, isLoading }, index) => (
-            <div className={isLoading ? "opacity-50" : "opacity-1"}>
-              <div key={id || index} className={"relative w-24 h-24 bg-lightGray p-2 border-gray border-1 rounded-lg mr-2 mb-1 mt-1 $"}>
+            <div key={id || index} className={`relative ${isLoading ? "opacity-50" : "opacity-1"}`}>
+              <div className={"relative w-24 h-fit bg-lightGray p-2 border-gray border-1 rounded-lg mr-2 mb-1 mt-1 $"}>
                 <Image src={url} width={"100%"} height="100%" objectFit="contain" />
+                {/* Image colors */}
+                <div className="w-20">
+                  <Label label="Background" className="font-medium mb-0.5" />
+                  <div className="w-full h-7 bg-white rounded-md overflow-hidden bottom-1.5 right-1.5 border-2 border-white">
+                    <input type="color" name="backgroundColor" onChange={onColorChange} data-index={index} className="w-full h-full" />
+                  </div>
+                </div>
+                <div className="w-20">
+                  <Label label="Text" className="font-medium mb-0.5" />
+                  <div className=" w-full h-7 bg-white rounded-md overflow-hidden bottom-1.5 right-1.5 border-2 border-white">
+                    <input type="color" name="color" onChange={onColorChange} data-index={index} className="w-full h-full" />
+                  </div>
+                </div>
               </div>
+
               {id !== null && (
                 <button type="button" onClick={onImageRemove} data-image={id} className="text-danger flex flex-row items-center">
                   <Delete fontSize="small" />

@@ -3,6 +3,7 @@ import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { ControllerRenderProps } from "react-hook-form";
 
 import Message, { MessageI } from "./Message";
+import Label from "./Label";
 
 interface InputI
   extends Omit<React.HTMLProps<HTMLInputElement>, "onChange">,
@@ -37,11 +38,7 @@ const Input = React.forwardRef<InputRef & TextAreaRef, InputI>((props, ref) => {
 
   return (
     <div className={`w-full mb-3.5 ${className || ""}`}>
-      {label && (
-        <label {...labelProps} className="ff-lato text-xs font-extrabold inline-block mb-1">
-          {label}
-        </label>
-      )}
+      {label && <Label labelProps={labelProps} label={label} />}
       <div
         className={`relative w-full ${type === "textarea" ? "h-24" : "h-12"}  ${
           isError ? "border-danger" : ""

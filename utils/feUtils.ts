@@ -22,3 +22,10 @@ export const showToast = (message: string, type: "info" | "success" | "warning" 
     type,
   });
 };
+
+export const fillEmptySlotsWithDefault = (arr: any[], defaultValue: any) => {
+  return Array.from(arr, (_, i) => {
+    if (!(i in arr)) return defaultValue;
+    return arr[i];
+  });
+};

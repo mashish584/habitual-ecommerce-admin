@@ -9,7 +9,8 @@ import { useProduct, useIntersection } from "../../hooks";
 
 const Product = () => {
   const loader = useRef<LoaderRef>(null);
-  const { getProducts, products, getProductDetail, productInfo, deleteProductImage, resetProductInfo, updateProductState, loading } = useProduct();
+  const { getProducts, products, getProductDetail, productInfo, deleteProductImage, resetProductInfo, updateProductState, loading } =
+    useProduct();
   const [showAddProductForm, setShowAddProductForm] = useState(false);
   const [showProductDetail, setShowProductDetail] = useState(false);
 
@@ -44,8 +45,7 @@ const Product = () => {
 
   useEffect(() => {
     getProducts("?select=id&select=title&select=price&select=images&select=quantity&select=categoryIds", null);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [getProducts]);
 
   useEffect(() => {
     let observer: IntersectionObserver;

@@ -21,6 +21,7 @@ export interface ProductFormInterface {
   discount: string;
   quantity: string;
   categories: string[] | string;
+  slideColors: Record<string, string>[] | string;
 }
 
 interface UseProduct {
@@ -49,6 +50,7 @@ function useProduct(): UseProduct {
     startLoading("addProduct");
 
     data.categories = JSON.stringify(data.categories);
+    data.slideColors = JSON.stringify(data.slideColors);
     const response = await appFetch(endpoint, {
       method: "POST",
       body: data,
@@ -60,12 +62,12 @@ function useProduct(): UseProduct {
     return response;
   }, []);
 
-  const filterProductForm = useCallback((data: ProductFormInterface, selectedProduct: Product) => {
+  const filterProductForm = useCallback((data: ProductFormInterface, selectedProduct: ProductI) => {
     const formValues = { ...data } as Partial<ProductFormInterface>;
 
     for (const key in formValues) {
       const currentValue = formValues[key as keyof ProductFormInterface];
-      const oldValue = selectedProduct[key as keyof Product];
+      const oldValue = selectedProduct[key as keyof ProductI];
       if (!["categories", "image"].includes(key) && currentValue == oldValue) {
         delete formValues[key as keyof ProductFormInterface];
       }
@@ -102,7 +104,7 @@ function useProduct(): UseProduct {
     return response;
   }, []);
 
-  const updateProductState = useCallback((type: StateUpdateType, data: Product) => {
+  const updateProductState = useCallback((type: StateUpdateType, data: ProductI) => {
     setProducts((prev) => ({
       ...prev,
       data: { ...prev.data, [data.id]: data },
@@ -123,7 +125,7 @@ function useProduct(): UseProduct {
     stopLoading();
 
     if (response.data) {
-      const products = generateKeyValuePair<Product>(response.data);
+      const products = generateKeyValuePair<ProductI>(response.data);
       setProducts((prev) => ({
         data: { ...prev.data, ...products },
         nextPage: response.next,

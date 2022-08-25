@@ -4,7 +4,7 @@ import { UploadResponse } from "imagekit/dist/libs/interfaces";
 import { NextApiRequest, NextApiResponse, NextPageContext } from "next";
 
 export type RequestType = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
-export type Status = "200" | "400" | "401" | "403" | "404" | "405";
+export type Status = "200" | "400" | "401" | "403" | "404" | "405" | "500";
 export type AsyncFnType = (req: NextApiRequest, res: NextApiResponse) => Promise<any>;
 
 export type ResponseError = {
@@ -101,7 +101,8 @@ export interface NContext extends NextPageContext {
 export type PreviewImage = {
   id: string | null;
   url: string;
-  color?: string;
+  bgColor?: string;
+  textColor?: string;
   isLoading?: boolean;
 };
 

@@ -3,11 +3,11 @@ import { Controller, useForm } from "react-hook-form";
 
 import Button from "../Button";
 import { Input, Select, ImagePicker, Message, MessageI, SelectOption } from "../Form";
-import { useProduct, useCategory, ProductFormInterface } from "../../hooks";
-
-import { Option, PreviewImage, ProductI, StateUpdateType } from "../../utils/types";
-
 import SideModal, { SideModalI } from "./SideModal";
+
+import { useProduct, useCategory, ProductFormInterface } from "../../hooks";
+import { Option, PreviewImage, ProductI, StateUpdateType } from "../../utils/types";
+import { fillEmptySlotsWithDefault } from "../../utils/feUtils";
 
 interface AddproductModal extends SideModalI {
   selectedProduct?: ProductI | null;
@@ -21,6 +21,8 @@ const AddProductModal: React.FC<AddproductModal> = ({ visible, onClose, selected
   const [uploadedImages, setUploadedImages] = useState<Record<string, PreviewImage>>({});
   const [categories, setCategories] = useState<Option[]>([]);
 
+  const selectedImageColors = React.useRef<Record<string, string>[]>([]);
+
   const {
     reset,
     handleSubmit,
@@ -31,6 +33,11 @@ const AddProductModal: React.FC<AddproductModal> = ({ visible, onClose, selected
   } = useForm<ProductFormInterface>();
 
   const onSubmit = async (data: ProductFormInterface) => {
+    data.slideColors = fillEmptySlotsWithDefault(selectedImageColors.current, {
+      backgroundColor: "#FFFFFF",
+      color: "#222222",
+    });
+
     function handleResponse(response: any) {
       if (response.status == 200) {
         onClose();
@@ -67,6 +74,20 @@ const AddProductModal: React.FC<AddproductModal> = ({ visible, onClose, selected
         ...images,
         [imageId]: { ...images[imageId], isLoading: false },
       }));
+    }
+  };
+
+  const updateImageColor = ({ target: { name, dataset, value } }: React.ChangeEvent<HTMLInputElement>) => {
+    const index = dataset.index ? parseInt(dataset.index) : 0;
+    const colors = selectedImageColors.current;
+    if (colors[index]) {
+      colors[index][name] = value;
+    } else {
+      colors[index] = {
+        backgroundColor: "#FFFFFF",
+        color: "#222222",
+      };
+      colors[index][name] = value;
     }
   };
 
@@ -265,6 +286,7 @@ const AddProductModal: React.FC<AddproductModal> = ({ visible, onClose, selected
                     maxUpload={3}
                     className={"mb-2 mt-3.5"}
                     onImageRemove={removeProductImage}
+                    onColorChange={updateImageColor}
                     onChange={onChange}
                   />
                   {errors.image && errors.image.type === "required" && <Message messageType="error" message={errors.image.message || ""} />}

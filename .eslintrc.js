@@ -35,6 +35,7 @@ module.exports = {
     "implicit-arrow-linebreak": 0,
     "function-paren-newline": 0,
     "arrow-body-style": 0,
+    "operator-linebreak": 0,
     eqeqeq: 0,
   },
   overrides: [
