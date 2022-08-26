@@ -40,14 +40,18 @@ const ProductDetailModal: React.FC<ProductDetailModalI> = ({ visible, selectedPr
         <div>{selectedProduct?.discount && <Chip variant="success" text={`${selectedProduct.discount}% OFF`} />}</div>
       </div>
       <div className="flex mt-5 py-2">
-        {selectedProduct?.images.map((image, index) => (
-          <div
-            key={`${image.name}-${index}`}
-            className="w-32 h-32 rounded-xl overflow-hidden bg-white mr-3.5 flex justify-center items-center border border-gray/50 hover:shadow-2xl ease-in duration-300"
-          >
-            <Image src={image.url} width="100%" height="100%" objectFit="contain" />
-          </div>
-        ))}
+        {selectedProduct?.images.map((image, index) => {
+          const isBackgroundColor = selectedProduct.slideColors[index]?.backgroundColor;
+          return (
+            <div
+              key={`${image.name}-${index}`}
+              className="w-32 h-32 rounded-xl overflow-hidden bg-white mr-3.5 flex justify-center items-center border border-gray/50 hover:shadow-2xl ease-in duration-300"
+              style={isBackgroundColor ? { backgroundColor: selectedProduct.slideColors[index]?.backgroundColor } : {}}
+            >
+              <Image src={image.url} width="100%" height="100%" objectFit="contain" />
+            </div>
+          );
+        })}
       </div>
     </div>
   </SideModal>

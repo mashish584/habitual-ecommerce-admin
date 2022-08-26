@@ -74,7 +74,27 @@ const ImagePicker = ({
 
   useEffect(() => {
     if (previousUploadUrls) {
-      setPreviewImages((prev) => [...prev, ...Object.values(previousUploadUrls)]);
+      setPreviewImages((previousImages) => {
+        const updatedIds = Object.keys(previousUploadUrls);
+
+        // Set "null" for remove image else update with "previousUploadUrls" if "id" match
+        // else return the default image
+        function filterRemoveImage(image: PreviewImage) {
+          if (image.id && !updatedIds.includes(image.id)) {
+            return null;
+          }
+          if (image.id && updatedIds.includes(image.id) && previousUploadUrls) {
+            return previousUploadUrls[image.id];
+          }
+          return image;
+        }
+
+        const images = previousImages.length
+          ? (previousImages.map(filterRemoveImage).filter((image) => image !== null) as PreviewImage[])
+          : Object.values(previousUploadUrls);
+
+        return images;
+      });
     }
   }, [previousUploadUrls]);
 
@@ -90,7 +110,7 @@ const ImagePicker = ({
       <div className={`w-full mb-3.5 ${className}`}>
         <label className="ff-lato text-xs font-extrabold inline-block mb-1">{label || "Add Image"}</label>
         <div className="flex flex-row flex-wrap">
-          {previewImages.map(({ id, url, isLoading }, index) => (
+          {previewImages.map(({ id, url, isLoading, backgroundColor, color }, index) => (
             <div key={id || index} className={`relative ${isLoading ? "opacity-50" : "opacity-1"}`}>
               <div className={"relative w-24 h-fit bg-lightGray p-2 border-gray border-1 rounded-lg mr-2 mb-1 mt-1 $"}>
                 <Image src={url} width={"100%"} height="100%" objectFit="contain" />
@@ -98,13 +118,27 @@ const ImagePicker = ({
                 <div className="w-20">
                   <Label label="Background" className="font-medium mb-0.5" />
                   <div className="w-full h-7 bg-white rounded-md overflow-hidden bottom-1.5 right-1.5 border-2 border-white">
-                    <input type="color" name="backgroundColor" onChange={onColorChange} data-index={index} className="w-full h-full" />
+                    <input
+                      type="color"
+                      name="backgroundColor"
+                      defaultValue={backgroundColor || "#FFFFFF"}
+                      onChange={onColorChange}
+                      data-index={index}
+                      className="w-full h-full"
+                    />
                   </div>
                 </div>
                 <div className="w-20">
                   <Label label="Text" className="font-medium mb-0.5" />
                   <div className=" w-full h-7 bg-white rounded-md overflow-hidden bottom-1.5 right-1.5 border-2 border-white">
-                    <input type="color" name="color" onChange={onColorChange} data-index={index} className="w-full h-full" />
+                    <input
+                      type="color"
+                      name="color"
+                      defaultValue={color || "#222222"}
+                      onChange={onColorChange}
+                      data-index={index}
+                      className="w-full h-full"
+                    />
                   </div>
                 </div>
               </div>

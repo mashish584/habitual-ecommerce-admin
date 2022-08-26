@@ -9,6 +9,8 @@ import { useProduct, useCategory, ProductFormInterface } from "../../hooks";
 import { Option, PreviewImage, ProductI, StateUpdateType } from "../../utils/types";
 import { fillEmptySlotsWithDefault } from "../../utils/feUtils";
 
+const defaultSlideColor = { backgroundColor: "#FFFFFF", color: "#222222" };
+
 interface AddproductModal extends SideModalI {
   selectedProduct?: ProductI | null;
   updateProductState: (type: StateUpdateType, data: ProductI) => void;
@@ -33,11 +35,6 @@ const AddProductModal: React.FC<AddproductModal> = ({ visible, onClose, selected
   } = useForm<ProductFormInterface>();
 
   const onSubmit = async (data: ProductFormInterface) => {
-    data.slideColors = fillEmptySlotsWithDefault(selectedImageColors.current, {
-      backgroundColor: "#FFFFFF",
-      color: "#222222",
-    });
-
     function handleResponse(response: any) {
       if (response.status == 200) {
         onClose();
@@ -52,11 +49,36 @@ const AddProductModal: React.FC<AddproductModal> = ({ visible, onClose, selected
 
     if (selectedProduct) {
       const formValues = filterProductForm(data, selectedProduct);
+      const updatedSlideColors = fillEmptySlotsWithDefault(
+        selectedImageColors.current,
+        selectedProduct.slideColors?.length ? null : defaultSlideColor,
+      );
+
+      formValues.slideColors = new Array((formValues.image?.length || 0) + selectedProduct.images.length)
+        .fill(defaultSlideColor)
+        .map((slideColor, index) => {
+          const isColorPreSelected = selectedProduct.slideColors?.[index]?.backgroundColor && selectedProduct.slideColors?.[index]?.color;
+
+          if (updatedSlideColors[index]) {
+            return updatedSlideColors[index];
+          }
+
+          if (isColorPreSelected) {
+            return selectedProduct.slideColors[index];
+          }
+
+          return slideColor;
+        });
+
       if (Object.keys(formValues).length) {
         const response = await updateProduct(formValues, selectedProduct.id);
         handleResponse(response);
       }
     } else {
+      data.slideColors = fillEmptySlotsWithDefault(selectedImageColors.current, {
+        backgroundColor: "#FFFFFF",
+        color: "#222222",
+      });
       const response = await addProduct(data);
       handleResponse(response);
     }
@@ -119,11 +141,12 @@ const AddProductModal: React.FC<AddproductModal> = ({ visible, onClose, selected
       setValue("categories", selectedProduct.categoryIds);
 
       const images = selectedProduct.images.reduce(
-        (previous, image) => ({
+        (previous, image, index) => ({
           ...previous,
           [image.fileId]: {
             id: image.fileId,
             url: image.url,
+            ...selectedProduct.slideColors[index],
           },
         }),
         {} as Record<string, PreviewImage>,

@@ -101,8 +101,8 @@ export interface NContext extends NextPageContext {
 export type PreviewImage = {
   id: string | null;
   url: string;
-  bgColor?: string;
-  textColor?: string;
+  backgroundColor?: string;
+  color?: string;
   isLoading?: boolean;
 };
 
@@ -127,9 +127,10 @@ export interface Order extends Omit<Transactions, "details" | "address"> {
   user: User;
 }
 
-export interface ProductI extends Omit<Product, "images"> {
+export interface ProductI extends Omit<Product, "images" | "slideColors"> {
   images: UploadResponse[];
   category: Record<"name" | "id", string>[];
+  slideColors: Record<"color" | "backgroundColor", string>[];
 }
 
 export interface CategoryI extends Category {

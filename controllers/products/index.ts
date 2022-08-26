@@ -274,6 +274,11 @@ const deleteProductImageHandler = async (req: NextApiRequest, res: NextApiRespon
     throw new Error("Image id not found in product.");
   }
 
+  const slideColors = productInfo.slideColors || [];
+  if (slideColors.length > 1) {
+    slideColors.splice(imageIndex, 1);
+  }
+
   // 🗑 image from imagekit and update product image field
   await delete_image_from_imagekit(imageId as string);
   images.splice(imageIndex, 1);
@@ -282,6 +287,7 @@ const deleteProductImageHandler = async (req: NextApiRequest, res: NextApiRespon
     where: { id: productId },
     data: {
       images,
+      slideColors,
     },
     include: {
       category: {

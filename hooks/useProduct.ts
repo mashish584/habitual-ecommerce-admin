@@ -93,6 +93,10 @@ function useProduct(): UseProduct {
       data.categories = JSON.stringify(data.categories);
     }
 
+    if (data.slideColors) {
+      data.slideColors = JSON.stringify(data.slideColors);
+    }
+
     const response = await appFetch(`${endpoint}${productId}/`, {
       method: "PATCH",
       body: data,
