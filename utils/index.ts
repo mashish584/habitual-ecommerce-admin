@@ -53,8 +53,8 @@ export const comparePassword = (password: string, currentPassword: string) => bc
 
 export const catchAsyncError = (fn: AsyncFnType) => (req: NextApiRequest, res: NextApiResponse) =>
   fn(req, res).catch((error) => {
-    let status: Status = "400";
-    let message = error?.message || "";
+    let status: Status = "500";
+    let message = error?.message || "Server Error.";
 
     if (
       error instanceof PrismaClientKnownRequestError &&
@@ -74,7 +74,7 @@ export const catchAsyncError = (fn: AsyncFnType) => (req: NextApiRequest, res: N
       status = "500";
     }
 
-    return generateResponse(status, message || "Something went wrong.", res);
+    return generateResponse(status, message || "Server Error.", res);
   });
 
 export const isInvalidObject = (keys: string[], object: Object) => Object.keys(object).some((key) => !keys.includes(key));

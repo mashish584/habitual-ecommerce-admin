@@ -167,8 +167,6 @@ function useProduct(): UseProduct {
         stopLoading();
         if (response.data) {
           setProductInfo(response.data);
-        } else if (response.message) {
-          alert(response.message);
         }
       }
     },

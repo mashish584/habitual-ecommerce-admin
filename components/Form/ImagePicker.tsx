@@ -4,6 +4,7 @@ import Image from "next/image";
 import { Delete, ImageOutlined } from "@mui/icons-material";
 import { PreviewImage } from "../../utils/types";
 import Label from "./Label";
+import { showToast } from "../../utils/feUtils";
 
 interface ImagePickerI {
   label?: string;
@@ -51,13 +52,13 @@ const ImagePicker = ({
 
     if (fileList?.length) {
       if (!isValidMediaSelected(Array.from(fileList))) {
-        alert("Please select valid image media.");
+        showToast("Please select valid image file.", "error");
       } else {
         const isSingleUpload = maxUpload === 1;
         const selectedUploadFiles = Array.from(fileList);
         const files = !isSingleUpload && selectedFiles.current ? [...selectedFiles.current, ...selectedUploadFiles] : selectedUploadFiles;
         if (files.length > maxUpload) {
-          alert("Max file limit exceed.");
+          showToast(`You're allowed to upload ${maxUpload} images.`, "error");
         } else {
           const urls = generateURLFromFiles(files);
           setPreviewImages(!isSingleUpload && previousUploadUrls ? [...Object.values(previousUploadUrls), ...urls] : urls);

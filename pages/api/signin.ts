@@ -27,7 +27,6 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
     if (!user) throw new Error("User credential not matched.");
 
-    console.log(user);
     if (req.body.isAdmin && !user?.isAdmin) {
       throw new Error("You're not allowed to access the portal.");
     }

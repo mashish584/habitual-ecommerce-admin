@@ -43,6 +43,6 @@ export const appFetch = async (url: string, options: FetchConfig) => {
     }
     return handleAPIError(response, endpoint);
   } catch (err) {
-    console.log({ err });
+    showToast("Something went wrong.", "error");
   }
 };

@@ -269,13 +269,7 @@ const AddProductModal: React.FC<AddproductModal> = ({ visible, onClose, selected
                     {categories.map((category, index) => {
                       const isSelected = value?.includes(category.value);
                       return (
-                        <SelectOption
-                          key={category.value}
-                          isSelectedItem={isSelected}
-                          item={category}
-                          index={index}
-                          onClick={() => alert(index)}
-                        >
+                        <SelectOption key={category.value} isSelectedItem={isSelected} item={category} index={index}>
                           {category.label}
                         </SelectOption>
                       );

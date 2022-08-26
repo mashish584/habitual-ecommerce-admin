@@ -33,7 +33,6 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       data: cards || [],
     });
   } catch (error) {
-    console.log({ error });
     return generateResponse("400", "Something went wrong.", res);
   }
 };

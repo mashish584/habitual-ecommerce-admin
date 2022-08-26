@@ -60,7 +60,6 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       },
     });
   } catch (error) {
-    console.log({ error });
     return generateResponse("400", "Something went wrong.", res);
   }
 };
