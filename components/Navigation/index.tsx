@@ -69,14 +69,12 @@ const Navigation = () => {
           </a>
         </Link>
         <nav className="w-full flex flex-col flex flex-1 mt-20">
-          {Object.keys(navigationItems).map((label, index) => {
+          {Object.keys(navigationItems).map((label) => {
             const { component: Icon, path } = navigationItems[label];
             const isActive = path === activePath;
-            const isLastItem = Object.keys(navigationItems).length - 1 === index;
 
             return (
               <>
-                {" "}
                 <Link key={label} href={path}>
                   <a
                     className={`text-black w-9/12 mx-auto mb-5 h-14 px-5 rounded-3xl flex flex-row items-center hover:bg-lightTheme transition-colors duration-300 ${
@@ -87,20 +85,20 @@ const Navigation = () => {
                     <span className="ml-5">{label}</span>
                   </a>
                 </Link>
-                {isLastItem && (
-                  <a
-                    onClick={openLogoutModal}
-                    className={
-                      "text-black w-9/12 mx-auto mb-5 h-14 px-5 rounded-3xl flex flex-row items-center hover:bg-lightTheme transition-colors duration-300 cursor-pointer"
-                    }
-                  >
-                    <LogoutOutlined />
-                    <span className="ml-5">Logout</span>
-                  </a>
-                )}
               </>
             );
           })}
+          <Link href="">
+            <a
+              onClick={openLogoutModal}
+              className={
+                "text-black w-9/12 mx-auto mb-5 h-14 px-5 rounded-3xl flex flex-row items-center hover:bg-lightTheme transition-colors duration-300 cursor-pointer"
+              }
+            >
+              <LogoutOutlined />
+              <span className="ml-5">Logout</span>
+            </a>
+          </Link>
         </nav>
       </aside>
       <LogoutModal visible={showLogoutModal} onClose={closeLogoutModal} />
