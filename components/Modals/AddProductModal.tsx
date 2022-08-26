@@ -190,7 +190,13 @@ const AddProductModal: React.FC<AddproductModal> = ({ visible, onClose, selected
                 name="price"
                 control={control}
                 defaultValue={""}
-                rules={{ required: "Please enter price." }}
+                rules={{
+                  pattern: {
+                    value: /^\d*(\.\d{0,2})?$/,
+                    message: "Please enter valid price. More than 2 decimal places are not allowed.",
+                  },
+                  required: "Please enter price.",
+                }}
                 render={({ field }) => {
                   const additionalInputProps = {} as MessageI;
 
@@ -198,7 +204,7 @@ const AddProductModal: React.FC<AddproductModal> = ({ visible, onClose, selected
                     additionalInputProps.messageType = "error";
                     additionalInputProps.message = errors.price.message;
                   }
-                  return <Input type="text" label="Price" className="basis-30" {...field} {...additionalInputProps} />;
+                  return <Input type="number" label="Price" icon="price" className="basis-30" {...field} {...additionalInputProps} />;
                 }}
               />
 
@@ -206,6 +212,9 @@ const AddProductModal: React.FC<AddproductModal> = ({ visible, onClose, selected
                 name="discount"
                 control={control}
                 defaultValue={""}
+                rules={{
+                  validate: (value) => parseInt(value) <= 100 || !value || "Please enter valid discount.",
+                }}
                 render={({ field }) => {
                   const additionalInputProps = {} as MessageI;
 
@@ -213,7 +222,7 @@ const AddProductModal: React.FC<AddproductModal> = ({ visible, onClose, selected
                     additionalInputProps.messageType = "error";
                     additionalInputProps.message = errors.discount.message;
                   }
-                  return <Input type="text" label="Discount" className="basis-30" {...field} {...additionalInputProps} />;
+                  return <Input type="number" icon="discount" label="Discount" className="basis-30" {...field} {...additionalInputProps} />;
                 }}
               />
 
@@ -221,7 +230,10 @@ const AddProductModal: React.FC<AddproductModal> = ({ visible, onClose, selected
                 name="quantity"
                 control={control}
                 defaultValue={""}
-                rules={{ required: "Please enter quantity." }}
+                rules={{
+                  required: "Please enter quantity.",
+                  validate: (value) => parseFloat(value) % 1 === 0 || "Please enter valid integer.",
+                }}
                 render={({ field }) => {
                   const additionalInputProps = {} as MessageI;
 
@@ -229,7 +241,7 @@ const AddProductModal: React.FC<AddproductModal> = ({ visible, onClose, selected
                     additionalInputProps.messageType = "error";
                     additionalInputProps.message = errors.quantity.message;
                   }
-                  return <Input type="text" label="Quantity" className="basis-30" {...field} {...additionalInputProps} />;
+                  return <Input type="number" label="Quantity" className="basis-30" {...field} {...additionalInputProps} />;
                 }}
               />
             </div>
