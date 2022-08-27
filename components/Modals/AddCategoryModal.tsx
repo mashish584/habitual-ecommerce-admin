@@ -7,6 +7,7 @@ import SideModal, { SideModalI } from "./SideModal";
 
 import { useCategory, CategoryFormInterface } from "../../hooks";
 import { CategoryI, Option, PreviewImage, StateUpdateType } from "../../utils/types";
+import { showToast } from "../../utils/feUtils";
 
 interface AddCategoryModalI extends SideModalI {
   selectedCategory: CategoryI | null;
@@ -62,6 +63,7 @@ const AddCategoryModal = ({ visible, onClose, selectedCategory, updateCategorySt
         onClose();
         reset();
         setPreviousUploadUrls({});
+        showToast(`${selectedCategory.name} category removed successfully.`, "success");
         updateCategoryState("delete", selectedCategory);
       }
     }
@@ -71,22 +73,30 @@ const AddCategoryModal = ({ visible, onClose, selectedCategory, updateCategorySt
     const info = { ...data };
     if (!info.image) delete info.image;
     if (info.parent?.trim() === "" || info.parent === selectedCategory?.parentId) delete info.parent;
+    if (info.name === selectedCategory?.name) delete info.name;
+
+    function handleResponse(response: any) {
+      if (response?.status == 200) {
+        onClose();
+        reset();
+        if (selectedCategory) setPreviousUploadUrls({});
+        const message = selectedCategory ? `${selectedCategory.name} category updated.` : "Category added successfully.";
+        updateCategoryState(selectedCategory ? "update" : "add", response.data);
+        showToast(message, "success");
+      }
+    }
 
     if (selectedCategory) {
-      const response = await updateCategory(selectedCategory.id, info);
-      if (response.status == 200) {
+      if (Object.keys(info).length === 0) {
         onClose();
-        reset();
-        setPreviousUploadUrls({});
-        updateCategoryState("update", response.data);
+        return;
       }
+
+      const response = await updateCategory(selectedCategory.id, info);
+      handleResponse(response);
     } else {
       const response = await addCategory(info);
-      if (response.status == 200) {
-        onClose();
-        reset();
-        updateCategoryState("add", response.data);
-      }
+      handleResponse(response);
     }
   };
 
