@@ -7,7 +7,7 @@ import SideModal, { SideModalI } from "./SideModal";
 
 import { useProduct, useCategory, ProductFormInterface } from "../../hooks";
 import { Option, PreviewImage, ProductI, StateUpdateType } from "../../utils/types";
-import { fillEmptySlotsWithDefault } from "../../utils/feUtils";
+import { fillEmptySlotsWithDefault, showToast } from "../../utils/feUtils";
 
 const defaultSlideColor = { backgroundColor: "#FFFFFF", color: "#222222" };
 
@@ -39,7 +39,10 @@ const AddProductModal: React.FC<AddproductModal> = ({ visible, onClose, selected
       if (response.status == 200) {
         onClose();
         if (!selectedProduct) reset();
+        selectedImageColors.current = [];
         updateProductState(selectedProduct ? "update" : "add", response.data);
+        const message = selectedProduct ? "Product details updated." : "Product added successfully.";
+        showToast(message, "success");
       } else {
         response?.errors?.map((error: { key: keyof ProductFormInterface; message: string }) =>
           setError(error.key, { message: error.message }),
@@ -49,30 +52,36 @@ const AddProductModal: React.FC<AddproductModal> = ({ visible, onClose, selected
 
     if (selectedProduct) {
       const formValues = filterProductForm(data, selectedProduct);
-      const updatedSlideColors = fillEmptySlotsWithDefault(
-        selectedImageColors.current,
-        selectedProduct.slideColors?.length ? null : defaultSlideColor,
-      );
 
-      formValues.slideColors = new Array((formValues.image?.length || 0) + selectedProduct.images.length)
-        .fill(defaultSlideColor)
-        .map((slideColor, index) => {
-          const isColorPreSelected = selectedProduct.slideColors?.[index]?.backgroundColor && selectedProduct.slideColors?.[index]?.color;
+      if (selectedImageColors.current?.length) {
+        const updatedSlideColors = fillEmptySlotsWithDefault(
+          selectedImageColors.current,
+          selectedProduct.slideColors?.length ? null : defaultSlideColor,
+        );
 
-          if (updatedSlideColors[index]) {
-            return updatedSlideColors[index];
-          }
+        formValues.slideColors = new Array((formValues.image?.length || 0) + selectedProduct.images.length)
+          .fill(defaultSlideColor)
+          .map((slideColor, index) => {
+            const previousSavedColors = selectedProduct.slideColors?.[index];
+            const isColorPreSelected = previousSavedColors?.backgroundColor && previousSavedColors?.color;
 
-          if (isColorPreSelected) {
-            return selectedProduct.slideColors[index];
-          }
+            if (updatedSlideColors[index]) {
+              return updatedSlideColors[index];
+            }
 
-          return slideColor;
-        });
+            if (isColorPreSelected) {
+              return selectedProduct.slideColors[index];
+            }
+
+            return slideColor;
+          });
+      }
 
       if (Object.keys(formValues).length) {
         const response = await updateProduct(formValues, selectedProduct.id);
         handleResponse(response);
+      } else {
+        onClose();
       }
     } else {
       data.slideColors = fillEmptySlotsWithDefault(selectedImageColors.current, {

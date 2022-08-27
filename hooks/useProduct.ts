@@ -51,6 +51,7 @@ function useProduct(): UseProduct {
 
     data.categories = JSON.stringify(data.categories);
     data.slideColors = JSON.stringify(data.slideColors);
+
     const response = await appFetch(endpoint, {
       method: "POST",
       body: data,
