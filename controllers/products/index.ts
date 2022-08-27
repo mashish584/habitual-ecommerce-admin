@@ -128,7 +128,7 @@ const postRequestHandler = async (req: NextApiRequest, res: NextApiResponse) => 
   const user = await getUser(req);
 
   if (!user?.isAdmin) {
-    return generateResponse("403", "Unauthorized access.", res, { errorMessage: "You're not authorized." });
+    return generateResponse("403", "Unauthorized access.", res, { errorMessage: "You're not authorized.", redirect: true });
   }
 
   const files = req.files || [];
@@ -180,7 +180,7 @@ const patchRequestHandler = async (req: NextApiRequest, res: NextApiResponse) =>
   const user = await getUser(req);
 
   if (!user?.isAdmin) {
-    return generateResponse("403", "Unauthorized access.", res, { errorMessage: "You're not authorized." });
+    return generateResponse("403", "Unauthorized access.", res, { errorMessage: "You're not authorized.", redirect: true });
   }
 
   const productId = req.query?.id as string;
@@ -244,7 +244,7 @@ const deleteProductImageHandler = async (req: NextApiRequest, res: NextApiRespon
   const user = await getUser(req);
 
   if (!user?.isAdmin) {
-    return generateResponse("403", "Unauthorized access.", res, { errorMessage: "You're not authorized." });
+    return generateResponse("403", "Unauthorized access.", res, { errorMessage: "You're not authorized.", redirect: true });
   }
 
   const imageId = req.query?.id;

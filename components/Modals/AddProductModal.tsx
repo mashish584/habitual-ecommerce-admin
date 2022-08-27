@@ -169,6 +169,7 @@ const AddProductModal: React.FC<AddproductModal> = ({ visible, onClose, selected
     if (!visible) {
       reset();
       setUploadedImages({});
+      selectedImageColors.current = [];
     }
   }, [reset, visible]);
 

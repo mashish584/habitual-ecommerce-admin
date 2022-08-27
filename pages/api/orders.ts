@@ -9,7 +9,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
   const user = await getUser(req);
 
   if (!user?.isAdmin) {
-    return generateResponse("403", "Unauthorized access.", res, { errorMessage: "You're not authorized." });
+    return generateResponse("403", "Unauthorized access.", res, { errorMessage: "You're not authorized.", redirect: true });
   }
 
   checkRequestType("GET", req.method as RequestType, res);

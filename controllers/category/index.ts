@@ -100,7 +100,7 @@ const postRequestHandler = async (req: NextApiRequest, res: NextApiResponse) => 
   const user = await getUser(req);
 
   if (!user?.isAdmin) {
-    return generateResponse("403", "Unauthorized access.", res, { errorMessage: "You're not authorized." });
+    return generateResponse("403", "Unauthorized access.", res, { errorMessage: "You're not authorized.", redirect: true });
   }
 
   const validationResponse = await validateCategory(req.body);
@@ -144,7 +144,7 @@ const patchRequestHandler = async (req: NextApiRequest, res: NextApiResponse) =>
   const user = await getUser(req);
 
   if (!user?.isAdmin) {
-    return generateResponse("403", "Unauthorized access.", res, { errorMessage: "You're not authorized." });
+    return generateResponse("403", "Unauthorized access.", res, { errorMessage: "You're not authorized.", redirect: true });
   }
 
   const categoryId = req.query?.id as string;
@@ -206,7 +206,7 @@ const deleteRequestHandler = async (req: NextApiRequest, res: NextApiResponse) =
   const user = await getUser(req);
 
   if (!user?.isAdmin) {
-    return generateResponse("403", "Unauthorized access.", res, { errorMessage: "You're not authorized." });
+    return generateResponse("403", "Unauthorized access.", res, { errorMessage: "You're not authorized.", redirect: true });
   }
 
   const categoryId = req.query?.id as string;

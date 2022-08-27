@@ -10,7 +10,7 @@ const getRequestHandler = async (req: NextApiRequest, res: NextApiResponse) => {
   const user = await getUser(req);
 
   if (!user?.isAdmin) {
-    return generateResponse("403", "Unauthorized access.", res, { errorMessage: "You're not authorized." });
+    return generateResponse("403", "Unauthorized access.", res, { errorMessage: "You're not authorized.", redirect: true });
   }
 
   const take = req.query.take !== undefined ? parseInt(req.query?.take as string) : 10;

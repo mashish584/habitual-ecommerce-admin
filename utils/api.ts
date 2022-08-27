@@ -4,9 +4,12 @@ import { FetchConfig } from "./types";
 export const DEV_URL = "http://localhost:3000/api/";
 
 async function handleAPIError(response: any, endpoint: string) {
-  response = await response.json();
+  response = (await response.json()) || {};
 
-  if (response.message && !response.errors?.length) {
+  if (response.status === "403" && response.redirect) {
+    showToast("Session expired.", "error");
+    window.location.href = "/admin";
+  } else if (response.message && !response.errors?.length) {
     showToast(response.message, "error");
   }
 

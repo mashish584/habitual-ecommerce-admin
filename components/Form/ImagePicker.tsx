@@ -13,7 +13,7 @@ interface ImagePickerI {
   maxUpload: number;
   resetComponentState: boolean;
   className?: string;
-  onColorChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onColorChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onImageRemove?: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
   onChange: (files: File[] | File) => void;
 }
@@ -115,33 +115,37 @@ const ImagePicker = ({
             <div key={id || index} className={`relative ${isLoading ? "opacity-50" : "opacity-1"}`}>
               <div className={"relative w-24 h-fit bg-lightGray p-2 border-gray border-1 rounded-lg mr-2 mb-1 mt-1 $"}>
                 <Image src={url} width={"100%"} height="100%" objectFit="contain" />
-                {/* Image colors */}
-                <div className="w-20">
-                  <Label label="Background" className="font-medium mb-0.5" />
-                  <div className="w-full h-7 bg-white rounded-md overflow-hidden bottom-1.5 right-1.5 border-2 border-white">
-                    <input
-                      type="color"
-                      name="backgroundColor"
-                      defaultValue={backgroundColor || "#FFFFFF"}
-                      onChange={onColorChange}
-                      data-index={index}
-                      className="w-full h-full"
-                    />
-                  </div>
-                </div>
-                <div className="w-20">
-                  <Label label="Text" className="font-medium mb-0.5" />
-                  <div className=" w-full h-7 bg-white rounded-md overflow-hidden bottom-1.5 right-1.5 border-2 border-white">
-                    <input
-                      type="color"
-                      name="color"
-                      defaultValue={color || "#222222"}
-                      onChange={onColorChange}
-                      data-index={index}
-                      className="w-full h-full"
-                    />
-                  </div>
-                </div>
+                {onColorChange ? (
+                  <>
+                    {/* Image colors */}
+                    <div className="w-20">
+                      <Label label="Background" className="font-medium mb-0.5" />
+                      <div className="w-full h-7 bg-white rounded-md overflow-hidden bottom-1.5 right-1.5 border-2 border-white">
+                        <input
+                          type="color"
+                          name="backgroundColor"
+                          defaultValue={backgroundColor || "#FFFFFF"}
+                          onChange={onColorChange}
+                          data-index={index}
+                          className="w-full h-full"
+                        />
+                      </div>
+                    </div>
+                    <div className="w-20">
+                      <Label label="Text" className="font-medium mb-0.5" />
+                      <div className=" w-full h-7 bg-white rounded-md overflow-hidden bottom-1.5 right-1.5 border-2 border-white">
+                        <input
+                          type="color"
+                          name="color"
+                          defaultValue={color || "#222222"}
+                          onChange={onColorChange}
+                          data-index={index}
+                          className="w-full h-full"
+                        />
+                      </div>
+                    </div>
+                  </>
+                ) : null}
               </div>
 
               {id !== null && (

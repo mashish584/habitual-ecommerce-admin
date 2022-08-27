@@ -112,7 +112,7 @@ const HomeAPI = async (req: NextApiRequest, res: NextApiResponse) => {
   const currentUser = await getUser(req);
 
   if (!currentUser?.isAdmin) {
-    return generateResponse("403", "Unauthorized access.", res, { errorMessage: "You're not authorized." });
+    return generateResponse("403", "Unauthorized access.", res, { errorMessage: "You're not authorized.", redirect: true });
   }
 
   const usersCountPromise = prisma.user.count();

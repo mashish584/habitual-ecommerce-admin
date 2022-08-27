@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { NextApiRequest, NextApiResponse } from "next";
 import Image from "next/image";
 import { useForm, Controller } from "react-hook-form";
 import { useRouter } from "next/router";
@@ -10,6 +9,7 @@ import Button from "../../components/Button";
 import loginStyles from "../../styles/Login.module.css";
 import { appFetch } from "../../utils/api";
 import { showToast } from "../../utils/feUtils";
+import { NContext } from "../../utils/types";
 
 interface Credential {
   email: string;
@@ -38,7 +38,7 @@ const Login = () => {
 
     setIsLoading(false);
 
-    if (response.status == 200) {
+    if (response?.status == 200) {
       showToast(response.message, "success");
       router.push("/admin");
     }
@@ -100,17 +100,23 @@ const Login = () => {
   );
 };
 
-export function getServerSideProps({ req, res }: { req: NextApiRequest; res: NextApiResponse }) {
-  if (req.cookies?.token) {
+Login.getInitialProps = async (ctx: NContext) => {
+  /**
+   * If cookie not available redirect back to login
+   */
+
+  const cookies = ctx.req?.cookies || {};
+
+  if (cookies?.token && ctx.res) {
     // avoid HTML caching
-    res.setHeader("Cache-Control", "no-store");
-    res.writeHead(301, {
+    ctx.res.setHeader("Cache-Control", "no-store");
+    ctx.res.writeHead(301, {
       Location: "/admin/",
     });
-    res.end();
+    ctx.res.end();
   }
 
-  return { props: {} };
-}
+  return {};
+};
 
 export default Login;
