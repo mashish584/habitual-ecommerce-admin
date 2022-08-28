@@ -88,7 +88,18 @@ const patchHandler = async (req: NextApiRequest, res: NextApiResponse) => {
     data.bio = bio?.trim();
   }
 
-  const updatedInfo: PartialBy<User, "password"> = await prisma.user.update({ where: { id: userId }, data });
+  const updatedInfo: PartialBy<User, "password"> = await prisma.user.update({
+    where: { id: userId },
+    data,
+    include: {
+      interests: {
+        select: {
+          name: true,
+          id: true,
+        },
+      },
+    },
+  });
 
   delete updatedInfo.password;
 

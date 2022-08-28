@@ -70,11 +70,10 @@ export const catchAsyncError = (fn: AsyncFnType) => (req: NextApiRequest, res: N
     }
 
     if (error instanceof TypeError || error instanceof ReferenceError || error instanceof SyntaxError) {
-      message = null;
       status = "500";
     }
 
-    return generateResponse(status, message || "Server Error.", res);
+    return generateResponse(status, status === "500" ? "Server Error" : message || "Something went wrong.", res);
   });
 
 export const isInvalidObject = (keys: string[], object: Object) => Object.keys(object).some((key) => !keys.includes(key));
