@@ -1,6 +1,6 @@
 # Habitual E-commerce Portal
 
-Web platform to manage mobile application data. Currently application include CRUD operations for all sort of sections & features like order tracking, notifications & product color variants,etc. in. loop ([Platform Video](https://www.linkedin.com/posts/mehraas_react-next-prisma-activity-6967148201787174912-tLr3?utm_source=share&utm_medium=member_desktop)):
+Web platform to manage mobile application data. Currently application include CRUD operations for all sort of sections & features like order tracking, notifications & product color variants,etc. in loop. [Platform Video](https://www.linkedin.com/posts/mehraas_react-next-prisma-activity-6967148201787174912-tLr3?utm_source=share&utm_medium=member_desktop):
 
 #### Figma Designs: [View](https://www.figma.com/file/QNX7J2J2gX7yDn40i0Wboa/Habitual-Ecommerce?node-id=579%3A7978)
 
