@@ -41,6 +41,8 @@ const HomeAPI = async (req: NextApiRequest, res: NextApiResponse) => {
       orderBy: {
         discount: "desc",
       },
+      skip: 0,
+      take: 10,
     });
 
     const userInterests: Record<string, Partial<Product>[]> = {};

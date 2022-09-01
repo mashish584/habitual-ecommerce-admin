@@ -214,7 +214,16 @@ const AddProductModal: React.FC<AddproductModal> = ({ visible, onClose, selected
                     additionalInputProps.messageType = "error";
                     additionalInputProps.message = errors.price.message;
                   }
-                  return <Input type="number" label="Price" icon="price" className="basis-30" {...field} {...additionalInputProps} />;
+                  return (
+                    <Input
+                      type="number"
+                      label="Price (After Discount)"
+                      icon="price"
+                      className="basis-30"
+                      {...field}
+                      {...additionalInputProps}
+                    />
+                  );
                 }}
               />
 
