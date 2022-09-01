@@ -1,7 +1,10 @@
-import { NextApiRequest, NextApiResponse } from "next";
+import { Category, Product, Transactions, User } from "@prisma/client";
+import { IncomingMessage } from "http";
+import { UploadResponse } from "imagekit/dist/libs/interfaces";
+import { NextApiRequest, NextApiResponse, NextPageContext } from "next";
 
 export type RequestType = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
-export type Status = "200" | "400" | "401" | "403" | "404" | "405";
+export type Status = "200" | "400" | "401" | "403" | "404" | "405" | "500";
 export type AsyncFnType = (req: NextApiRequest, res: NextApiResponse) => Promise<any>;
 
 export type ResponseError = {
@@ -70,3 +73,108 @@ export type Address = {
 
 // TS Utils
 export type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
+
+// Frontend Fetch Types
+export type FetchHeader = {
+  "Content-Type": "application/json" | "multipart/form-data";
+  Authorization?: string;
+  token?: string;
+};
+
+export type RequestMethods = "POST" | "GET" | "PATCH" | "DELETE" | "PUT";
+
+export type ErrorMessage<T> = {
+  key: T;
+  message: string;
+};
+
+/**
+ *  *** Frontend ***
+ */
+
+// Next Overwrites
+export interface NContext extends NextPageContext {
+  req: IncomingMessage & { cookies: { token: string } };
+}
+
+// Component Interface and Types
+export type PreviewImage = {
+  id: string | null;
+  url: string;
+  backgroundColor?: string;
+  color?: string;
+  isLoading?: boolean;
+};
+
+export type Option = {
+  label: string;
+  value: string;
+  isSelected?: boolean;
+};
+
+// Schema
+
+type OrderDetails = Record<
+  string,
+  {
+    product: Pick<Product, "title" | "price" | "quantity"> & { image: string };
+    quantity: number;
+  }
+>;
+export interface Order extends Omit<Transactions, "details" | "address"> {
+  details: OrderDetails[];
+  address: Address;
+  user: User;
+}
+
+export interface ProductI extends Omit<Product, "images" | "slideColors"> {
+  images: UploadResponse[];
+  category: Record<"name" | "id", string>[];
+  slideColors: Record<"color" | "backgroundColor", string>[];
+}
+
+export interface CategoryI extends Category {
+  parentCategory: {
+    id: string;
+    name: string;
+  };
+}
+
+export interface UserI extends Omit<User, "addresses"> {
+  ordersCount: Number;
+  addresses: Address[];
+  interests: [{ name: string; id: string }];
+}
+
+// Api Call
+export interface FetchConfig {
+  method: RequestMethods;
+  headers?: FetchHeader;
+  body?: any;
+  path?: string;
+  query?: string;
+  url?: string;
+  isFormData?: boolean;
+  disableUrlAppend?: boolean;
+}
+
+export interface ErrorResponse<T> {
+  errorMessage: ErrorMessage<T>;
+  errors: ErrorMessage<T>[];
+  message: string;
+}
+
+export interface SuccessResponse<T> {
+  message: string;
+  token: string;
+  data: T;
+  next: string;
+}
+
+export interface LoadingI<T> {
+  type: T;
+  isLoading: boolean;
+}
+
+export type StateUpdateType = "add" | "update" | "delete";
+export type DateFormats = "MMMM DD, YYYY" | "MMMM DD, YYYY hh:mm a";

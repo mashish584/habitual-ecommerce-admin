@@ -1,7 +1,7 @@
 module.exports = {
   root: true,
   parser: "@typescript-eslint/parser",
-  plugins: ["@typescript-eslint", "eslint-plugin-import"],
+  plugins: ["@typescript-eslint", "eslint-plugin-import", "react-hooks"],
   extends: ["airbnb-base"],
   rules: {
     quotes: [2, "double", { avoidEscape: true }],
@@ -13,7 +13,7 @@ module.exports = {
     "no-param-reassign": 0,
     "array-callback-return": 0,
     "no-plusplus": 0,
-    "no-unused-vars": ["warn", { vars: "all", args: "none", ignoreRestSiblings: false }],
+    "no-unused-vars": 0,
     "@typescript-eslint/no-unused-vars": ["error", { vars: "all", args: "none", ignoreRestSiblings: false }],
     "max-len": 0,
     camelcase: 0,
@@ -25,7 +25,27 @@ module.exports = {
     "no-restricted-globals": 0,
     "no-await-in-loop": 0,
     "guard-for-in": 0,
+    "default-param-last": 0,
+    "object-curly-newline": 0,
+    "import/no-unresolved": 0,
+    "class-methods-use-this": 0,
+    "react-hooks/rules-of-hooks": 2,
+    "react-hooks/exhaustive-deps": 1,
+    "prefer-destructuring": 0,
+    "implicit-arrow-linebreak": 0,
+    "function-paren-newline": 0,
+    "arrow-body-style": 0,
+    "operator-linebreak": 0,
+    eqeqeq: 0,
   },
+  overrides: [
+    {
+      files: ["*.ts", "*.tsx"],
+      rules: {
+        "no-undef": "off",
+      },
+    },
+  ],
   settings: {
     "import/resolver": {
       node: {

@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  reactStrictMode: true,
+  reactStrictMode: false,
 };
 
 module.exports = {
@@ -16,5 +16,8 @@ module.exports = {
     // your project has type errors.
     // !! WARN !!
     ignoreBuildErrors: true,
+  },
+  images: {
+    domains: ["ik.imagekit.io", "unsplash.it"],
   },
 };

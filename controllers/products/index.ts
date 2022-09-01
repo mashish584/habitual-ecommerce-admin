@@ -5,7 +5,7 @@ import prisma from "../../utils/prisma";
 import { FileType } from "../../utils/types";
 import { delete_image_from_imagekit, upload_on_imagekit } from "../../utils/upload";
 import { validateProduct } from "../../utils/validation";
-import { generateResponse } from "../../utils";
+import { generateResponse, getUser } from "../../utils";
 
 type CategoryInfo = Pick<Category, "id" | "name">[];
 type ProductInfo = Partial<Product> & { categories?: CategoryInfo };
@@ -95,16 +95,27 @@ const getRequestHandler = async (req: NextApiRequest, res: NextApiResponse) => {
   const [count, products]: [number, ProductInfo[]] = await Promise.all([totalCountPromise, productsPromise]);
 
   const prefix = req.headers.host?.includes("localhost") ? "http://" : "https://";
+  const url = `${prefix}${req.headers.host}/api/products/`;
   const nextTake = skip + take;
-  const next = nextTake >= count ? null : `${prefix}${req.headers.host}/api/user/orders/?take=${take}&skip=${nextTake}`;
+  const next = nextTake >= count ? null : `${url}?take=${take}&skip=${nextTake}`;
 
-  return generateResponse("200", "Products fetched..", res, { data: products, next });
+  return generateResponse("200", "Products fetched..", res, { data: products, next, count });
 };
 
 const getIndividualProductHandler = async (req: NextApiRequest, res: NextApiResponse) => {
   const productId = req.query?.id as string;
 
-  const product = await prisma.product.findFirst({ where: { id: productId } });
+  const product = await prisma.product.findFirst({
+    where: { id: productId },
+    include: {
+      category: {
+        select: {
+          name: true,
+          id: true,
+        },
+      },
+    },
+  });
 
   if (!product) {
     throw new Error("Product not found.");
@@ -114,6 +125,12 @@ const getIndividualProductHandler = async (req: NextApiRequest, res: NextApiResp
 };
 
 const postRequestHandler = async (req: NextApiRequest, res: NextApiResponse) => {
+  const user = await getUser(req);
+
+  if (!user?.isAdmin) {
+    return generateResponse("403", "Unauthorized access.", res, { errorMessage: "You're not authorized.", redirect: true });
+  }
+
   const files = req.files || [];
 
   const data = { ...req.body, images: files };
@@ -155,11 +172,17 @@ const postRequestHandler = async (req: NextApiRequest, res: NextApiResponse) => 
   const product = await prisma.product.create({ data: { ...data, images } });
 
   return generateResponse("200", "Product created endpoint hit.", res, {
-    product,
+    data: product,
   });
 };
 
 const patchRequestHandler = async (req: NextApiRequest, res: NextApiResponse) => {
+  const user = await getUser(req);
+
+  if (!user?.isAdmin) {
+    return generateResponse("403", "Unauthorized access.", res, { errorMessage: "You're not authorized.", redirect: true });
+  }
+
   const productId = req.query?.id as string;
 
   // → Fetch product details
@@ -201,14 +224,35 @@ const patchRequestHandler = async (req: NextApiRequest, res: NextApiResponse) =>
     delete data.images;
   }
 
-  const product = await prisma.product.update({ where: { id: productId }, data });
+  const product = await prisma.product.update({
+    where: { id: productId },
+    data,
+    include: {
+      category: {
+        select: {
+          name: true,
+          id: true,
+        },
+      },
+    },
+  });
 
-  return generateResponse("200", "Product created endpoint hit.", res, { product });
+  return generateResponse("200", "Product created endpoint hit.", res, { data: product });
 };
 
 const deleteProductImageHandler = async (req: NextApiRequest, res: NextApiResponse) => {
+  const user = await getUser(req);
+
+  if (!user?.isAdmin) {
+    return generateResponse("403", "Unauthorized access.", res, { errorMessage: "You're not authorized.", redirect: true });
+  }
+
   const imageId = req.query?.id;
   const productId = req.body?.productId;
+
+  if (!productId) {
+    throw new Error("Product id not provided.");
+  }
 
   // ⚠️ productId not exist
   const productInfo = await prisma.product.findFirst({ where: { id: productId } });
@@ -219,11 +263,20 @@ const deleteProductImageHandler = async (req: NextApiRequest, res: NextApiRespon
 
   const images = productInfo.images || [];
 
+  if (productInfo.images.length === 1) {
+    throw new Error("You're not allowed to delete only present image of product.");
+  }
+
   // ⚠️ imageId not exist
   const imageIndex = images?.findIndex((product: any) => product?.fileId === imageId);
 
   if (imageIndex === -1) {
     throw new Error("Image id not found in product.");
+  }
+
+  const slideColors = productInfo.slideColors || [];
+  if (slideColors.length > 1) {
+    slideColors.splice(imageIndex, 1);
   }
 
   // 🗑 image from imagekit and update product image field
@@ -234,10 +287,19 @@ const deleteProductImageHandler = async (req: NextApiRequest, res: NextApiRespon
     where: { id: productId },
     data: {
       images,
+      slideColors,
+    },
+    include: {
+      category: {
+        select: {
+          name: true,
+          id: true,
+        },
+      },
     },
   });
 
-  return generateResponse("200", "Product image removed.", res, { product });
+  return generateResponse("200", "Product image removed.", res, { data: product });
 };
 
 export default {

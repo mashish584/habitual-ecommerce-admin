@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import ProductJSON from "./products";
+import ProductJSON from "./productsSeed";
 
 const prisma = new PrismaClient();
 
@@ -11,7 +11,6 @@ const seed = () => {
 
 seed()
   .catch((e) => {
-    console.log({ e });
     process.exit(1);
   })
   .finally(() => prisma.$disconnect());

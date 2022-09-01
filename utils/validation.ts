@@ -5,9 +5,7 @@ import * as yup from "yup";
 import { isInvalidObject, isValidJSONString } from "./index";
 import prisma from "./prisma";
 
-import {
-  CategoryBody, FileType, ProductBody, ProductVariant, ResponseError, AuthBody, SlideColors,
-} from "./types";
+import { CategoryBody, FileType, ProductBody, ProductVariant, ResponseError, AuthBody, SlideColors } from "./types";
 
 const { ValidationError } = yup;
 
@@ -90,17 +88,18 @@ export const validateProduct = async (values: ProductBody, productinfo?: Product
   try {
     // → totalImages is sumof user selected images and images already in db if both exist
     // → else it will be upload images length which will be by default 0 if not passed
-    const totalImages = values?.images?.length && productinfo?.id && productinfo?.images?.length
-      ? productinfo.images.length + values.images.length
-      : values?.images?.length;
+    const totalImages =
+      values?.images?.length && productinfo?.id && productinfo?.images?.length
+        ? productinfo.images.length + values.images.length
+        : values?.images?.length;
 
     const schema = yup.object().shape({
       title: yup.string().trim().required("Please provide product title.").notRequired(),
       description: yup
         .string()
         .trim()
-        .min(50, "Product description shoulbe between 50-300 characters.")
-        .max(300, "Product description shoulbe between 50-300 characters.")
+        .min(50, "Product description should be between 50-300 characters.")
+        .max(300, "Product description should be between 50-300 characters.")
         .notRequired(),
       images: yup
         .array()
@@ -210,13 +209,12 @@ export const validateProduct = async (values: ProductBody, productinfo?: Product
         }),
       categories: yup.mixed().test("isValidCategories", "Please provide valid categories", async (value) => {
         const categories = (isValidJSONString(value) ? JSON.parse(value) : []) as string[];
-        console.log({ categories, productinfo });
 
         // ✅ Valid if no new category added but have old categories already during update
         if (productinfo?.categoryIds?.length && !categories.length) return true;
 
         // ⚠️ No category added
-        if (!categories.length && !productinfo?.categoryIds?.length) return false;
+        if (!categories.length && productinfo?.categoryIds && !productinfo?.categoryIds?.length) return false;
 
         for (const key in categories) {
           const category = categories[key];

@@ -29,12 +29,8 @@ export const delete_image_from_imagekit = (id: string) => image_kit.deleteFile(i
 export const listFiles = (config: ListFileOptions) => {
   image_kit
     .listFiles(config)
-    .then((response) => {
-      console.log(response);
-    })
-    .catch((error) => {
-      console.log(error);
-    });
+    .then((response) => {})
+    .catch((error) => {});
 };
 
 export default () => multer({ storage });

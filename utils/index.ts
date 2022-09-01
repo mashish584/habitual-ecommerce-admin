@@ -2,9 +2,10 @@ import { NextApiRequest, NextApiResponse } from "next";
 import bcrypt from "bcryptjs";
 import jwt, { Secret } from "jsonwebtoken";
 import { User } from "@prisma/client";
-import { PrismaClientKnownRequestError, PrismaClientValidationError } from "@prisma/client/runtime";
-
 import { Stripe } from "stripe";
+import { PrismaClientKnownRequestError, PrismaClientValidationError } from "@prisma/client/runtime";
+import cookie from "cookie";
+
 import { Address, AsyncFnType, RequestType, Status } from "./types";
 import { PRISMA_ERRORS } from "./enum";
 import prisma from "./prisma";
@@ -52,8 +53,8 @@ export const comparePassword = (password: string, currentPassword: string) => bc
 
 export const catchAsyncError = (fn: AsyncFnType) => (req: NextApiRequest, res: NextApiResponse) =>
   fn(req, res).catch((error) => {
-    let status: Status = "400";
-    let message = error?.message || "";
+    let status: Status = "500";
+    let message = error?.message || "Server Error.";
 
     if (
       error instanceof PrismaClientKnownRequestError &&
@@ -68,7 +69,11 @@ export const catchAsyncError = (fn: AsyncFnType) => (req: NextApiRequest, res: N
       status = "400";
     }
 
-    return generateResponse(status, message || "Something went wrong.", res);
+    if (error instanceof TypeError || error instanceof ReferenceError || error instanceof SyntaxError) {
+      status = "500";
+    }
+
+    return generateResponse(status, status === "500" ? "Server Error" : message || "Something went wrong.", res);
   });
 
 export const isInvalidObject = (keys: string[], object: Object) => Object.keys(object).some((key) => !keys.includes(key));
@@ -83,7 +88,11 @@ export const isValidJSONString = (value: string) => {
 
 export const getUser = async (request: NextApiRequest) => {
   try {
-    const token = request?.headers?.token as string;
+    let token = request?.headers?.token as string;
+    if (!token && request.headers.cookie) {
+      token = `Bearer ${cookie.parse(request.headers.cookie).token}`;
+    }
+
     const decoded = (await decodeJWT(request?.headers?.authorization || token)) as User;
 
     const user = await prisma.user.findFirst({
@@ -164,3 +173,11 @@ export const fetchPaymentMethods = async (customerId: string) => {
 };
 
 export const fetchPaymentInfo = (paymentIntentId: string) => stripe.paymentIntents.retrieve(paymentIntentId);
+
+export const wait = (delay: number) => {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      resolve();
+    }, delay);
+  });
+};
