@@ -94,8 +94,16 @@ const patchHandler = async (req: NextApiRequest, res: NextApiResponse) => {
     include: {
       interests: {
         select: {
-          name: true,
           id: true,
+          name: true,
+          image: true,
+          parentCategory: {
+            select: {
+              id: true,
+              name: true,
+              image: true,
+            },
+          },
         },
       },
     },
