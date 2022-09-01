@@ -69,23 +69,21 @@ const Navigation = () => {
           </a>
         </Link>
         <nav className="w-full flex flex-col flex flex-1 mt-20">
-          {Object.keys(navigationItems).map((label) => {
+          {Object.keys(navigationItems).map((label, index) => {
             const { component: Icon, path } = navigationItems[label];
             const isActive = path === activePath;
 
             return (
-              <>
-                <Link key={label} href={path}>
-                  <a
-                    className={`text-black w-9/12 mx-auto mb-5 h-14 px-5 rounded-3xl flex flex-row items-center hover:bg-lightTheme transition-colors duration-300 ${
-                      isActive ? "bg-lightTheme" : ""
-                    }`}
-                  >
-                    <Icon fontSize="medium" />
-                    <span className="ml-5">{label}</span>
-                  </a>
-                </Link>
-              </>
+              <Link key={`${label}-${index}`} href={path}>
+                <a
+                  className={`text-black w-9/12 mx-auto mb-5 h-14 px-5 rounded-3xl flex flex-row items-center hover:bg-lightTheme transition-colors duration-300 ${
+                    isActive ? "bg-lightTheme" : ""
+                  }`}
+                >
+                  <Icon fontSize="medium" />
+                  <span className="ml-5">{label}</span>
+                </a>
+              </Link>
             );
           })}
           <Link href="">
