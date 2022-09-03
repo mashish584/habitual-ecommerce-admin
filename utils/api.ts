@@ -3,19 +3,6 @@ import { FetchConfig } from "./types";
 
 export const DEV_URL = "/api/";
 
-async function handleAPIError(response: any, endpoint: string) {
-  response = (await response.json()) || {};
-
-  if (response.status === "403" && response.redirect) {
-    showToast("Session expired.", "error");
-    window.location.href = "/admin";
-  } else if (response.message && !response.errors?.length) {
-    showToast(response.message, "error");
-  }
-
-  return response;
-}
-
 export const appFetch = async (url: string, options: FetchConfig) => {
   try {
     const endpoint = options.disableUrlAppend ? url : `${DEV_URL}${url}`;
@@ -44,8 +31,28 @@ export const appFetch = async (url: string, options: FetchConfig) => {
     if (response.status === 200) {
       return response.json();
     }
+    // eslint-disable-next-line no-use-before-define
     return handleAPIError(response, endpoint);
   } catch (err) {
     showToast("Something went wrong.", "error");
   }
 };
+
+async function handleAPIError(response: any, endpoint: string) {
+  response = (await response.json()) || {};
+
+  if (response.status === "403" && response.redirect) {
+    await appFetch("signout", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    showToast("Session expired.", "error");
+    window.location.href = "/admin";
+  } else if (response.message && !response.errors?.length) {
+    showToast(response.message, "error");
+  }
+
+  return response;
+}
