@@ -127,6 +127,7 @@ function useProduct(): UseProduct {
       method: "GET",
       disableUrlAppend: nextPage !== null,
     });
+
     stopLoading();
 
     if (response.data) {

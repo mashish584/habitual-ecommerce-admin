@@ -1,7 +1,7 @@
 import { showToast } from "./feUtils";
 import { FetchConfig } from "./types";
 
-export const DEV_URL = "http://localhost:3000/api/";
+export const DEV_URL = "/api/";
 
 async function handleAPIError(response: any, endpoint: string) {
   response = (await response.json()) || {};

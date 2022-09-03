@@ -35,7 +35,7 @@ function useOrder(): UseOrder {
       stopLoading();
 
       if (response.data) {
-        const orders = generateKeyValuePair<Orders>(response.data);
+        const orders = generateKeyValuePair<Order>(response.data);
         setOrders((prev) => ({
           data: { ...prev.data, ...orders },
           nextPage: response.next,
