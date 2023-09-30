@@ -50,14 +50,14 @@ const Login = () => {
 
   return (
     <div className="flex flex-row w-full h-full">
-      <div className={`basis-3/5 ${loginStyles.loginBg}`}></div>
-      <div className="basis-2/5 flex flex-col justify-center items-center">
+      <div className={`basis-3/5 ${loginStyles.loginBg} hidden lg:block`}></div>
+      <div className="lg:basis-2/5 w-full flex flex-col justify-center items-center">
         <Image
           src={"https://ik.imagekit.io/imashish/habitual-ecommerce/portal/logo?ik-sdk-version=javascript-1.4.3&updatedAt=1658368339830"}
           width={274}
           height={64}
         />
-        <form onSubmit={handleSubmit(onSubmit)} className="w-7/12 mx-auto mt-16">
+        <form onSubmit={handleSubmit(onSubmit)} className="sm:w-7/12 w-10/12 mx-auto mt-16">
           <Controller
             name="email"
             control={control}
